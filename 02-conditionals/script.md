@@ -1,0 +1,6 @@
+- responder al mensaje vacío
+- responder a un mensaje básico "hola"
+- terminar la conversación (múltiples condiciones)
+- respuesta por defecto
+- guardar el nombre y preguntar por él
+- reescribir una aserción como una pregunta
