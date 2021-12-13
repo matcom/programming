@@ -211,3 +211,12 @@ public class Game
         return col >= 0 && col < this.Width && row >= 0 && row <= this.Height;
     }
 }
+
+// EJERCICIOS
+
+// 1. Modifique el juego para incluir modificadores de ataque que aumentan el rango y la cantidad de enemigos que se matan en cada ataque.
+//    Los modificadores de ataque pueden aparecer aleatoriamente cuando se mata un enemigo.
+
+// 2. Modifique el movimiento de las arañas para que la probabilidad de moverse hacia el jugador sea mayor mientras más cerca estén del mismo.
+
+// 3. Modifique las vidas para que aparezcan y desaparezcan cada cierta cantidad de turnos, y que nunca haya más de una en el mapa.
