@@ -218,3 +218,27 @@ public class Matrix
     }
     #endregion
 }
+
+/* EJERCICIOS
+
+1) Redefine el operador `==` de manera que sea posible comparar dos matrices de la forma `matrix_a == matrix_b`. 
+   El resultado será `true` si ambas continen los mismos elementos en las mismas posiciones, de lo contrario debe 
+   evaluar `false`.
+   Hint: Para ello implementa el método `public static Matrix operator ==(Matrix a, Matrix b)`.
+   Puedes reutilizar métodos implementados.
+
+2) Adicione un método de instancia `bool IsSymmetrical(Matrix m)` que devuelve `true` si y solo si la matriz es una matriz
+   simétrica, e implemente los tests que considere necesarios para evaluarlo.
+
+3) Adicione un método estático `static Matrix Parse(string matrix_str)` que dado un string con el formato:
+   <x1,...,xn | xn+1,...,x2n | ...> parsee el contenido y retorne la matriz correspondiente. Implemente los tests que 
+   considere necesarios para evaluarlo.
+   
+   Ejemplo:
+   A partir del string "<1,2,3 | 4,5,6 | 7,8,9>"  se obtiene la matriz:
+   
+   ⌈  1   2   3  ⌉
+   |  4   5   6  |
+   ⌊  7   8   9  ⌋
+
+*/ 
