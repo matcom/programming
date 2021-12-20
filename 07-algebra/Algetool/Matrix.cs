@@ -42,7 +42,7 @@ public class Matrix
     public void Transpose()
     {
         // what happened here 😱?
-        this.transposed = true;
+        this.transposed = !this.transposed;
     }
 
     public override string ToString()
