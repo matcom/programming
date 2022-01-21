@@ -44,14 +44,20 @@ public static class Sort
     {
         for (int i = 1; i < array.Length; i++)
         {
+            int x = array[i];
             int j = i - 1;
 
-            while (j >= 0 && array[j] > array[i])
+            while (j >= 0 && array[j] > x)
+            {
                 array[j + 1] = array[j];
+                j = j-1;
+            }
 
-            array[j + 1] = array[i];
+            array[j + 1] = x;
         }
     }
+
+    #region Black magic
 
     public static void MergeSort(int[] array)
     {
@@ -94,4 +100,6 @@ public static class Sort
         for (int i = left; i <= right; i++)
             array[i] = tmp[i];
     }
+
+    #endregion
 }
