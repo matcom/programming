@@ -12,3 +12,10 @@
 6. [Matrices](./conferences/06-matrices)
 7. [Algebra](./conferences/07-algebra)
 8. [Ordenación](./conferences/08-sorting)
+
+## Exámenes anteriores
+
+### 2022
+
+- [Intensidad de la Señal](./exams/2022-01-21/wifi)
+- [Turismo Ecológico](./exams/2022-01-21/tourist)
