@@ -5,7 +5,7 @@ class Program
 {
     static void Main()
     {
-        // Case1();
+        Case1();
         Case2();
     }
 
