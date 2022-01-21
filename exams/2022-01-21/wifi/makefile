@@ -3,3 +3,6 @@ test:
 
 build:
 	dotnet build
+
+clean:
+	git clean -fxd
