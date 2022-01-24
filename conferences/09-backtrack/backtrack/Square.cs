@@ -22,12 +22,7 @@ public static class Square
             return IsValid(square, sum, max);
 
         if (row >= square.GetLength(0))
-        {
-            if (SumCol(square, col) != sum)
-                return false;
-
             return Solve(square, 0, col+1, sum, max, used);
-        }
 
         for (int value = 1; value <= max; value++)
         {
