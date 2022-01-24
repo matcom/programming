@@ -12,6 +12,7 @@
 6. [Matrices](./conferences/06-matrices)
 7. [Algebra](./conferences/07-algebra)
 8. [Ordenación](./conferences/08-sorting)
+9. [Backtrack](./conferences/09-backtrack)
 
 ## Exámenes anteriores
 
