@@ -16,7 +16,7 @@
 
 ## Ejercicios
 
-- [Recursión](./exercises/recursion.md)
+- [Recursión](./exercises/exercises.pdf)
 
 ## Exámenes anteriores
 
