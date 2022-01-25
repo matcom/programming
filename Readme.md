@@ -14,6 +14,10 @@
 8. [Ordenación](./conferences/08-sorting)
 9. [Backtrack](./conferences/09-backtrack)
 
+## Ejercicios
+
+- [Recursión](./exercises/recursion.md)
+
 ## Exámenes anteriores
 
 ### 2022
