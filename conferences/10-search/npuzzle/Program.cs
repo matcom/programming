@@ -6,6 +6,7 @@ class Program
     static void Main(string[] args)
     {
         int size = int.Parse(args[0]);
+        int maxSteps = int.Parse(args[1]);
         int movements = 0;
         NPuzzle puzzle = new NPuzzle(size);
 
@@ -17,7 +18,7 @@ class Program
 
             Draw(puzzle);
 
-            switch (Console.ReadKey().Key)
+            switch (Console.ReadKey(true).Key)
             {
                 case ConsoleKey.LeftArrow:
                     puzzle = puzzle.Move(NPuzzle.Movement.Left);
@@ -36,18 +37,32 @@ class Program
                     movements++;
                     break;
                 case ConsoleKey.R:
-                    puzzle = puzzle.Randomize();
+                    puzzle = new NPuzzle(size).Randomize();
                     movements = 0;
                     break;
                 case ConsoleKey.S:
-                    var steps = NPuzzleSolver.Solve(puzzle);
+                    Console.ForegroundColor = ConsoleColor.DarkMagenta;
+                    Console.WriteLine("Solving...");
 
-                    foreach(var step in steps) {
-                        puzzle = puzzle.Move(step);
-                        movements += 1;
-                        Thread.Sleep(100);
+                    try
+                    {
+                        var steps = NPuzzleSolver.Solve(puzzle, maxSteps);
+
+                        foreach(var step in steps) {
+                            Console.Clear();
+                            puzzle = puzzle.Move(step);
+                            movements += 1;
+                            Draw(puzzle);
+                            Thread.Sleep(100);
+                        }
                     }
-
+                    catch (InvalidOperationException) {
+                        Console.ForegroundColor = ConsoleColor.DarkMagenta;
+                        Console.WriteLine("Unsolvable puzzle! (Press any key to continue)");
+                        Console.ReadKey();
+                        puzzle = new NPuzzle(size);
+                        movements = 0;
+                    }
                     break;
                 case ConsoleKey.Escape:
                     return;

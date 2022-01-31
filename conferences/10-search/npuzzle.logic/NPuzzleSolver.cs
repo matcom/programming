@@ -2,11 +2,12 @@ namespace npuzzle.logic
 {
     public static class NPuzzleSolver
     {
-        public static NPuzzle.Movement[] Solve(NPuzzle puzzle)
+        public static NPuzzle.Movement[] Solve(NPuzzle puzzle, int maxSteps)
         {
             var steps = new List<NPuzzle.Movement>();
+            var seen = new HashSet<NPuzzle>();
 
-            if (Solve(puzzle, steps))
+            if (Solve(puzzle, steps, seen, maxSteps))
             {
                 return steps.ToArray();
             }
@@ -14,8 +15,18 @@ namespace npuzzle.logic
             throw new InvalidOperationException("Unsolvable puzzle");
         }
 
-        private static bool Solve(NPuzzle puzzle, List<NPuzzle.Movement> steps)
+        private static bool Solve(NPuzzle puzzle, List<NPuzzle.Movement> steps, HashSet<NPuzzle> seen, int maxSteps)
         {
+            if (seen.Contains(puzzle)) {
+                return false;
+            }
+
+            if (steps.Count > maxSteps) {
+                return false;
+            }
+
+            seen.Add(puzzle);
+
             if (puzzle.Solved())
             {
                 return true;
@@ -29,7 +40,7 @@ namespace npuzzle.logic
                 {
                     steps.Add(m);
 
-                    if (Solve(puzzle.Move(m), steps))
+                    if (Solve(puzzle.Move(m), steps, seen, maxSteps))
                     {
                         return true;
                     }
@@ -38,6 +49,7 @@ namespace npuzzle.logic
                 }
             }
 
+            seen.Remove(puzzle);
             return false;
         }
     }

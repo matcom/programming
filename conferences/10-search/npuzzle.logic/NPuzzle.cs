@@ -1,4 +1,7 @@
-﻿namespace npuzzle.logic
+﻿using System.Text;
+
+
+namespace npuzzle.logic
 {
     public class NPuzzle
     {
@@ -99,6 +102,20 @@
         private bool IsValid(int row, int col)
         {
             return row >= 0 && row < Size && col >= 0 && col < Size;
+        }
+
+        public override int GetHashCode()
+        {
+            return this.ToString().GetHashCode();
+        }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj == null) {
+                return false;
+            }
+
+            return this.ToString() == obj.ToString();
         }
 
         public override string ToString()
