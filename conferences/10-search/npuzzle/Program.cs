@@ -40,6 +40,10 @@ class Program
                     puzzle = new NPuzzle(size).Randomize();
                     movements = 0;
                     break;
+                case ConsoleKey.N:
+                    puzzle = new NPuzzle(size);
+                    movements = 0;
+                    break;
                 case ConsoleKey.S:
                     Console.ForegroundColor = ConsoleColor.DarkMagenta;
                     Console.WriteLine("Solving...");

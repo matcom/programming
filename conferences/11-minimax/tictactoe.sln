@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tictactoe", "tictactoe\tictactoe.csproj", "{137439E6-888E-4357-90F3-901B34F893B6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tictactoe.logic", "tictactoe.logic\tictactoe.logic.csproj", "{AA9653A2-A3F8-4A06-A91D-7254F6B94979}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{137439E6-888E-4357-90F3-901B34F893B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{137439E6-888E-4357-90F3-901B34F893B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{137439E6-888E-4357-90F3-901B34F893B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{137439E6-888E-4357-90F3-901B34F893B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA9653A2-A3F8-4A06-A91D-7254F6B94979}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA9653A2-A3F8-4A06-A91D-7254F6B94979}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA9653A2-A3F8-4A06-A91D-7254F6B94979}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA9653A2-A3F8-4A06-A91D-7254F6B94979}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
