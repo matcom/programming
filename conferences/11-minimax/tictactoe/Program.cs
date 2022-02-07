@@ -3,48 +3,8 @@
 
 class Program
 {
-    // static void Main(string[] args)
-    // {
-    //     while (true)
-    //     {
-    //         TicTacToe game = new TicTacToe();
-
-    //         while (game.Winner() == Mark.None)
-    //         {
-    //             Console.Clear();
-    //             Draw(game);
-    //             (int row, int col) = ReadInput(game.Turn);
-
-    //             if (game.CanPlay(row, col))
-    //                 game.Play(row, col);
-    //         }
-
-    //         Console.Clear();
-    //         Draw(game);
-
-    //         Console.ForegroundColor = ConsoleColor.DarkMagenta;
-    //         Console.Write($"🥳 The winner is {game.Winner()}! Press any key...");
-
-    //         Console.ReadKey();
-    //         Console.Clear();
-    //     }
-    // }
-
     static void Main(string[] args)
     {
-        string mark = args[0];
-        Mark player;
-
-        if (mark == "X") {
-            player = Mark.Cross;
-        }
-        else if (mark == "O") {
-            player = Mark.Zero;
-        }
-        else {
-            throw new ArgumentException("Choose one of X or O.");
-        }
-
         while (true)
         {
             TicTacToe game = new TicTacToe();
@@ -53,14 +13,7 @@ class Program
             {
                 Console.Clear();
                 Draw(game);
-                int row, col;
-
-                if (game.Turn == player) {
-                    (row, col) = ReadInput(game.Turn);
-                }
-                else {
-                    (row, col) = TicTacToeAI.BestMove(game);
-                }
+                (int row, int col) = ReadInput(game.Turn);
 
                 if (game.CanPlay(row, col))
                     game.Play(row, col);
@@ -76,6 +29,53 @@ class Program
             Console.Clear();
         }
     }
+
+    // static void Main(string[] args)
+    // {
+    //     string mark = args[0];
+    //     Mark player;
+
+    //     if (mark == "X") {
+    //         player = Mark.Cross;
+    //     }
+    //     else if (mark == "O") {
+    //         player = Mark.Zero;
+    //     }
+    //     else {
+    //         throw new ArgumentException("Choose one of X or O.");
+    //     }
+
+    //     while (true)
+    //     {
+    //         TicTacToe game = new TicTacToe();
+
+    //         while (game.Winner() == Mark.None)
+    //         {
+    //             Console.Clear();
+    //             Draw(game);
+    //             int row, col;
+
+    //             if (game.Turn == player) {
+    //                 (row, col) = ReadInput(game.Turn);
+    //             }
+    //             else {
+    //                 (row, col) = TicTacToeAI.BestMove(game);
+    //             }
+
+    //             if (game.CanPlay(row, col))
+    //                 game.Play(row, col);
+    //         }
+
+    //         Console.Clear();
+    //         Draw(game);
+
+    //         Console.ForegroundColor = ConsoleColor.DarkMagenta;
+    //         Console.Write($"🥳 The winner is {game.Winner()}! Press any key...");
+
+    //         Console.ReadKey();
+    //         Console.Clear();
+    //     }
+    // }
 
     static void Draw(TicTacToe game)
     {
