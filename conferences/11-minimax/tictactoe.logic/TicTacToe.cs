@@ -57,18 +57,19 @@
 
         public Mark Winner()
         {
-            if (!CanPlay()) return Mark.Draw;
-
             foreach (Mark mark in new[] { Mark.Zero, Mark.Cross })
             {
                 for (int i = 0; i < 3; i++)
                 {
                     if (AllEqual(i, 0, 0, 1, mark)) return mark;
                     if (AllEqual(0, i, 1, 0, mark)) return mark;
-                    if (AllEqual(0, 0, 1, 1, mark)) return mark;
-                    if (AllEqual(0, 2, 1, -1, mark)) return mark;
                 }
+
+                if (AllEqual(0, 0, 1, 1, mark)) return mark;
+                if (AllEqual(0, 2, 1, -1, mark)) return mark;
             }
+
+            if (!CanPlay()) return Mark.Draw;
 
             return Mark.None;
         }
