@@ -14,7 +14,7 @@ class Program
         var solution = TSPSolution.Find(problem);
         int elapsed = Environment.TickCount - time;
 
-        Console.WriteLine($"\nSolved in {elapsed / 1000} seconds.");
+        Console.WriteLine($"\n🚀 Solved in {elapsed / 1000.0} seconds.");
         Print(solution);
     }
 
@@ -40,12 +40,12 @@ class Program
 
     static void Print(TSPSolution solution)
     {
-        Console.WriteLine($"Total cost: {solution.TotalCost}");
+        Console.WriteLine($"💲 Total cost: {solution.TotalCost}\n");
 
         for (int i = 0; i < solution.Size; i++)
         {
             (string start, string end, int cost) = solution.Step(i);
-            Console.WriteLine($"{start} -> {end} = {cost}");
+            Console.WriteLine($"{start} ➡️ {end} = {cost}");
         }
     }
 }
