@@ -101,15 +101,16 @@
         {
             int[] solution = new int[problem.Size];
             bool[] visited = new bool[problem.Size];
-            return Solve(problem, solution, visited, 0);
+            return Solve(problem, solution, visited, 0, 0, null);
         }
 
-        private static TSPSolution Solve(TSPProblem problem, int[] solution, bool[] visited, int current)
+        private static TSPSolution Solve(TSPProblem problem, int[] solution, bool[] visited, int current, int cost, TSPSolution? best)
         {
             if (current >= problem.Size)
                 return new TSPSolution(problem, solution);
 
-            TSPSolution? best = null;
+            if (best != null && cost > best.TotalCost)
+                return best;
 
             for (int node = 0; node < problem.Size; node++)
             {
@@ -117,8 +118,12 @@
 
                 solution[current] = node;
                 visited[node] = true;
+                int newCost = cost;
 
-                TSPSolution s = Solve(problem, solution, visited, current + 1);
+                if (current > 0)
+                    newCost += problem.Cost(solution[current-1], node);
+
+                TSPSolution s = Solve(problem, solution, visited, current + 1, newCost, best);
 
                 if (best == null || s.TotalCost < best.TotalCost)
                     best = s;
