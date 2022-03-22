@@ -38,7 +38,6 @@ public class Program
         );
 
         // Nadie conectado
-        // Dos conjuntos disjuntos de cliques
         Test(
             // Conexiones
             new[,]
