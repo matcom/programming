@@ -9,7 +9,7 @@ public class Program
 
         // Una asignatura convalida todas las demás
         Test(
-            // Intersecciones
+            // Convalidaciones
             new[,]
             {
                 { true,   true,  true,  true,  true},
@@ -24,7 +24,7 @@ public class Program
 
         // Ninguna asignatura convalida a ninguna otra
         Test(
-            // Intersecciones
+            // Convalidaciones
             new[,]
             {
                 { true,  false, false, false, false},
@@ -38,11 +38,11 @@ public class Program
         );
     }
 
-    public static void Test(bool[,] intersecciones, int esperado)
+    public static void Test(bool[,] convalidaciones, int esperado)
     {
         try
         {
-            int resultado = Examenes.MinimoEstudio(intersecciones);
+            int resultado = Examenes.MinimoEstudio(convalidaciones);
 
             if (resultado != esperado)
             {
