@@ -7,8 +7,7 @@ public class Program
     {
         // Adicione aquí los tests que considere necesarios
 
-        // Todos son amigos de todos, así que serían 3 equipos de una persona, pero no
-        // pueden haber equipos de una persona
+        // Todos son amigos de todos, así que serían 3 equipos de una persona
         Test(
             // Amigos
             new[,]
@@ -18,10 +17,10 @@ public class Program
                 { true,  true, false},
             },
             // Resultado esperado
-            0
+            3
         );
 
-        // Dos conjuntos disjuntos de amigos, pero se queda un equipo
+        // Dos conjuntos disjuntos de amigos, se queda un equipo
         // con una sola persona que no se cuenta
         Test(
             // Amigos
