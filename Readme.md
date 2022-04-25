@@ -31,7 +31,7 @@ El primer semestre de programación se dedica a los conceptos fundamentales de l
 
 El segundo semestre se dedica a profundizar en la programación orientada a objetos como paradigma fundamental para la creación de software extensible y mantenible, aunque también se introducen otras nociones de paradigmas alternativos como la programación funcional y orientada a eventos, así como otras nociones de algoritmia más avanzadas.
 
-13. [Herencia](./conferencias/13-inheritance)
+13. [Herencia](./conferences/13-inheritance)
 
 ## Ejercicios
 
