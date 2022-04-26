@@ -11,11 +11,16 @@ namespace Accounting
 
         public string Name { get; private set; }
         public int Price { get; private set; }
-        public int Units { get; set; }
+        public int Units { get; private set; }
 
         public virtual int TotalCost()
         {
             return this.Price * this.Units;
+        }
+
+        public virtual void AddUnits(int units)
+        {
+            this.Units += units;
         }
 
         public override string ToString()
@@ -24,7 +29,7 @@ namespace Accounting
         }
     }
 
-    public class DiscountProduct: Product
+    public class DiscountProduct : Product
     {
         public double Discount { get; private set; }
 
