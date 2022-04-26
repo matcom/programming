@@ -11,7 +11,7 @@ namespace Accounting
 
         public string Name { get; private set; }
         public int Price { get; private set; }
-        public int Units { get; private set; }
+        public int Units { get; set; }
 
         public virtual int TotalCost()
         {

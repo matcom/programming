@@ -31,7 +31,11 @@
 
         public void Add(Product product)
         {
-            this.products.Add(product);
+            int index = products.FindIndex(p=>p.Name == product.Name);
+            if(index == -1)
+                this.products.Add(product);
+            else
+                this.products[index].Units += product.Units;
         }
     }
 

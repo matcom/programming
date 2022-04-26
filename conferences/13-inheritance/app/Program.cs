@@ -8,8 +8,8 @@ class Program
         new Product("🐟 Pescado (kg)", 100, 10),
         new Product("🐔 Pollo (kg)", 150, 1),
         new Product("🐔 Pollo (kg)", 150, 5),
-        new Product("🥚 Huevo", 10, 1),
-        new Product("🥚 Huevos (caja)", 10, 30),
+        new Product("🥚 Huevos (unidades)", 10, 1),
+        new Product("🥚 Huevos (unidades)", 10, 30),
     };
 
     static void Main()
