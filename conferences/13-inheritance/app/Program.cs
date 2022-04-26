@@ -14,7 +14,7 @@ class Program
 
     static void Main()
     {
-        Cart cart = new Cart; //WithShipment(10, 1000);
+        Cart cart = new Cart(); //WithShipment(10, 1000);
 
         while (true)
         {
