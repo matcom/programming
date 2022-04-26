@@ -1,4 +1,5 @@
-﻿namespace Accounting
+﻿using System;
+namespace Accounting
 {
     public class Cart
     {
@@ -31,7 +32,11 @@
 
         public void Add(Product product)
         {
-            this.products.Add(product);
+            int index = products.FindIndex(p => p.Name == product.Name && p.GetType() == product.GetType());
+            if (index == -1)
+                this.products.Add();
+            else
+                this.products[index].AddUnits(product.Units);
         }
     }
 

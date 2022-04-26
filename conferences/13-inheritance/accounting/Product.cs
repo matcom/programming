@@ -18,13 +18,18 @@ namespace Accounting
             return this.Price * this.Units;
         }
 
+        public virtual void AddUnits(int units)
+        {
+            this.Units += units;
+        }
+
         public override string ToString()
         {
             return $"{this.Name} - ${this.Price} (x{this.Units}) = ${this.TotalCost()}";
         }
     }
 
-    public class DiscountProduct: Product
+    public class DiscountProduct : Product
     {
         public double Discount { get; private set; }
 
