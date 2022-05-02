@@ -47,6 +47,8 @@
             this.freeCost = freeCost;
         }
 
+        public int Cost { get { return costPerUnit; } }
+
         public override IEnumerable<Product> Products()
         {
             int cost = 0;

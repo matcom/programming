@@ -5,16 +5,16 @@ class Program
 {
     static Product[] Catalog = {
         new Product("🐟 Pescado (kg)", 100, 1),
-        new Product("🐟 Pescado (kg)", 100, 10),
+        new DiscountProduct("🐟 Pescado (kg)", 100, 10, 0.1),
         new Product("🐔 Pollo (kg)", 150, 1),
         new Product("🐔 Pollo (kg)", 150, 5),
         new Product("🥚 Huevo", 10, 1),
-        new Product("🥚 Huevos (caja)", 10, 30),
+        new DiscountProduct("🥚 Huevos (caja)", 10, 30, 0.05),
     };
 
     static void Main()
     {
-        Cart cart = new Cart();
+        Cart cart = new CartWithShipment(10, 1000);
 
         while (true)
         {
