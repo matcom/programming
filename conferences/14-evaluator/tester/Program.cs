@@ -5,7 +5,12 @@ class Program
 {
     static void Main(string[] args)
     {
-        Expression e = new Divide(
+        Expression e = GetExpression();
+        Console.WriteLine($"{e} = {e.Evaluate()}");
+    }
+
+    static Expression GetExpression() {
+        return new Divide(
             new Sin(new Constant(4)),
             new Multiply(
                 new Subtract(
@@ -18,7 +23,5 @@ class Program
                 )
             )
         );
-
-        Console.WriteLine($"{e} = {e.Evaluate()}");
     }
 }

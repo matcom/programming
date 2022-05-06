@@ -96,6 +96,7 @@
 
         public override string ToString()
         {
+
             return $"({left.ToString()}) / ({right.ToString()})";
         }
     }
