@@ -7,9 +7,8 @@ class Program
 {
     static void Main()
     {
-        // SortNumbers();
+        SortNumbers();
         // SortDates();
-        SortPeople();
     }
 
     static void SortNumbers()
