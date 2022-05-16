@@ -55,6 +55,8 @@ class Program
         Print(collection);
     }
 
+    // 💠 Ejercicio de Conferencia: ¿cómo generalizar este código? 👆
+
     static void Print<T>(MatCom.Sorting.ICollection<T> collection)
     {
         System.Console.WriteLine($"{collection.Count} items\n");
