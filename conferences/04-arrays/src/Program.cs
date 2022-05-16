@@ -128,7 +128,7 @@ class Program {
         string[] words = new string[30];
 
         for (int i = 0; i < words.Length; i++) {
-            words[i] = reader.ReadLine();
+            words[i] = reader.ReadLine()!;
         }
 
         return words;
