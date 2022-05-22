@@ -36,6 +36,14 @@ El segundo semestre se dedica a profundizar en la programación orientada a obje
 15. [Interfaces](./conferences/15-interfaces)
 15. [Genericidad](./conferences/16-generics)
 
+## Proyectos
+
+Links a los proyectos que han sido orientados en varias ediciones del curso.
+
+- [**Moogle!**](https://github.com/matcom/moogle): Primer proyecto de programación, consiste en implementar las funcionalidades básicas de un buscador, incluyendo algún tipo de modelo de documentos (e.g., modelo vectorial), una función de *ranking*, y algunos operadores.
+
+- [**Domino**](https://github.com/matcom/domino): Segundo proyecto de programación, consiste en implementar una biblioteca de clases para experimentar con diferentes variantes del juego Dominó y diferentes estrategias de jugadores virtuales.
+
 ## Ejercicios
 
 - [Recursión](./exercises/exercises.pdf)
