@@ -22,7 +22,7 @@
         bool Apply(T item);
     }
 
-    public interface IShoppingCart<TProduct>
+    public interface IShoppingCart<TProduct> where TProduct : IProduct
     {
         // Añadir un nuevo producto al carrito.
         void Add(TProduct product, int count);
