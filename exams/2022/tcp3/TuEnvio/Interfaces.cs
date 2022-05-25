@@ -24,6 +24,14 @@
 
     public interface IShoppingCart<TProduct> where TProduct : IProduct
     {
+
+        // Calcula el costo total de los productos en el carrito,
+        // teniendo en cuenta todas las promociones.
+        int Cost { get; }
+
+        // Cantidad total de productos diferentes en el carrito.
+        int Total { get; }
+
         // Añadir un nuevo producto al carrito.
         void Add(TProduct product, int count);
 
@@ -36,16 +44,9 @@
         // Devuelve la cantidad total de elementos que cumplen con un filtro determinado.
         int Count(IFilter<TProduct> filter);
 
-        // Cantidad total de elementos en el carrito.
-        int Total { get; }
-
         // Adiciona una promoción que debe ser tenida en cuenta a partir de ahora para calcular el costo.
         // Devuelve `true` si la promoción aplica a algún producto existente.
         // Cada producto puede tener una sola promoción.
         void AddPromotion(IPromotion<TProduct> promotion);
-
-        // Calcula el costo total de los productos en el carrito,
-        // teniendo en cuenta todas las promociones.
-        int Cost { get; }
     }
 }

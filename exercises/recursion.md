@@ -96,3 +96,5 @@ int RecorridosCaballo(int n) {
     // del caballo en un tablero de n x n
 }
 ```
+
+# Ejercicios
