@@ -45,8 +45,6 @@
         int Count(IFilter<TProduct> filter);
 
         // Adiciona una promoción que debe ser tenida en cuenta a partir de ahora para calcular el costo.
-        // Devuelve `true` si la promoción aplica a algún producto existente.
-        // Cada producto puede tener una sola promoción.
         void AddPromotion(IPromotion<TProduct> promotion);
     }
 }
