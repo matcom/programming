@@ -8,7 +8,8 @@ Como su código debe coexistir con la arquitectura de software existente,
 usted debe implementar la `interface IShoppingCart`:
 
 ```cs
-public interface IShoppingCart<TProduct> where TProduct : IProduct
+public interface IShoppingCart<TProduct>
+    where TProduct: IProduct
 {
     int Cost { get; }
     int Total { get; }
@@ -36,21 +37,22 @@ con cualquier implementación de estas `interfaces` que los otros desarrolladore
 
 Para proveer su implementación de `IShoppingCart` a los demás clientes de su código,
 usted debe implementar el método `GetShoppingCart` de la clase `TuEnvio`.
-Este método recibe un parámetro `capacity` que representa la cantidad máxima de productos
-diferentes que pueden ser adicionados al carrito. Se garantiza que nunca se adicionarán
-una cantidad mayor de productos **diferentes** que este valor.
 
 ```cs
 public static class TuEnvio
 {
-    public static IShoppingCart<TProduct> GetShoppingCart<TProduct>(int capacity)
+    public static IShoppingCart<TProduct>
+        GetShoppingCart<TProduct>(int capacity)
         where TProduct : IProduct
     {
-        // Borre aquí y devuelva una instancia de su implementación de IShoppingCart
         throw new NotImplementedException();
     }
 }
 ```
+
+Este método recibe un parámetro `capacity` que representa la cantidad máxima de productos
+diferentes que pueden ser adicionados al carrito. Se garantiza que nunca se adicionarán
+una cantidad mayor de productos **diferentes** que este valor.
 
 A continuación se explica en más detalle las funcionalidades a implementar.
 
@@ -72,7 +74,8 @@ El carrito de compras debe permitir adicionar una o más unidades de cualquier p
 del método `Add`.
 
 ```cs
-interface IShoppingCart<TProduct> where TProduct: IProduct
+interface IShoppingCart<TProduct>
+    where TProduct: IProduct
 {
     // ...
     void Add(TProduct product, int count);
@@ -94,7 +97,8 @@ Además de adicionar, el carrito de compras permite eliminar todas las unidades 
 mediante el método `Remove`:
 
 ```cs
-interface IShoppingCart<TProduct> where TProduct: IProduct
+interface IShoppingCart<TProduct>
+    where TProduct: IProduct
 {
     // ...
     bool Remove(TProduct product);
@@ -113,7 +117,8 @@ El carrito permite además saber la cantidad de unidades de un producto específ
 `Count`:
 
 ```cs
-interface IShoppingCart<TProduct> where TProduct: IProduct
+interface IShoppingCart<TProduct>
+    where TProduct: IProduct
 {
     // ...
     int Count(TProduct product);
@@ -127,7 +132,7 @@ independientemente de cuántas veces se haya invocado `Add` con el mismo product
 ## Filtrado de productos
 
 Con vistas a soportar ciertas funcionalidades de la interfaz gráfica, el carrito de compras debe
-implementar una funcionalidad para contar la cantidad de productos que cumplen con 
+implementar una funcionalidad para contar la cantidad de productos que cumplen con
 cierto criterio arbitrario. El concepto de filtro se encapsula en la `interface IFilter`:
 
 ```cs
@@ -145,7 +150,8 @@ Para utilizar este criterio, el carrito de compras implementa una sobrecarga del
 que recibe una instancia de `IFilter` genérica en el tipo concreto de producto que corresponda:
 
 ```cs
-interface IShoppingCart<TProduct> where TProduct: IProduct
+interface IShoppingCart<TProduct>
+    where TProduct: IProduct
 {
     // ...
     int Count(IFilter<TProduct> filter);
@@ -159,7 +165,7 @@ que cumplan con la condición del filtro correspondiente.
 ## Cálculo del costo
 
 Finalemente, la funcionalidad principal del carrito de compras es calcular el costo total
-de todos los productos. En principio, el costo será la suma de todos las unidades de cada 
+de todos los productos. En principio, el costo será la suma de todos las unidades de cada
 producto almacenado, multiplicadas por su respectivo precio base.
 
 Sin embargo, en virtud los cambios económicos actuales, la empresa considera interesante
@@ -175,7 +181,8 @@ que debe ser disminuido en el cálculo del costo.
 Este concepto se encapsula en la `interface IPromotion<TProduct>`:
 
 ```cs
-public interface IPromotion<TProduct> where TProduct : IProduct
+public interface IPromotion<TProduct>
+    where TProduct: IProduct
 {
     double Discount(TProduct product, int count);
 }
@@ -187,8 +194,8 @@ en el carrito. Devuelve un valor `double` entre 0 y 1 que representa el porcient
 Por ejemplo, supongamos que el producto corresponde a una botella de vino, con precio base de 250 CUP.
 Supongamos que la promoción aplica a este tipo de producto a partir de 5 unidades con un descuento del 20%.
 Entonces, en un carrito con 4 unidades de botellas de vino, la invocación al método `Discount` devoverá `0`
-pues la promoción no aplica. Así mismo, si se ejecuta el método `Discount` sobre otro producto que no 
-tiene promoción (e.j, maíz molido), también se devolverá `0` independientemente de la cantidad 
+pues la promoción no aplica. Así mismo, si se ejecuta el método `Discount` sobre otro producto que no
+tiene promoción (e.j, maíz molido), también se devolverá `0` independientemente de la cantidad
 de productos.
 En cambio, si un carrito tiene 10 botellas de vino, al invocar `Discount` con este valor para `count` en
 el producto correcto, el resultado será `0.2`, que corresponde al 20% de descuento.
@@ -206,7 +213,8 @@ usted debe invocar `Discount` siempre con la cantidad total de unidades de cada 
 Para adicionar una promoción al carrito se implementa el método `AddPromotion`:
 
 ```cs
-interface IShoppingCart<TProduct> where TProduct: IProduct
+interface IShoppingCart<TProduct>
+    where TProduct: IProduct
 {
     // ...
     void AddPromotion(IPromotion<TProduct> promotion);
@@ -234,12 +242,12 @@ A partir de este punto, se podrían añadir productos de la siguiente forma (asu
 de `SimpleProduct` recibe precio y descripción):
 
 ```cs
-SimpleProduct pollo = new SimpleProduct(100, "Pollo (1kg)");
-SimpleProduct pescado = new SimpleProduct(150, "Pescado (1kg)");
-SimpleProduct vino = new SimpleProduct(250, "Botella de Vino");
+var pollo = new SimpleProduct(100, "Pollo (1kg)");
+var pescado = new SimpleProduct(150, "Pescado (1kg)");
+var vino = new SimpleProduct(250, "Botella de Vino");
 
 cart.Add(pollo, 5);     // Añadiendo 5 kilos de pollo
-cart.Add(pescado, 3);   // Añadiendo 3 kilos de pescado 
+cart.Add(pescado, 3);   // Añadiendo 3 kilos de pescado
 cart.Add(vino, 2)       // Añadiendo dos botellas de vino
 cart.Add(pollo, 2)      // Añadiendo 2 kilos de pollo adicionales
 ```
@@ -255,30 +263,33 @@ int pescadoTotal = cart.Count(pescado);  // Devolvería 3
 int vinoTotal = cart.Count(pescado);     // Devolvería 2
 ```
 
-Supongamos entonces que existe una implementación de `IFilter` que devuelve `true` para 
+Supongamos entonces que existe una implementación de `IFilter` que devuelve `true` para
 todos los productos cárnicos:
 
 ```cs
-IFilter<SimpleProduct> filtroCarnico = // ... (no importa como se implementa este filtro)
+IFilter<SimpleProduct> filtroCarnico = // ...
+    // (no importa como se implementa este filtro)
 
 filtroCarnico.Apply(pollo);   // Devolvería `true`
 filtroCarnico.Apply(pescado); // Devolvería `true`
 filtroCarnico.Apply(vino);    // Devolvería `false`
 
-int totalCarnico = cart.Count(filtroCarnico);  // Devolvería 10 (7 pollo + 3 pescado)
+int totalCarnico = cart.Count(filtroCarnico);
+// Devolvería 10 (7 pollo + 3 pescado)
 ```
 
 Teniendo en cuenta el contenido del carrito, el costo total sería `1950` (`7*100 + 5*150 + 2*250`).
 
 Supongamos ahora que se aplica una promoción a los productos cárnicos (pollo y pescado) con
-un descuento de un 10% si hay 5 unidades o más. 
+un descuento de un 10% si hay 5 unidades o más.
 Esta promoción por lo tanto aplica al pollo pero no al pescado (porque son solo 3 unidades),
 ni al vino (porque no está entre los productos promocionados).
 Con esta promoción aplicada, el costo sería `1810`, pues a los `700` del pollo se le reduce
 un 20%, quedando ese subtotal en `560`, y los otros dos subtotales son iguales.
 
 ```cs
-IPromotion<SimpleProduct> promocionCubaneo = // ... (no importa como se implementa esta promoción)
+IPromotion<SimpleProduct> promocionCubaneo = // ...
+    // (no importa como se implementa esta promoción)
 
 promocionCubaneo.Discount(pollo, 7);    // Devolvería 0.2
 promocionCubaneo.Discount(pescado, 3);  // Devolvería 0
@@ -291,7 +302,7 @@ int cost = cart.Cost;   // Devolvería 1810
 ## Notas
 
 - Usted no necesita implementar las interfaces `IProduct`, `IFilter` o `IPromotion` para ser evaluado,
-  solo la interfaz `IShoppingCart`. Sin embargo, para probar su implementación, le será conveniente 
+  solo la interfaz `IShoppingCart`. Sin embargo, para probar su implementación, le será conveniente
   probar algunas implementaciones suyas de estas interfaces. Siéntase libre de hacerlo a su conveniencia.
 
 - La implementación concreta de `IShoppingCart` que se utilizará es la que usted devuelva en el método
