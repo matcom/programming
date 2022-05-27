@@ -54,7 +54,7 @@ Este método recibe un parámetro `capacity` que representa la cantidad máxima 
 diferentes que pueden ser adicionados al carrito. Se garantiza que nunca se adicionarán
 una cantidad mayor de productos **diferentes** que este valor.
 
-A continuación se explica en más detalle las funcionalidades a implementar.
+A continuación se explican en más detalle las funcionalidades a implementar.
 
 ## Manejo de productos
 
@@ -68,7 +68,7 @@ public interface IProduct
 }
 ```
 
-Todo producto tiene un precio base (propiedad `Price`) y una descripcion (propiedad `Description`).
+Todo producto tiene un precio base (propiedad `Price`) y una descripción (propiedad `Description`).
 
 El carrito de compras debe permitir adicionar una o más unidades de cualquier producto a partir
 del método `Add`.
@@ -146,7 +146,7 @@ El método `Apply` recibe un elemento arbitario (de un tipo genérico `T`) y dev
 si cumple con la condición que encapsula la implementación concreta de `IFilter` que tenga
 en ese momento.
 
-Para utilizar este criterio, el carrito de compras implementa una sobrecarga del `Count`
+Para utilizar este criterio, el carrito de compras implementa una sobrecarga del método `Count`
 que recibe una instancia de `IFilter` genérica en el tipo concreto de producto que corresponda:
 
 ```cs
