@@ -11,7 +11,7 @@ usted debe implementar la `interface IShoppingCart`:
 public interface IShoppingCart<TProduct>
     where TProduct: IProduct
 {
-    int Cost { get; }
+    double Cost { get; }
     int Total { get; }
 
     void Add(TProduct product, int count);
@@ -281,7 +281,7 @@ int totalCarnico = cart.Count(filtroCarnico);
 Teniendo en cuenta el contenido del carrito, el costo total sería `1950` (`7*100 + 5*150 + 2*250`).
 
 Supongamos ahora que se aplica una promoción a los productos cárnicos (pollo y pescado) con
-un descuento de un 10% si hay 5 unidades o más.
+un descuento de un 20% si hay 5 unidades o más.
 Esta promoción por lo tanto aplica al pollo pero no al pescado (porque son solo 3 unidades),
 ni al vino (porque no está entre los productos promocionados).
 Con esta promoción aplicada, el costo sería `1810`, pues a los `700` del pollo se le reduce
@@ -296,7 +296,7 @@ promocionCubaneo.Discount(pescado, 3);  // Devolvería 0
 promocionCubaneo.Discount(vino, 2);     // Devolvería 0
 
 cart.AddPromotion(promocionCubaneo);
-int cost = cart.Cost;   // Devolvería 1810
+double cost = cart.Cost;   // Devolvería 1810
 ```
 
 ## Notas

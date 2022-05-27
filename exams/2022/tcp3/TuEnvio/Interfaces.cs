@@ -27,7 +27,7 @@
 
         // Calcula el costo total de los productos en el carrito,
         // teniendo en cuenta todas las promociones.
-        int Cost { get; }
+        double Cost { get; }
 
         // Cantidad total de productos diferentes en el carrito.
         int Total { get; }
