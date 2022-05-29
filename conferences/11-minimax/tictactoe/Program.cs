@@ -3,7 +3,8 @@
 
 class Program
 {
-    static void Main(string[] args) {
+    static void Main(string[] args)
+    {
         // MainHuman(args);
         MainAI(args);
     }
@@ -40,13 +41,16 @@ class Program
         string mark = args[0];
         Mark player;
 
-        if (mark == "X") {
+        if (mark == "X")
+        {
             player = Mark.Cross;
         }
-        else if (mark == "O") {
+        else if (mark == "O")
+        {
             player = Mark.Zero;
         }
-        else {
+        else
+        {
             throw new ArgumentException("Choose one of X or O.");
         }
 
@@ -60,10 +64,12 @@ class Program
                 Draw(game);
                 int row, col;
 
-                if (game.Turn == player) {
+                if (game.Turn == player)
+                {
                     (row, col) = ReadInput(game.Turn);
                 }
-                else {
+                else
+                {
                     (row, col) = TicTacToeAI.BestMove(game);
                 }
 

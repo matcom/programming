@@ -8,7 +8,7 @@ public static class Square
         int[,] square = new int[size, size];
         int max = size * size;
         int sum = max * (max + 1) / (2 * size);
-        bool[] used = new bool[max+1];
+        bool[] used = new bool[max + 1];
 
         if (Solve(square, 0, 0, sum, max, used))
             return square;
@@ -26,7 +26,7 @@ public static class Square
             if (SumCol(square, col) != sum)
                 return false;
 
-            return Solve(square, 0, col+1, sum, max, used);
+            return Solve(square, 0, col + 1, sum, max, used);
         }
 
         for (int value = 1; value <= max; value++)
@@ -37,7 +37,7 @@ public static class Square
 
             used[value] = true;
 
-            if (Solve(square, row+1, col, sum, max, used))
+            if (Solve(square, row + 1, col, sum, max, used))
                 return true;
 
             used[value] = false;
@@ -56,13 +56,13 @@ public static class Square
             if (SumCol(square, col) != sum)
                 return false;
 
-        bool[] used = new bool[max+1];
+        bool[] used = new bool[max + 1];
 
         for (int i = 0; i < square.GetLength(0); i++)
         {
             for (int j = 0; j < square.GetLength(1); j++)
             {
-                int val = square[i,j];
+                int val = square[i, j];
 
                 if (val > max)
                     return false;

@@ -91,7 +91,8 @@ class DefaultComparer : IComparer
 {
     public int Compare(object a, object b)
     {
-        if (a is IComparable ai) {
+        if (a is IComparable ai)
+        {
             return ai.CompareTo(b);
         }
 

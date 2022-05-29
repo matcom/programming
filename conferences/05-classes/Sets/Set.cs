@@ -1,14 +1,17 @@
 ﻿namespace MatCom.Logic;
 
-public class Set {
+public class Set
+{
     private int[] elements;
 
     // Constructor privado que solo puedo llamar desde esta clase,
     // por lo tanto según el uso, a veces puedo confiar en que los
     // elementos no estén repetidos, y me ahorro tener que hacer esa
     // verificación 2 veces.
-    private Set(int[] elements, bool safe) {
-        if (!safe) {
+    private Set(int[] elements, bool safe)
+    {
+        if (!safe)
+        {
             elements = Unique(elements);
         }
 
@@ -17,17 +20,22 @@ public class Set {
 
     // Constructor público que llamarán los usuarios de la biblioteca,
     // por definición no puedo confiar en la entrada.
-    public Set(params int[] elements) {
+    public Set(params int[] elements)
+    {
         this.elements = Unique(elements);
     }
 
-    public int Size {
+    public int Size
+    {
         get { return this.elements.Length; }
     }
 
-    public bool Contains(int x) {
-        for (int i = 0; i < this.elements.Length; i++) {
-            if (this.elements[i] == x) {
+    public bool Contains(int x)
+    {
+        for (int i = 0; i < this.elements.Length; i++)
+        {
+            if (this.elements[i] == x)
+            {
                 return true;
             }
         }
@@ -35,33 +43,39 @@ public class Set {
         return false;
     }
 
-    public Set Union(Set other) {
+    public Set Union(Set other)
+    {
         int[] union = new int[this.Size + other.Size];
         int total = 0;
 
         // Como cada conjunto no tiene elementos repetidos,
         // podemos poner con total seguridad los del conjunto actual
-        for (int i = 0; i < this.Size; i++) {
+        for (int i = 0; i < this.Size; i++)
+        {
             union[total++] = this.elements[i];
         }
 
         // Ahora ponemos los del otro conjunto, que algunos estarán repetidos
-        for (int i = 0; i < other.Size; i++) {
+        for (int i = 0; i < other.Size; i++)
+        {
             union[total++] = other.elements[i];
         }
 
         return new Set(union);
     }
 
-    public Set Intersection(Set other) {
+    public Set Intersection(Set other)
+    {
         int[] intersection = new int[Math.Min(this.Size, other.Size)];
         int total = 0;
 
         // Por cada elemento del conjunto actual, lo ponemos si y solo si
         // también está en el otro conjunto
         // Usaremos un ciclo foreach porque no nos interesa el índice
-        foreach (int x in this.elements) {
-            if (other.Contains(x)) {
+        foreach (int x in this.elements)
+        {
+            if (other.Contains(x))
+            {
                 intersection[total++] = x;
             }
         }
@@ -73,13 +87,16 @@ public class Set {
 
     #region Métodos auxiliares
 
-    private static int[] Unique(int[] elements) {
+    private static int[] Unique(int[] elements)
+    {
         int[] temp = new int[elements.Length];
         int total = 0;
 
         // Poner en temp solamente aquellos elementos nuevos
-        for (int i = 0; i < elements.Length; i++) {
-            if (!Find(elements[i], temp, total)) {
+        for (int i = 0; i < elements.Length; i++)
+        {
+            if (!Find(elements[i], temp, total))
+            {
                 temp[total++] = elements[i];
             }
         }
@@ -87,20 +104,25 @@ public class Set {
         return Resize(temp, total);
     }
 
-    private static int[] Resize(int[] array, int newSize) {
+    private static int[] Resize(int[] array, int newSize)
+    {
         // Crear un nuevo array con la cantidad justa de elementos
         int[] result = new int[newSize];
 
-        for (int i = 0; i < newSize; i++) {
+        for (int i = 0; i < newSize; i++)
+        {
             result[i] = array[i];
         }
 
         return result;
     }
 
-    private static bool Find(int x, int[] array, int length) {
-        for (int i = 0; i < length; i++) {
-            if (array[i] == x) {
+    private static bool Find(int x, int[] array, int length)
+    {
+        for (int i = 0; i < length; i++)
+        {
+            if (array[i] == x)
+            {
                 return true;
             }
         }

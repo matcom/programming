@@ -26,7 +26,7 @@ class Program
             System.Console.ForegroundColor = ConsoleColor.Black;
             for (int i = 0; i < Catalog.Length; i++)
             {
-                System.Console.WriteLine($"{i+1}: {Catalog[i]}");
+                System.Console.WriteLine($"{i + 1}: {Catalog[i]}");
             }
 
             System.Console.ForegroundColor = ConsoleColor.DarkGreen;
@@ -44,7 +44,7 @@ class Program
             try
             {
                 int index = int.Parse(Console.ReadLine());
-                cart.Add(Catalog[index-1]);
+                cart.Add(Catalog[index - 1]);
             }
             catch (Exception e)
             {

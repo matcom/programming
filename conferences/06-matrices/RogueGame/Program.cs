@@ -1,17 +1,19 @@
 ﻿namespace Rogue;
 
-class Program {
-
+class Program
+{
     static void Main()
     {
-        while (true) {
+        while (true)
+        {
             Console.Clear();
             PrintMenu();
 
             ConsoleKey key = Console.ReadKey(true).Key;
             Console.Clear();
 
-            switch(key) {
+            switch (key)
+            {
                 case ConsoleKey.N:
                     NewGame();
                     break;
@@ -21,15 +23,18 @@ class Program {
         }
     }
 
-    static void NewGame() {
+    static void NewGame()
+    {
         Game game = new Game(35, 18);
 
-        while(true) {
+        while (true)
+        {
             Console.Clear();
             DrawBoard(game);
             ConsoleKey key = Console.ReadKey(true).Key;
 
-            switch(key) {
+            switch (key)
+            {
                 case ConsoleKey.UpArrow:
                     game.MovePlayer(Direction.Up);
                     break;
@@ -51,19 +56,22 @@ class Program {
 
             game.Update();
 
-            if (game.Lives == 0) {
+            if (game.Lives == 0)
+            {
                 GameOver();
                 break;
             }
 
-            if (game.CountEnemies() == 0) {
+            if (game.CountEnemies() == 0)
+            {
                 WinGame();
                 break;
             }
         }
     }
 
-    static void GameOver() {
+    static void GameOver()
+    {
         string message = @"
                                            ▄▄   ▄▄                 ▄▄
 ▀███▀   ▀██▀                             ▀███   ██               ▀███ ██
@@ -87,7 +95,8 @@ class Program {
         Console.ReadKey(true);
     }
 
-    static void WinGame() {
+    static void WinGame()
+    {
         string message = @"
 
 ▀███▀   ▀██▀                                                            ██
@@ -111,21 +120,27 @@ class Program {
         Console.ReadKey(true);
     }
 
-    static void DrawBoard(Game game) {
-        for(int i = 0; i < game.Lives; i++) {
+    static void DrawBoard(Game game)
+    {
+        for (int i = 0; i < game.Lives; i++)
+        {
             Console.Write("💖");
         }
 
         Console.WriteLine("\n");
 
-        for (int row = 0; row < game.Height; row++) {
-            for (int col = 0; col < game.Width; col++) {
-                if (game.PlayerCol == col && game.PlayerRow == row) {
+        for (int row = 0; row < game.Height; row++)
+        {
+            for (int col = 0; col < game.Width; col++)
+            {
+                if (game.PlayerCol == col && game.PlayerRow == row)
+                {
                     Console.Write("🧍");
                     continue;
                 }
 
-                switch(game.ObjectAt(col, row)) {
+                switch (game.ObjectAt(col, row))
+                {
                     case GameObject.Floor:
                         Console.Write("  ");
                         break;
@@ -150,7 +165,8 @@ class Program {
         }
     }
 
-    static void PrintMenu() {
+    static void PrintMenu()
+    {
         string banner = @"
  ██▀███   ▒█████   ▄████  █    ██  ▓█████
 ▓██ ▒ ██▒▒██▒  ██▒ ██▒ ▀█ ██  ▓██▒ ▓█   ▀
