@@ -1,6 +1,8 @@
-- responder al mensaje vacío
-- responder a un mensaje básico "hola"
-- terminar la conversación (múltiples condiciones)
-- respuesta por defecto
-- guardar el nombre y preguntar por él
-- reescribir una aserción como una pregunta
+# Guión
+
+- Responder al mensaje vacío
+- Responder a un mensaje básico "hola"
+- Terminar la conversación (múltiples condiciones)
+- Respuesta por defecto
+- Guardar el nombre y preguntar por él
+- Reescribir una aserción como una pregunta

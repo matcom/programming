@@ -32,7 +32,7 @@ class Program
             Console.Write(problem.Node(i).PadLeft(3));
 
             for (int j = 0; j < problem.Size; j++)
-                Console.Write(problem.Cost(i,j).ToString().PadLeft(3));
+                Console.Write(problem.Cost(i, j).ToString().PadLeft(3));
 
             Console.WriteLine();
         }

@@ -1,22 +1,26 @@
-﻿public enum State {
+﻿public enum State
+{
     Awake,
     Asleep,
     Dead,
 }
 
 
-public class Program {
+public class Program
+{
     static int life = 100;
     static int hunger = 0;
     static int energy = 75;
     static int happiness = 50;
     static State state = State.Awake;
 
-    static void Main() {
+    static void Main()
+    {
         System.Console.Write("¿Cómo se llama tu mascota? > ");
         string name = Console.ReadLine();
 
-        while (true) {
+        while (true)
+        {
 
             Console.Clear();
             UpdateStatus(name);
@@ -25,7 +29,8 @@ public class Program {
 
             PrintMenu();
 
-            if (state == State.Dead) {
+            if (state == State.Dead)
+            {
                 Console.WriteLine("\n😢 {0} ha muerto!", name);
                 return;
             }
@@ -33,7 +38,8 @@ public class Program {
             Console.Write("> ");
             string input = Console.ReadLine();
 
-            if (string.IsNullOrEmpty(input)) {
+            if (string.IsNullOrEmpty(input))
+            {
                 continue;
             }
 
@@ -43,34 +49,35 @@ public class Program {
             switch (option)
             {
                 case 1:
-                Feed(25);
-                break;
+                    Feed(25);
+                    break;
 
                 case 2:
-                Play(10);
-                break;
+                    Play(10);
+                    break;
 
                 case 3:
-                Sleep();
-                break;
+                    Sleep();
+                    break;
 
                 case 4:
-                Awake();
-                break;
+                    Awake();
+                    break;
 
                 case 5:
-                Console.WriteLine("👋 Adiós!");
-                return;
+                    Console.WriteLine("👋 Adiós!");
+                    return;
 
                 default:
-                break;
+                    break;
             }
 
             Thread.Sleep(1000);
         }
     }
 
-    static void PrintMenu() {
+    static void PrintMenu()
+    {
         Console.WriteLine();
         Console.WriteLine("Opciones\n--------");
         Console.WriteLine("1️⃣ Alimentar");
@@ -80,16 +87,20 @@ public class Program {
         Console.WriteLine("5️⃣ Salir");
     }
 
-    static void PrintStatus(string id) {
+    static void PrintStatus(string id)
+    {
         Console.WriteLine();
 
-        if (state == State.Awake) {
+        if (state == State.Awake)
+        {
             Console.WriteLine("🙂 {0}", id);
         }
-        else if (state == State.Asleep) {
+        else if (state == State.Asleep)
+        {
             Console.WriteLine("😴 {0}", id);
         }
-        else if (state == State.Dead) {
+        else if (state == State.Dead)
+        {
             Console.WriteLine("☠️ {0}", id);
         }
 
@@ -99,63 +110,77 @@ public class Program {
         Console.WriteLine("🍖 {0}", hunger);
     }
 
-    static void Feed(int food) {
+    static void Feed(int food)
+    {
         Console.Write("🍖 alimentando ... ");
 
-        if (hunger > 0) {
+        if (hunger > 0)
+        {
             hunger -= food;
             Console.WriteLine("👍");
         }
-        else {
+        else
+        {
             happiness -= 10;
             Console.WriteLine("👎");
         }
     }
 
-    static void Play(int intensity) {
+    static void Play(int intensity)
+    {
         Console.Write("🦴 jugando ... ");
 
-        if (energy > 20) {
+        if (energy > 20)
+        {
             energy -= intensity;
             hunger += intensity;
             happiness += 10;
             Console.WriteLine("👍");
         }
-        else {
+        else
+        {
             happiness -= 10;
             hunger += intensity;
             Console.WriteLine("👎");
         }
     }
 
-    static void Sleep() {
+    static void Sleep()
+    {
         Console.Write("💤 poniendo a dormir... ");
 
-        if (energy < 50) {
+        if (energy < 50)
+        {
             state = State.Asleep;
             Console.WriteLine("👍");
         }
-        else {
+        else
+        {
             happiness -= 20;
             Console.WriteLine("👎");
         }
     }
 
-    static void Awake() {
+    static void Awake()
+    {
         Console.Write("🔔 despertando... ");
 
-        if (energy > 30) {
+        if (energy > 30)
+        {
             state = State.Awake;
             Console.WriteLine("👍");
         }
-        else {
+        else
+        {
             happiness -= 20;
             Console.WriteLine("👎");
         }
     }
 
-    static void UpdateStatus(string name) {
-        if (life <= 0) {
+    static void UpdateStatus(string name)
+    {
+        if (life <= 0)
+        {
             state = State.Dead;
             return;
         }
@@ -163,13 +188,16 @@ public class Program {
         switch (state)
         {
             case State.Awake:
-                if (hunger > 50) {
+                if (hunger > 50)
+                {
                     happiness -= 10;
                 }
-                if (hunger >= 90) {
+                if (hunger >= 90)
+                {
                     life -= 5;
                 }
-                if (energy <= 0) {
+                if (energy <= 0)
+                {
                     Console.WriteLine("😱 {0} se ha desmayado!", name);
                     state = State.Asleep;
                 }
@@ -183,7 +211,8 @@ public class Program {
                 hunger += 5;
                 happiness += 5;
 
-                if (hunger > 50 || energy > 75) {
+                if (hunger > 50 || energy > 75)
+                {
                     Console.WriteLine("😱 {0} se ha despertado!", name);
                     state = State.Awake;
                 }
@@ -191,16 +220,17 @@ public class Program {
                 break;
 
             default:
-            break;
+                break;
         }
 
         life = Normalize(life);
-        hunger = Normalize(hunger, max:90);
+        hunger = Normalize(hunger, max: 90);
         energy = Normalize(energy);
         happiness = Normalize(happiness);
     }
 
-    static int Normalize(int value, int min=0, int max=100) {
+    static int Normalize(int value, int min = 0, int max = 100)
+    {
         return Math.Min(max, Math.Max(value, min));
     }
 }
