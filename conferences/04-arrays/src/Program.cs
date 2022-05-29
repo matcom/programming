@@ -1,21 +1,17 @@
 ﻿using System;
 using System.IO;
 
-class Program
-{
-    static void Main()
-    {
+class Program {
+    static void Main() {
         Console.Title = "☠️ Ahorcado v1.0";
 
-        while (true)
-        {
+        while(true) {
             Console.Clear();
             PrintMenu();
 
             ConsoleKey key = Console.ReadKey(true).Key;
 
-            switch (key)
-            {
+            switch(key) {
                 case ConsoleKey.N:
                 case ConsoleKey.Enter:
                     NewGame();
@@ -32,8 +28,7 @@ class Program
         }
     }
 
-    static void PrintMenu()
-    {
+    static void PrintMenu() {
         Console.ForegroundColor = ConsoleColor.Cyan;
         Console.WriteLine("Bienvenido al Ahorcado ☠️");
         Console.WriteLine();
@@ -48,16 +43,14 @@ class Program
 
     }
 
-    static void NewGame()
-    {
+    static void NewGame() {
         string word = GetRandomWord();
         bool[] marks = InitializeMarks(word);
 
         int lives = 5;
         int hints = 3;
 
-        while (true)
-        {
+        while(true) {
             Console.Clear();
 
             PrintInfo(lives, hints);
@@ -67,30 +60,24 @@ class Program
 
             ConsoleKeyInfo key = Console.ReadKey(true);
 
-            if (key.Key == ConsoleKey.Escape)
-            {
+            if (key.Key == ConsoleKey.Escape) {
                 return;
             }
 
-            if (key.KeyChar == '?')
-            {
-                if (hints > 0)
-                {
+            if (key.KeyChar == '?') {
+                if (hints > 0) {
                     GiveHint(word, marks);
                     hints -= 1;
                 }
             }
 
-            else
-            {
-                if (!Reveal(word, marks, key.KeyChar))
-                {
+            else {
+                if (!Reveal(word, marks, key.KeyChar)) {
                     lives -= 1;
                 }
             }
 
-            if (Complete(marks))
-            {
+            if (Complete(marks)) {
                 Win(word);
                 break;
             }
@@ -130,38 +117,32 @@ class Program
         Console.ReadLine();
     }
 
-    static string GetRandomWord()
-    {
+    static string GetRandomWord() {
         string[] words = LoadWords();
         Random r = new Random();
         return words[r.Next(words.Length)];
     }
 
-    static string[] LoadWords()
-    {
+    static string[] LoadWords() {
         StreamReader reader = new StreamReader("words.txt");
         string[] words = new string[30];
 
-        for (int i = 0; i < words.Length; i++)
-        {
+        for (int i = 0; i < words.Length; i++) {
             words[i] = reader.ReadLine();
         }
 
         return words;
     }
 
-    static bool[] InitializeMarks(string word)
-    {
+    static bool[] InitializeMarks(string word) {
         bool[] marks = new bool[word.Length];
 
         for (int i = 0; i < word.Length; i++)
         {
-            if (word[i] == ' ')
-            {
+            if (word[i] == ' ') {
                 marks[i] = true;
             }
-            else
-            {
+            else {
                 marks[i] = false;
             }
         }
@@ -169,35 +150,29 @@ class Program
         return marks;
     }
 
-    static void PrintInfo(int lives, int hints)
-    {
-        for (int i = 0; i < lives; i++)
-        {
+    static void PrintInfo(int lives, int hints) {
+        for (int i = 0; i < lives; i++) {
             Console.Write("❤️ ");
         }
 
         Console.Write(" ");
 
-        for (int i = 0; i < hints; i++)
-        {
+        for (int i = 0; i < hints; i++) {
             Console.Write("❔");
         }
 
         Console.WriteLine("\n");
     }
 
-    static void PrintWord(string word, bool[] marks)
-    {
+    static void PrintWord(string word, bool[] marks) {
         Console.ForegroundColor = ConsoleColor.White;
 
         for (int i = 0; i < marks.Length; i++)
         {
-            if (marks[i])
-            {
+            if (marks[i]) {
                 Console.Write(word[i]);
             }
-            else
-            {
+            else {
                 Console.Write('*');
             }
         }
@@ -206,18 +181,15 @@ class Program
         Console.ForegroundColor = ConsoleColor.Gray;
     }
 
-    static void GiveHint(string word, bool[] marks)
-    {
+    static void GiveHint(string word, bool[] marks) {
         Random r = new Random();
 
-        while (true)
-        {
+        while(true) {
             // Buscamos una posición aleatoria en la palabra
             int pos = r.Next(word.Length);
 
             // Si ya está marcada, probamos de nuevo
-            if (marks[pos])
-            {
+            if (marks[pos]) {
                 continue;
             }
 
@@ -227,16 +199,13 @@ class Program
         }
     }
 
-    static bool Reveal(string word, bool[] marks, char c)
-    {
+    static bool Reveal(string word, bool[] marks, char c) {
         bool found = false;
 
-        for (int i = 0; i < word.Length; i++)
-        {
+        for (int i = 0; i < word.Length; i++) {
             // Por cada letra, si la letra no está marcada ya, y coincide con el caracter c
             // entonces la marcamos
-            if (!marks[i] && word[i] == c)
-            {
+            if (!marks[i] && word[i] == c) {
                 marks[i] = true;
                 found = true;
             }
@@ -246,13 +215,10 @@ class Program
         return found;
     }
 
-    static bool Complete(bool[] marks)
-    {
-        for (int i = 0; i < marks.Length; i++)
-        {
+    static bool Complete(bool[] marks) {
+        for (int i = 0; i < marks.Length; i++) {
             // Si al menos una letra no está marcada, ya se sabe que no está terminado el juego.
-            if (!marks[i])
-            {
+            if (!marks[i]) {
                 return false;
             }
         }
@@ -261,14 +227,12 @@ class Program
         return true;
     }
 
-    static void ShowWords()
-    {
+    static void ShowWords() {
         Console.Clear();
         Console.ForegroundColor = ConsoleColor.Cyan;
         string[] words = LoadWords();
 
-        foreach (string word in words)
-        {
+        foreach (string word in words) {
             Console.WriteLine(word);
         }
 
