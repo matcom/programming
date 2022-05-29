@@ -9,7 +9,8 @@ class Program
         Console.WriteLine($"{e} = {e.Evaluate()}");
     }
 
-    static Expression GetExpression() {
+    static Expression GetExpression()
+    {
         return new Divide(
             new Sin(new Constant(4)),
             new Multiply(
