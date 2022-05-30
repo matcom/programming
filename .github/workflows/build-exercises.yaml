@@ -1,0 +1,24 @@
+name: Build exercises
+on: push
+jobs:
+  build-exercises:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cloning repo
+        uses: actions/checkout@v3
+      - name: Creating file list
+        id: files_list
+        run: |
+          cd exercises
+          echo "::set-output name=files::$(printf '"%s" ' *.md)"
+      - name: Removing old files
+        run: |
+          cd exercises
+          rm exercises.pdf
+      - uses: docker://pandoc/latex:2.9
+        with:
+          args: -o=exercises/exercises.pdf ${{ steps.files_list.outputs.files }}
+      - uses: actions/upload-artifact@v3
+        with:
+          name: exercises.pdf
+          path: exercises/exercises.pdf
