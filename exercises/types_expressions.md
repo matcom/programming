@@ -14,7 +14,7 @@ Lea tres números enteros de la consola e imprima su ordenación ascendente util
 
 Sean las circunferencias `C1` y `C2` de radio `r`. Lea de la consola el radio `r` (puede ser un número real cualquiera, no solo un entero) y calcule el área sombreada.
 
-![área sombreada](/exercises/assets/area_sombreada.jpg)
+![área sombreada](exercises/assets/area_sombreada.jpg)
 
 ## Solución de la ecuación de segundo grado
 
