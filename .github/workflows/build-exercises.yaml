@@ -10,7 +10,7 @@ jobs:
         id: files_list
         run: |
           cd exercises
-          echo "::set-output name=files::$(printf '"%s" ' *.md)"
+          echo "::set-output name=files::$(printf '"exercises/%s" ' *.md)"
       - name: Removing old files
         run: |
           cd exercises
