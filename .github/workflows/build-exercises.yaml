@@ -11,10 +11,10 @@ jobs:
         run: |
           cd exercises
           echo "::set-output name=files::$(printf '"exercises/%s" ' *.md)"
-      # - name: Removing old files
-      #   run: |
-      #     cd exercises
-      #     rm exercises.pdf
+      - name: Removing old files
+        run: |
+          cd exercises
+          rm exercises.pdf
       - name: Building pdf file
         uses: docker://pandoc/latex:2.9
         with:
@@ -22,5 +22,9 @@ jobs:
       - name: Uploading pdf file
         uses: actions/upload-artifact@v3
         with:
-          name: exercises.pdf
+          name: exercises
           path: exercises/exercises.pdf
+      - name: Commiting changes
+        uses: EndBug/add-and-commit@v9
+        with:
+          add: exercises/exercises.pdf
