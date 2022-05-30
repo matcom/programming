@@ -17,7 +17,7 @@ jobs:
           rm exercises.pdf
       - uses: docker://pandoc/latex:2.9
         with:
-          args: -o=exercises/exercises.pdf ${{ steps.files_list.outputs.files }}
+          args: -o=exercises/exercises.pdf --pdf-engine=xelatex ${{ steps.files_list.outputs.files }}
       - uses: actions/upload-artifact@v3
         with:
           name: exercises.pdf
