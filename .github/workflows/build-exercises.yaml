@@ -18,7 +18,7 @@ jobs:
       - name: Building pdf file
         uses: docker://pandoc/latex:2.9
         with:
-          args: -o=exercises/exercises.pdf --pdf-engine=xelatex ${{ steps.files_list.outputs.files }}
+          args: --output=exercises/exercises.pdf --pdf-engine=xelatex ${{ steps.files_list.outputs.files }}
       - name: Uploading pdf file
         uses: actions/upload-artifact@v3
         with:
