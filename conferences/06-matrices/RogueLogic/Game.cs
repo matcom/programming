@@ -1,6 +1,7 @@
 ﻿namespace Rogue;
 
-public enum GameObject {
+public enum GameObject
+{
     Floor,
     Wall,
     Enemy,
@@ -9,7 +10,8 @@ public enum GameObject {
     Corpse,
 }
 
-public enum Direction {
+public enum Direction
+{
     Up,
     Down,
     Left,
@@ -21,7 +23,8 @@ public class Game
     private GameObject[,] board;
     private Random random = new Random();
 
-    public Game(int width, int height) {
+    public Game(int width, int height)
+    {
         this.board = new GameObject[width, height];
         this.FillBoard();
 
@@ -30,16 +33,19 @@ public class Game
         this.Lives = 5;
     }
 
-    private void FillBoard() {
+    private void FillBoard()
+    {
         // Poner todas las paredes horizontales
-        for(int col=0; col < this.board.GetLength(0); col++) {
-            this.board[col,0] = GameObject.Wall;
+        for (int col = 0; col < this.board.GetLength(0); col++)
+        {
+            this.board[col, 0] = GameObject.Wall;
             this.board[col, this.board.GetLength(1) - 1] = GameObject.Wall;
         }
 
         // Poner todas las paredes verticales
-        for(int row=0; row < this.board.GetLength(1); row++) {
-            this.board[0,row] = GameObject.Wall;
+        for (int row = 0; row < this.board.GetLength(1); row++)
+        {
+            this.board[0, row] = GameObject.Wall;
             this.board[this.board.GetLength(0) - 1, row] = GameObject.Wall;
         }
 
@@ -49,21 +55,25 @@ public class Game
         this.Generate(20, GameObject.Trap);
     }
 
-    private void Generate(int count, GameObject obj) {
+    private void Generate(int count, GameObject obj)
+    {
         int generated = 0;
 
-        while (generated < count) {
+        while (generated < count)
+        {
             int col = random.Next(0, this.Width);
             int row = random.Next(0, this.Height);
 
-            if (this.ObjectAt(col, row) == GameObject.Floor) {
+            if (this.ObjectAt(col, row) == GameObject.Floor)
+            {
                 this.board[col, row] = obj;
                 generated += 1;
             }
         }
     }
 
-    public GameObject ObjectAt(int col, int row) {
+    public GameObject ObjectAt(int col, int row)
+    {
         return this.board[col, row];
     }
 
@@ -77,14 +87,16 @@ public class Game
 
     public int Lives { get; private set; }
 
-    public void MovePlayer(Direction direction) {
+    public void MovePlayer(Direction direction)
+    {
         int newCol = PlayerCol;
         int newRow = PlayerRow;
 
         // Vamos a calcular la nueva posición en la quedaría el jugador
-        switch(direction) {
+        switch (direction)
+        {
             case Direction.Up:
-                newRow -=1;
+                newRow -= 1;
                 break;
             case Direction.Down:
                 newRow += 1;
@@ -98,15 +110,18 @@ public class Game
         }
 
         // El jugador puede moverse si y solo si esa posición no es una pared
-        if (this.ObjectAt(newCol, newRow) != GameObject.Wall) {
+        if (this.ObjectAt(newCol, newRow) != GameObject.Wall)
+        {
             this.PlayerCol = newCol;
             this.PlayerRow = newRow;
         }
     }
 
-    public void Update() {
+    public void Update()
+    {
         // Calculamos según lo que hay en la posición del jugador, que le sucede
-        switch(this.ObjectAt(this.PlayerCol, this.PlayerRow)) {
+        switch (this.ObjectAt(this.PlayerCol, this.PlayerRow))
+        {
             case GameObject.Life:
                 this.Lives += 1;
                 this.board[this.PlayerCol, this.PlayerRow] = GameObject.Floor;
@@ -128,7 +143,8 @@ public class Game
         {
             for (int row = 0; row < this.Height; row++)
             {
-                if (this.ObjectAt(col, row) == GameObject.Enemy) {
+                if (this.ObjectAt(col, row) == GameObject.Enemy)
+                {
                     UpdateEnemy(col, row);
                 }
             }
@@ -137,14 +153,16 @@ public class Game
         this.Lives = Math.Max(0, this.Lives);
     }
 
-    public int CountEnemies() {
+    public int CountEnemies()
+    {
         int enemies = 0;
 
         for (int col = 0; col < this.Width; col++)
         {
-            for (int row = 0; row < this.Height ; row++)
+            for (int row = 0; row < this.Height; row++)
             {
-                if (this.ObjectAt(col, row) == GameObject.Enemy) {
+                if (this.ObjectAt(col, row) == GameObject.Enemy)
+                {
                     enemies++;
                 }
             }
@@ -153,42 +171,51 @@ public class Game
         return enemies;
     }
 
-    private void UpdateEnemy(int col, int row) {
+    private void UpdateEnemy(int col, int row)
+    {
         int newCol = col;
         int newRow = row;
 
         // Aleatoriamente decidimos hacia donde se mueve
         // Con probabilidad 0.5 se mueve hacia el jugador, o hacia una posición aleatoria
-        if (this.random.NextDouble() < 0.5) {
+        if (this.random.NextDouble() < 0.5)
+        {
             // Se mueve hacia el jugador
 
-            if (this.PlayerCol < newCol) {
+            if (this.PlayerCol < newCol)
+            {
                 newCol -= 1;
             }
-            else if (this.PlayerCol > newCol) {
+            else if (this.PlayerCol > newCol)
+            {
                 newCol += 1;
             }
 
-            if (this.PlayerRow < newRow) {
+            if (this.PlayerRow < newRow)
+            {
                 newRow -= 1;
             }
-            else if (this.PlayerRow > newRow) {
+            else if (this.PlayerRow > newRow)
+            {
                 newRow += 1;
             }
         }
-        else {
+        else
+        {
             // Se mueve aleatorio
             newCol += random.Next(3) - 1;
             newRow += random.Next(3) - 1;
         }
 
-        if (ValidPos(newCol, newRow) && this.ObjectAt(newCol, newRow) == GameObject.Floor) {
+        if (ValidPos(newCol, newRow) && this.ObjectAt(newCol, newRow) == GameObject.Floor)
+        {
             this.board[col, row] = GameObject.Floor;
             this.board[newCol, newRow] = GameObject.Enemy;
         }
     }
 
-    public void Attack() {
+    public void Attack()
+    {
         // Vamos a analizar las nueve posiciones alrededor del jugador
         for (int dCol = -1; dCol <= 1; dCol++)
         {
@@ -198,7 +225,8 @@ public class Game
                 int row = this.PlayerRow + dRow;
 
                 // Si hay un enemigo, se va!
-                if (ValidPos(col, row) && this.ObjectAt(col, row) == GameObject.Enemy) {
+                if (ValidPos(col, row) && this.ObjectAt(col, row) == GameObject.Enemy)
+                {
                     this.board[col, row] = GameObject.Corpse;
                     // Pero solo se elimina uno en cada turno
                     return;
@@ -207,7 +235,8 @@ public class Game
         }
     }
 
-    public bool ValidPos(int col, int row) {
+    public bool ValidPos(int col, int row)
+    {
         return col >= 0 && col < this.Width && row >= 0 && row <= this.Height;
     }
 }

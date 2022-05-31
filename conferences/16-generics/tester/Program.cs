@@ -83,7 +83,7 @@ class IntComparer : MatCom.Sorting.IComparer<int>
     }
 }
 
-class DefaultComparer<T> : MatCom.Sorting.IComparer<T> where T: IComparable<T>
+class DefaultComparer<T> : MatCom.Sorting.IComparer<T> where T : IComparable<T>
 {
     public int Compare(T a, T b)
     {

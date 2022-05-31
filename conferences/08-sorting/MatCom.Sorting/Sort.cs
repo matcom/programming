@@ -50,7 +50,7 @@ public static class Sort
             while (j >= 0 && array[j] > x)
             {
                 array[j + 1] = array[j];
-                j = j-1;
+                j = j - 1;
             }
 
             array[j + 1] = x;
@@ -80,7 +80,7 @@ public static class Sort
     private static void Merge(int[] array, int left, int mid, int right, int[] tmp)
     {
         int l = left;
-        int r = mid+1;
+        int r = mid + 1;
         int p = left;
 
         while (l <= mid && r <= right)

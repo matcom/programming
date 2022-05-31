@@ -1,29 +1,28 @@
-namespace MatCom.Sorting.Collections
+namespace MatCom.Sorting.Collections;
+
+public class ArrayCollection : ICollection
 {
-    public class ArrayCollection : ICollection
+    private readonly object[] items;
+
+    public ArrayCollection(object[] items)
     {
-        private readonly object[] items;
+        this.items = items;
+    }
 
-        public ArrayCollection(object[] items)
+    public int Count
+    {
+        get { return this.items.Length; }
+    }
+
+    public object this[int index]
+    {
+        get
         {
-            this.items = items;
+            return this.items[index];
         }
-
-        public int Count
+        set
         {
-            get { return this.items.Length; }
-        }
-
-        public object this[int index]
-        {
-            get
-            {
-                return this.items[index];
-            }
-            set
-            {
-                this.items[index] = value;
-            }
+            this.items[index] = value;
         }
     }
 }

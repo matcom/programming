@@ -52,7 +52,8 @@ class Program
                     {
                         var steps = NPuzzleSolver.Solve(puzzle, maxSteps);
 
-                        foreach(var step in steps) {
+                        foreach (var step in steps)
+                        {
                             Console.Clear();
                             puzzle = puzzle.Move(step);
                             movements += 1;
@@ -60,7 +61,8 @@ class Program
                             Thread.Sleep(100);
                         }
                     }
-                    catch (InvalidOperationException) {
+                    catch (InvalidOperationException)
+                    {
                         Console.ForegroundColor = ConsoleColor.DarkMagenta;
                         Console.WriteLine("Unsolvable puzzle! (Press any key to continue)");
                         Console.ReadKey();
