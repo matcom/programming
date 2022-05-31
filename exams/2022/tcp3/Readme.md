@@ -278,13 +278,13 @@ int totalCarnico = cart.Count(filtroCarnico);
 // Devolvería 10 (7 pollo + 3 pescado)
 ```
 
-Teniendo en cuenta el contenido del carrito, el costo total sería `1950` (`7*100 + 5*150 + 2*250`).
+Teniendo en cuenta el contenido del carrito, el costo total sería `1650` (`7*100 + 3*150 + 2*250`).
 
 Supongamos ahora que se aplica una promoción a los productos cárnicos (pollo y pescado) con
 un descuento de un 20% si hay 5 unidades o más.
 Esta promoción por lo tanto aplica al pollo pero no al pescado (porque son solo 3 unidades),
 ni al vino (porque no está entre los productos promocionados).
-Con esta promoción aplicada, el costo sería `1810`, pues a los `700` del pollo se le reduce
+Con esta promoción aplicada, el costo sería `1510`, pues a los `700` del pollo se le reduce
 un 20%, quedando ese subtotal en `560`, y los otros dos subtotales son iguales.
 
 ```cs
