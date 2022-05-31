@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "funclib", "funclib\funclib.csproj", "{6A328738-B03E-421E-AC8C-334DE5DBCF79}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tester", "tester\tester.csproj", "{86DD410E-CBE6-4FBF-8169-64B59385CF89}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6A328738-B03E-421E-AC8C-334DE5DBCF79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A328738-B03E-421E-AC8C-334DE5DBCF79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A328738-B03E-421E-AC8C-334DE5DBCF79}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A328738-B03E-421E-AC8C-334DE5DBCF79}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86DD410E-CBE6-4FBF-8169-64B59385CF89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86DD410E-CBE6-4FBF-8169-64B59385CF89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86DD410E-CBE6-4FBF-8169-64B59385CF89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86DD410E-CBE6-4FBF-8169-64B59385CF89}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
