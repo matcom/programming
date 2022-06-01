@@ -35,18 +35,18 @@ public class Game
 
     private void FillBoard()
     {
-        // Poner todas las paredes horizontales
-        for (int col = 0; col < this.board.GetLength(0); col++)
+        // Poner todas las paredes verticales
+        for(int row=0; row < this.board.GetLength(0); row++) 
         {
-            this.board[col, 0] = GameObject.Wall;
-            this.board[col, this.board.GetLength(1) - 1] = GameObject.Wall;
+            this.board[row,0] = GameObject.Wall;
+            this.board[row, this.board.GetLength(1) - 1] = GameObject.Wall;
         }
 
-        // Poner todas las paredes verticales
-        for (int row = 0; row < this.board.GetLength(1); row++)
+        // Poner todas las paredes horizontales
+        for(int col=0; col < this.board.GetLength(1); col++) 
         {
-            this.board[0, row] = GameObject.Wall;
-            this.board[this.board.GetLength(0) - 1, row] = GameObject.Wall;
+            this.board[0,col] = GameObject.Wall;
+            this.board[this.board.GetLength(0) - 1, col] = GameObject.Wall;
         }
 
         // Generar aleatoriamente objetos
