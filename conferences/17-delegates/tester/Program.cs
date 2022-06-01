@@ -2,9 +2,13 @@
 
 class Program
 {
-    void Main()
+    static void Main()
     {
         TestFilter();
+
+        TestMap();
+
+        TestReduce();
     }
 
     private static void TestFilter()
@@ -16,9 +20,9 @@ class Program
             numbers[i] = i + 1;
         }
 
-        int[] evenNumbers = FuncTools.Filter(numbers, new Predicate<int>(IsEven));
+        int[] evenNumbers = FuncTools.Filter(numbers, new funclib.Predicate<int>(IsEven));
 
-        int[] oddNumbers = FuncTools.Filter(numbers, new Predicate<int>(delegate (int x)
+        int[] oddNumbers = FuncTools.Filter(numbers, new funclib.Predicate<int>(delegate (int x)
         {
             return x % 2 == 1;
         }));
@@ -46,7 +50,7 @@ class Program
             numbers[i] = i + 1;
         }
 
-        int[] squares = FuncTools.Map(items, x => x * x);
+        int[] squares = FuncTools.Map(numbers, x => x * x);
     }
 
     private static void TestReduce()
@@ -58,7 +62,7 @@ class Program
             numbers[i] = i + 1;
         }
 
-        int sum = FuncTools.Reduce(numbers, (num, accum) => num + accum, seed=0);
+        int sum = FuncTools.Reduce(numbers, (num, accum) => num + accum, seed: 0);
     }
 
     static bool IsEven(int number)

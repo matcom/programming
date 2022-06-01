@@ -37,7 +37,7 @@
             return result;
         }
 
-        public static TResult Reduce<T, TResult>(T[] items, Reductor<T, TResult> reductor, TResult seed = default(TResult))
+        public static TResult Reduce<T, TResult>(T[] items, Reductor<T, TResult> reductor, TResult seed)
         {
             TResult result = seed;
 
