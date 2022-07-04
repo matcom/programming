@@ -17,9 +17,13 @@
             throw new NotImplementedException();
         }
 
-        public static string Nombre => "Nombre Apellido Apellido";
+        // Borre esta excepción y ponga su nombre como string, e.j.
+        // Nombre => "Fulano Pérez Pérez";
+        public static string Nombre => throw new NotImplementedException();
 
-        public static string Grupo => "C2XX";
+        // Borre esta excepción y ponga su grupo como string, e.j.
+        // Grupo => "C2XX";
+        public static string Grupo => throw new NotImplementedException();
     }
 
 }
