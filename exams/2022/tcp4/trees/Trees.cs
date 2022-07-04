@@ -16,6 +16,10 @@
             // ponga su código aquí
             throw new NotImplementedException();
         }
+
+        public static string Nombre => "Nombre Apellido Apellido";
+
+        public static string Grupo => "C2XX";
     }
 
 }

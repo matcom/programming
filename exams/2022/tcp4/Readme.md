@@ -2,6 +2,8 @@
 
 Usted debe haber recibido una solución de .NET Core con una biblioteca de clases llamada `trees`. Dentro encontrará un archivo `Trees.cs` donde verá las siguientes definiciones.
 
+**NOTA**: Antes de comenzar, descompacte el proyecto entregado, y vaya a la carpeta `trees`, archivo `Trees.cs`, y al final de la clase estática `Exam` encontrará dos propiedades que debe rellenar con su nombre y grupo. Esto es imprescindible para ser evaluado, pues será el nombre y grupo que se usará.
+
 Una interfaz que define un árbol n-ario genérico:
 
 ```cs
@@ -29,7 +31,7 @@ public static IEnumerable<ITree<T>> MaximalSubtreesWhere<T>(
 }
 ```
 
-> **Definición:** Un subárbol es simplemente cualquier hijo del árbol pasado como argumento al método. Un subárbol maximal es aquel que cumple que no es subárbol de ningún otro subárbol que cumpla con la misma propiedad.
+**Definición:** Un subárbol es simplemente cualquier hijo del árbol pasado como argumento al método, incluyendo el propio árbol. Un subárbol maximal es aquel que cumple que no es hijo de ningún otro subárbol que cumpla con la misma propiedad.
 
 Se garantiza que ningún argumento será `null`, pero si es posible que ningún valor cumpla con el predicado, en cuyo caso su respuesta debe ser un *enumerable vacío*, nunca un valor `null`.
 
