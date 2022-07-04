@@ -2,11 +2,11 @@ build:
 	dotnet build
 
 zip:
-	rm C2XX-NombreApellidoApellido.zip
+	rm C2XX-NombreApellidoApellido.zip | echo "Nada que eliminar"
 	zip -j C2XX-NombreApellidoApellido.zip trees/Trees.cs
 
 archive:
-	git archive HEAD . > tcp4.zip
+	git archive HEAD . -o tcp4.zip
 
 pdf:
 	pandoc Readme.md -o Readme.pdf
