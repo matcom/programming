@@ -2,7 +2,7 @@
 
 Usted debe haber recibido una solución de .NET Core con una biblioteca de clases llamada `trees`. Dentro encontrará un archivo `Trees.cs` donde verá las siguientes definiciones.
 
-**NOTA**: Antes de comenzar, descompacte el proyecto entregado, y vaya a la carpeta `trees`, archivo `Trees.cs`, y al final de la clase estática `Exam` encontrará dos propiedades que debe rellenar con su nombre y grupo. Esto es imprescindible para ser evaluado, pues será el nombre y grupo que se usará.
+**NOTA**: Antes de comenzar, descompacte el proyecto entregado, y vaya a la carpeta `trees`, archivo `Trees.cs`, y al final de la clase estática `Exam` encontrará dos propiedades que debe rellenar con su nombre y grupo. Esto es imprescindible para ser evaluado, pues será el nombre y grupo que se usará en el acta del examen.
 
 Una interfaz que define un árbol n-ario genérico:
 
@@ -67,7 +67,7 @@ Usted debe garantizar que su solución cumple los siguientes requisitos:
 
 - En el enumerable devuelto están exactamente las mismas instancias de `ITree<T>` que recibió como argumento, o sea, usted nunca necesita crear nuevas instancias de árboles.
 
-- Asegúrese que todo el código necesario para ejecutar su solución está en el archivo `Examen.cs`. Si necesita métodos o tipos adicionales, defínalos en ese mismo archivo.
+- Asegúrese que todo el código necesario para ejecutar su solución está en el archivo `Trees.cs`. Si necesita métodos o tipos adicionales, defínalos en ese mismo archivo.
 
 ## Sugerencias
 
