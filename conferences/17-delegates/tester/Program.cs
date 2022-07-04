@@ -46,7 +46,7 @@ class Program
             numbers[i] = i + 1;
         }
 
-        int[] squares = FuncTools.Map(items, x => x * x);
+        int[] squares = FuncTools.Map(numbers, x => x * x);
     }
 
     private static void TestReduce()
@@ -58,7 +58,7 @@ class Program
             numbers[i] = i + 1;
         }
 
-        int sum = FuncTools.Reduce(numbers, (num, accum) => num + accum, seed=0);
+        int sum = FuncTools.Reduce(numbers, (num, accum) => num + accum, seed: 0);
     }
 
     static bool IsEven(int number)
