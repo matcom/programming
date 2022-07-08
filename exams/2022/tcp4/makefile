@@ -6,7 +6,7 @@ build:
 
 zip:
 	rm C2XX-NombreApellidoApellido.zip | echo "Nada que eliminar"
-	zip -j C2XX-NombreApellidoApellido.zip trees/Trees.cs
+	zip -j C2XX-NombreApellidoApellido.zip exam/Exam.cs
 
 archive:
 	git archive HEAD . -o tcp4.zip
