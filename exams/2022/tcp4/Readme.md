@@ -1,8 +1,8 @@
 # Subárboles maximales
 
-Usted debe haber recibido una solución de .NET Core con una biblioteca de clases llamada `trees`. Dentro encontrará un archivo `Trees.cs` donde verá las siguientes definiciones.
+**NOTA**: Antes de comenzar, descompacte el proyecto entregado, y vaya a la carpeta `exam`, archivo `Exam.cs`, y al final de la clase estática `Exam` encontrará dos propiedades donde debe devolver su nombre y grupo. Esto es imprescindible para ser evaluado, pues será el nombre y grupo que se usará en el acta del examen.
 
-**NOTA**: Antes de comenzar, descompacte el proyecto entregado, y vaya a la carpeta `trees`, archivo `Trees.cs`, y al final de la clase estática `Exam` encontrará dos propiedades donde debe devolver su nombre y grupo. Esto es imprescindible para ser evaluado, pues será el nombre y grupo que se usará en el acta del examen.
+Usted debe haber recibido una solución de .NET Core con una biblioteca de clases llamada `trees`. Dentro encontrará un archivo `Trees.cs` donde verá las siguientes definiciones.
 
 Una interfaz que define un árbol n-ario genérico:
 
@@ -20,7 +20,9 @@ Un delegado que representa un predicado arbitrario sobre un tipo genérico:
 public delegate bool Predicate<T>(T item);
 ```
 
-A partir de estas dos definiciones, usted debe implementar el método `MaximalSubtreesWhere`, que devuelve todos los subárboles maximales tales que todos sus elementos (incluyendo el valor de la raíz del subárbol) cumplen con cierto predicado:
+Además en la solución encontrará un proyecto de consola llamado `exam` con un archivo `Exam.cs`, dentro verá una clase estática `Exam` donde deberá implementar su solución al siguiente problema.
+
+A partir de las dos definiciones anteriores, usted debe implementar el método `MaximalSubtreesWhere`, que devuelve todos los subárboles maximales tales que todos sus elementos (incluyendo el valor de la raíz del subárbol) cumplen con cierto predicado:
 
 ```cs
 public static IEnumerable<ITree<T>> MaximalSubtreesWhere<T>(

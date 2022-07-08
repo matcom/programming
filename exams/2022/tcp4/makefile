@@ -1,3 +1,6 @@
+test:
+	dotnet run --project exam
+
 build:
 	dotnet build
 
