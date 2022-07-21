@@ -106,7 +106,7 @@ public interface IFileSystem
 }
 ```
 
-La dirección de un archivo o carpeta es un `string` que contiene todos los nombres desde la raíz del sistema de archivos hasta el archivo o carpeta correspondiente, usadon `/` como separador. Por ejemplo:
+La dirección de un archivo o carpeta es un `string` que contiene todos los nombres desde la raíz del sistema de archivos hasta el archivo o carpeta correspondiente, usando `/` como separador. Por ejemplo:
 
 - `/` representa la carpeta raíz del sistema de archivos.
 - `/folder1` representa la carpeta llamada `folder1` que es una subcarpeta de la carpeta raíz.
@@ -145,7 +145,7 @@ public interface IFileSystem
 En el caso de `Copy` y `Move`, el origen puede ser un archivo, o una carpeta, y el destino siempre será una carpeta. Si el origen es una carpeta, evidentemente se copiará o moverá la carpeta, subcarpetas, y todos los archivos de forma recursiva.
 Note que siempre se copia o mueve el origen para *dentro* del destino. O sea que si `origin` apunta a una carpeta, tendremos entonces una nueva subcarpeta dentro de `destination` con todo el contenido correspondiente.
 
-Si al mover una carpeta, ya existe una carpeta con el mismo nombre en el destino, entonces los contenidos de ambas carpetas **deben mezclarse recursivamente**. En caso de que existan archivos con el mismo nombre, **siempre se reemplazará** el archivo existente por el archivo nuevo.
+Si al mover una carpeta, ya existe otra carpeta con el mismo nombre en el destino, entonces los contenidos de ambas carpetas **deben mezclarse recursivamente**. En caso de que existan archivos con el mismo nombre, **siempre se reemplazará** el archivo existente por el archivo nuevo.
 
 En el caso de `Delete` el argumento `path` puede ser una carpeta o archivo. En caso de ser una carpeta, se elimina todo su contenido.
 
