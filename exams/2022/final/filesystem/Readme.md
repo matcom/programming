@@ -102,6 +102,7 @@ public interface IFileSystem
     // ...
     IFolder GetFolder(string path);
     IFile GetFile(string path);
+    IFileSystem GetRoot(string path);
     // ...
 }
 ```
@@ -111,6 +112,19 @@ La dirección de un archivo o carpeta es un `string` que contiene todos los nomb
 - `/` representa la carpeta raíz del sistema de archivos.
 - `/folder1` representa la carpeta llamada `folder1` que es una subcarpeta de la carpeta raíz.
 - `/folder1/folder2/file1` representa el archivo `file1` que está en la carpeta `folder2`, que es a su vez una subcarpeta de `folder1`, que a su vez es subcarpeta de la raíz.
+
+El método `GetRoot` devuelve un nuevo sistema de archivos cuya raíz es la carpeta pasada como dirección al método. Por lo tanto, es lo mismo decir:
+
+```cs
+var file = fs.GetFile("/folder1/folder2/file.txt");
+```
+
+Que decir:
+
+```cs
+var fs2 = fs.GetRoot("/folder1");
+var file = fs2.GetFile("/folder2/file.txt");
+```
 
 Además de identificar un archivo o carpeta concreto, el sistema de archivos permite también encontrar todos los archivos que cumplan con cierta condición (por ejemplo, que el tamaño sea menor que cierto valor o que el nombre contenga cierto texto). Para ello se usa el predicado siguiente:
 

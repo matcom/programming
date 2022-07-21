@@ -25,6 +25,7 @@
     {
         IFolder GetFolder(string path);
         IFile GetFile(string path);
+        IFileSystem GetRoot(string path);
 
         IEnumerable<IFile> Find(FileFilter filter);
 
