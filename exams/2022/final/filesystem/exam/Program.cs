@@ -21,7 +21,7 @@ class Program
             tmp.CreateFile($"file{i}.tmp", 10);
 
         // Verificando el tamaño de `tmp`
-        Debug.Assert(tmp.TotalSize() == 100, "El tamaño debe ser 100");
+        Debug.Assert(tmp.TotalSize() == 100);
 
         // Creando archivos en `home`
         home.CreateFile("picture.png", 20);
@@ -39,6 +39,12 @@ class Program
         // Verificando el método `Find` con nombres
         foreach (var file in fs.Find(file => file.Name.EndsWith(".png")))
             Debug.Assert(file.Name == "picture.png");
+
+        // Ahora vamos a copiar `/tmp` para `/home` y verificar los tamaños
+        fs.Copy("/tmp", "/home");
+        Debug.Assert(home.TotalSize() == 570);
+        Debug.Assert(fs.GetFolder("/tmp").TotalSize() ==
+                     fs.GetFolder("/home/tmp").TotalSize());
 
         // Añade tus pruebas aquí
         // ...
