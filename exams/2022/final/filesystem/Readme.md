@@ -2,6 +2,8 @@
 
 > *Exámen Final de Programación II - Curso 2022*
 
+**NOTA**: *Antes de comenzar asegúrese de descompactar el archivo `filesystem.zip` y abrir la solución `filesystem.sln` en su editor. Asegúrese también de que su código compila, y la aplicación de consola ejecuta (debe lanzar una excepción). Recuerde que todo el código a evaluar debe ir en el archivo `Exam.cs`*
+
 En este ejercicio crearemos un sistema de archivos virtual, que simulará algunas de las operaciones que se pueden realizar normalmente en un sistema de archivos real, como el sistema de archivos `ext4` en Linux.
 
 Empecemos por algunas definiciones.
