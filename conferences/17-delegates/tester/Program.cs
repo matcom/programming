@@ -2,9 +2,13 @@
 
 class Program
 {
-    void Main()
+    static void Main()
     {
         TestFilter();
+
+        TestMap();
+
+        TestReduce();
     }
 
     private static void TestFilter()
@@ -16,9 +20,9 @@ class Program
             numbers[i] = i + 1;
         }
 
-        int[] evenNumbers = FuncTools.Filter(numbers, new Predicate<int>(IsEven));
+        int[] evenNumbers = FuncTools.Filter(numbers, new funclib.Predicate<int>(IsEven));
 
-        int[] oddNumbers = FuncTools.Filter(numbers, new Predicate<int>(delegate (int x)
+        int[] oddNumbers = FuncTools.Filter(numbers, new funclib.Predicate<int>(delegate (int x)
         {
             return x % 2 == 1;
         }));

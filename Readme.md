@@ -34,7 +34,8 @@ El segundo semestre se dedica a profundizar en la programación orientada a obje
 13. [Herencia](./conferences/13-inheritance)
 14. [Clases abstractas](./conferences/14-evaluator)
 15. [Interfaces](./conferences/15-interfaces)
-15. [Genericidad](./conferences/16-generics)
+16. [Genericidad](./conferences/16-generics)
+17. [Delegados](./conferences/17-delegates)
 
 ## Proyectos
 
