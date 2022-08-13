@@ -16,13 +16,18 @@ obtenidos en el proyecto.
 
 | Nombre                         | Grupo | Caso 1 | Casos 1-2 | Casos 1-5 | Casos 1-7 | Aprobado |
 | ------------------------------ | ----- | ------ | --------- | --------- | --------- | -------- |
+| Adrian Hernandez Santos        | C211  | 👍      | 👍         | 👎         | 👎         | 🟢        |
 | Alex Sánchez Saez              | C212  | 👍      | 👍         | 👍         | 👍         | 🟢        |
 | Alex Sierra Alcala             | C211  | 👍      | 👍         | 👎         | 👎         | 🟢        |
+| Alfredo Montero Lopez          | C211  | 👍      | 👍         | 👎         | 👎         | 🟢        |
+| Anthuán Montes de Oca Pons     | C211  | 👍      | 👍         | 👎         | 👎         | 🟢        |
+| Brayan Duran Medina            | C212  | 👍      | 👍         | 👎         | 👎         | 🟢        |
 | Carlos Manuel Gonzalez Pena    | C211  | 👍      | 👍         | 👎         | 👎         | 🟢        |
 | Davier Sanchez Bello           | C212  | 👍      | 👍         | 👎         | 👎         | 🟢        |
-| Fernando Rodriguez Gonzalez    |       | 👍      | 👍         | 👎         | 👎         | 🟢        |
+| Fernando Rodriguez Gonzalez    | C211  | 👍      | 👍         | 👎         | 👎         | 🟢        |
 | Fernando Valdés García         | C212  | 👍      | 👍         | 👍         | 👍         | 🟢        |
 | Juan Carlos Espinosa           | C211  | 👍      | 👍         | 👎         | 👎         | 🟢        |
+| Juan Jose Muñoz Noda           | C211  | 👍      | 👍         | 👎         | 👎         | 🟢        |
 | Leonardo Amaro Rodríguez       | C211  | 👍      | 👍         | 👍         | 👍         | 🟢        |
 | Luis Alejandro Rodríguez Otero | C211  | 👍      | 👍         | 👎         | 👎         | 🟢        |
 | Marcos Antonio Pérez Lorenzo   | C212  | 👍      | 👍         | 👍         | 👎         | 🟢        |
@@ -33,16 +38,12 @@ obtenidos en el proyecto.
 
 | Nombre                               | Grupo | Caso 1 | Casos 1-2 | Casos 1-5 | Casos 1-7 | Aprobado |
 | ------------------------------------ | ----- | ------ | --------- | --------- | --------- | -------- |
-| Abdel Fregel Hernandez               | C212  | 👎      | 👎         | 👎         | 👎         | 🔴        |
-| Adrian Hernandez Santos              | C211  | 👎      | 👎         | 👎         | 👎         | 🔴        |
+| Abdel Fregel Hernandez               | C212  | 👍      | 👎         | 👎         | 👎         | 🔴        |
 | Alejandro Alvarez Lamazares          | C212  | 👎      | 👎         | 👎         | 👎         | 🔴        |
 | Alejandro Barrios Real               | C212  | 👎      | 👎         | 👎         | 👎         | 🔴        |
-| Alfredo Montero Lopez                | C211  | 👎      | 👎         | 👎         | 👎         | 🔴        |
 | Amanda Noris Hernandez               | C212  | 👍      | 👎         | 👎         | 👎         | 🔴        |
 | Angel Daniel Cabrera Joya            | C211  | 👎      | 👎         | 👎         | 👎         | 🔴        |
-| Anthuán Montes de Oca Pons           | C211  | 👍      | 👎         | 👎         | 👎         | 🔴        |
 | Jesus Armando Padron Rabeiro         | C211  | 👎      | 👎         | 👎         | 👎         | 🔴        |
-| Brayan Duran Medina                  | C212  | 👎      | 👎         | 👎         | 👎         | 🔴        |
 | Brian Ameht Inclan Quesada           | C211  | 👎      | 👎         | 👎         | 👎         | 🔴        |
 | Carla Sunami Perez Valera            | C212  | 👎      | 👎         | 👎         | 👎         | 🔴        |
 | Carlos Arturo Perez Cabrera          | C212  | 👎      | 👎         | 👎         | 👎         | 🔴        |
@@ -60,23 +61,23 @@ obtenidos en el proyecto.
 | Jose Carlos Pendas Rodriguez         | C211  | 👍      | 👎         | 👎         | 👎         | 🔴        |
 | Jose Miguel Perez Perez              | c211  | 👎      | 👎         | 👎         | 👎         | 🔴        |
 | Jose Damian Tadeo Escarra            | C212  | 👎      | 👎         | 👎         | 👎         | 🔴        |
-| Juan Jose Muñoz Noda                 | C211  | 👎      | 👎         | 👎         | 👎         | 🔴        |
-| Juan Miguel Pérez Martínez           | C212  | 👎      | 👎         | 👎         | 👎         | 🔴        |
+| Juan Miguel Pérez Martínez           | C212  | 👍      | 👎         | 👎         | 👎         | 🔴        |
 | Karen Dianelis Cantero Lopez         | C211  | 👍      | 👎         | 👎         | 👎         | 🔴        |
-| Kevin Majim Ortega Alvarez           | C212  | 👍      | 👎         | 👎         | 👎         | 🔴        |
+| Kevin Majim Ortega Alvarez           | C212  | 👍      | 👍         | 👎         | 👎         | 🔴        |
 | Lazaro David Alba Ajete              | C211  | 👎      | 👎         | 👎         | 👎         | 🔴        |
+| Leonardo Ramirez Calatayud           | C211  | 👎      | 👎         | 👎         | 👎         | 🔴        |
 | Leydis Laura Hernández Martínez      | C211  | 👎      | 👎         | 👎         | 👎         | 🔴        |
-| Loitzel Ernesto Morales Santiesteban | C212  | 👎      | 👎         | 👎         | 👎         | 🔴        |
+| Loitzel Ernesto Morales Santiesteban | C212  | 👍      | 👎         | 👎         | 👎         | 🔴        |
 | Luis Manuel Gamboa Hernandez         | C211  | 👎      | 👎         | 👎         | 👎         | 🔴        |
 | Maday Suarez Velazquez               | C211  | 👎      | 👎         | 👎         | 👎         | 🔴        |
 | Manuel Alejandro Gamboa Hernandez    | C211  | 👎      | 👎         | 👎         | 👎         | 🔴        |
 | Maria de Lourdes Choy Fernandez      | C212  | 👎      | 👎         | 👎         | 👎         | 🔴        |
 | Max Bengochea                        | C211  | 👎      | 👎         | 👎         | 👎         | 🔴        |
 | Naomi Lahera Champagne               | C211  | 👍      | 👎         | 👎         | 👎         | 🔴        |
-| OvidioNavarro                        |       | 👎      | 👎         | 👎         | 👎         | 🔴        |
+| Ovidio Navarro Pazos                 | C211  | 👎      | 👎         | 👎         | 👎         | 🔴        |
 | Rafael Fabian Lopez Pazos            | C211  | 👎      | 👎         | 👎         | 👎         | 🔴        |
 | Randy Jesús Rivero Córdova           | C212  | 👎      | 👎         | 👎         | 👎         | 🔴        |
-| Reinaldo Canovas Gamon               |       | 👎      | 👎         | 👎         | 👎         | 🔴        |
+| Reinaldo Canovas Gamon               | C211  | 👎      | 👎         | 👎         | 👎         | 🔴        |
 | Richard García Rodríguez             | C211  | 👎      | 👎         | 👎         | 👎         | 🔴        |
 | Roger Moreno Gutiérrez               | C212  | 👍      | 👎         | 👎         | 👎         | 🔴        |
 | Sebastian Suarez Gomez               | C211  | 👎      | 👎         | 👎         | 👎         | 🔴        |
