@@ -12,6 +12,16 @@ Para obtener la evaluación mínima es necesario pasar todos los casos de los co
 El resto de los casos se tendrán en cuenta para la nota final, en correspondencia con los resultados
 obtenidos en el proyecto.
 
+## Estudiantes convalidados
+
+| Nombre                         | Grupo |
+| ------------------------------ | ----- |
+| Anabel Benitez Gonzalez        | C211  |
+| Daniel Abad Fundora            | C221  |  
+| Enzo Rojas D´Toste             | C211  |
+| Omar Rivero Gomez-Wangüemert   | C211  |
+| Raudel Alejandro Gomez Molina  | C211  |
+
 ## Estudiantes aprobados
 
 | Nombre                         | Grupo | Caso 1 | Casos 1-2 | Casos 1-5 | Casos 1-7 | Aprobado |
@@ -45,6 +55,7 @@ obtenidos en el proyecto.
 | Angel Daniel Cabrera Joya            | C211  | 👎      | 👎         | 👎         | 👎         | 🔴        |
 | Jesus Armando Padron Rabeiro         | C211  | 👎      | 👎         | 👎         | 👎         | 🔴        |
 | Brian Ameht Inclan Quesada           | C211  | 👎      | 👎         | 👎         | 👎         | 🔴        |
+| Bruno Jesus Pire Ricardo             | C212  | 👎      | 👎         | 👎         | 👎         | 🔴        |
 | Carla Sunami Perez Valera            | C212  | 👎      | 👎         | 👎         | 👎         | 🔴        |
 | Carlos Arturo Perez Cabrera          | C212  | 👎      | 👎         | 👎         | 👎         | 🔴        |
 | Chavely Gonzalez Acosta              | C212  | 👎      | 👎         | 👎         | 👎         | 🔴        |
