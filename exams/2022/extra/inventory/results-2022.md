@@ -1,6 +1,6 @@
 # Resultados del Examen Extraordinario 2022
 
-Para aprobar es necesario pasas los casos 1-9 que verifican las condiciones mínimas de correctitud de las funcionalidades pedidas.
+Para aprobar es necesario pasas los casos 2-9 que verifican las condiciones mínimas de correctitud de las funcionalidades pedidas.
 El resto de los casos se reserva como criterio cualitativo para la nota final, en correspondencia con los resultados del proyecto.
 
 Para notificar cualquier error en el tester o en los casos de prueba (no en su examen) contactar a su mentor.
