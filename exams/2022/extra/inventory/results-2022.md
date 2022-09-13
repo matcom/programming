@@ -50,6 +50,7 @@ Para notificar cualquier error en el tester o en los casos de prueba (no en su e
 | Abdel Fregel Hernandez          | C212  | 🟢        | ❌   | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   | ❌   | ❌   | ❌   | ❌   | ❌   | ❌   |
 | Anthuan Montes de Oca Pons      | C211  | 🟢        | ❌   | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   | ❌   | ✅   | ✅   | ✅   | ✅   | ✅   | ❌   |
 | Javier Rodriguez Sanchez        | C211  | 🟢        | ❌   | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   | ❌   | ❌   | ✅   | ✅   | ✅   | ❌   |
+| Manuel Alejandro Gamboa Hernandez | C211  | 🟢       | ❌   | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   | ❌   | ❌   | ❌   | ❌   | ✅   | ✅   | ❌   |
 | Sherlyn Ballestero Cruz         | C211  | 🟢        | ❌   | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   | ❌   | ❌   | ✅   | ✅   | ❌   |
 
 ## Estudiantes suspensos
@@ -65,7 +66,6 @@ Para notificar cualquier error en el tester o en los casos de prueba (no en su e
 | Leonardo Ramirez Calatayud        |       | 🔴       | ⚠️   | ⚠️   | ⚠️   | ⚠️   | ⚠️   | ⚠️   | ⚠️   | ⚠️   | ⚠️   | ⚠️   | ⚠️   | ⚠️   | ⚠️   | ⚠️   | ⚠️   | ⚠️   |
 | Luis Manuel Gamboa                | C212  | 🔴       | ⚠️   | ⚠️   | ⚠️   | ⚠️   | ⚠️   | ⚠️   | ⚠️   | ⚠️   | ⚠️   | ⚠️   | ⚠️   | ⚠️   | ⚠️   | ⚠️   | ⚠️   | ⚠️   |
 | Maday Suarez Velazquez            | C211  | 🔴       | ❌   | ❌   | ❌   | ❌   | ❌   | ❌   | ❌   | ❌   | ❌   | ❌   | ❌   | ❌   | ❌   | ❌   | ❌   | ❌   |
-| Manuel Alejandro Gamboa Hernandez | C211  | 🔴       | ❌   | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   | ❌   | ❌   | ❌   | ❌   | ✅   | ✅   | ❌   |
 | Maria de Lourdes Choy Fernandez   | C212  | 🔴       | ❌   | ✅   | ✅   | ❌   | ❌   | ❌   | ❌   | ❌   | ✅   | ❌   | ❌   | ❌   | ✅   | ❌   | ❌   | ❌   |
 | Max Bengochea                     | C211  | 🔴       | ❌   | ✅   | ✅   | ✅   | ❌   | ❌   | ❌   | ❌   | ✅   | ✅   | ❌   | ❌   | ❌   | ✅   | ❌   | ❌   |
 | Ovidio Navarro                    | C211  | 🔴       | ⚠️   | ⚠️   | ⚠️   | ⚠️   | ⚠️   | ⚠️   | ⚠️   | ⚠️   | ⚠️   | ⚠️   | ⚠️   | ⚠️   | ⚠️   | ⚠️   | ⚠️   | ⚠️   |
