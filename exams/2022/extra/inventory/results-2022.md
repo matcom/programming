@@ -16,7 +16,7 @@ Para notificar cualquier error en el tester o en los casos de prueba (no en su e
 
 ## Estudiantes aprobados
 
-| Nombre                            | Grupo | Aprobado | 1   | 2   | 3   | 4   | 5   | 6   | 7   | 8   | 9   | 10  | 11  | 12  | 13  | 14  | 15  | 15  |
+| Nombre                            | Grupo | Aprobado | 1   | 2   | 3   | 4   | 5   | 6   | 7   | 8   | 9   | 10  | 11  | 12  | 13  | 14  | 15  | 16  |
 | --------------------------------- | ----- | -------- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Alex Sierra Alcala                | C211  | ⭐        | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   |
 | Bruno Jesús Pire Ricardo          | C212  | ⭐        | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   |
@@ -56,7 +56,7 @@ Para notificar cualquier error en el tester o en los casos de prueba (no en su e
 
 ## Estudiantes suspensos
 
-| Nombre                          | Grupo | Aprobado | 1   | 2   | 3   | 4   | 5   | 6   | 7   | 8   | 9   | 10  | 11  | 12  | 13  | 14  | 15  | 15  |
+| Nombre                          | Grupo | Aprobado | 1   | 2   | 3   | 4   | 5   | 6   | 7   | 8   | 9   | 10  | 11  | 12  | 13  | 14  | 15  | 16  |
 | ------------------------------- | ----- | -------- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Alejandro Barrios Real          | C212  | 🔴        | ❌   | ❌   | ❌   | ❌   | ❌   | ❌   | ❌   | ❌   | ❌   | ❌   | ❌   | ❌   | ❌   | ❌   | ❌   | ❌   |
 | Amanda Noris Hernandez          | C212  | 🔴        | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   | ✅   | ❌   | ✅   | ✅   | ❌   | ❌   | ❌   | ❌   | ❌   |
