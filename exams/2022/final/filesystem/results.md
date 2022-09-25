@@ -38,6 +38,7 @@ obtenidos en el proyecto.
 | Fernando Valdés García         | C212  | 👍      | 👍         | 👍         | 👍         | 🟢        |
 | Juan Carlos Espinosa           | C211  | 👍      | 👍         | 👎         | 👎         | 🟢        |
 | Juan Jose Muñoz Noda           | C211  | 👍      | 👍         | 👎         | 👎         | 🟢        |
+| Kevin Majim Ortega Alvarez     | C212  | 👍      | 👍         | 👎         | 👎         | 🟢        |
 | Leonardo Amaro Rodríguez       | C211  | 👍      | 👍         | 👍         | 👍         | 🟢        |
 | Luis Alejandro Rodríguez Otero | C211  | 👍      | 👍         | 👎         | 👎         | 🟢        |
 | Marcos Antonio Pérez Lorenzo   | C212  | 👍      | 👍         | 👍         | 👎         | 🟢        |
@@ -74,7 +75,6 @@ obtenidos en el proyecto.
 | Jose Damian Tadeo Escarra            | C212  | 👎      | 👎         | 👎         | 👎         | 🔴        |
 | Juan Miguel Pérez Martínez           | C212  | 👍      | 👎         | 👎         | 👎         | 🔴        |
 | Karen Dianelis Cantero Lopez         | C211  | 👍      | 👎         | 👎         | 👎         | 🔴        |
-| Kevin Majim Ortega Alvarez           | C212  | 👍      | 👍         | 👎         | 👎         | 🔴        |
 | Lazaro David Alba Ajete              | C211  | 👎      | 👎         | 👎         | 👎         | 🔴        |
 | Leonardo Ramirez Calatayud           | C211  | 👎      | 👎         | 👎         | 👎         | 🔴        |
 | Leydis Laura Hernández Martínez      | C211  | 👎      | 👎         | 👎         | 👎         | 🔴        |
