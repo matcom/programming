@@ -14,6 +14,8 @@ Las conferencias tienen un estilo muy interactivo. En vez de una clásica presen
 
 El primer semestre de programación se dedica a los conceptos fundamentales de la programación estructurada (aunque se hace un brevísimo paseo por algunos elementos de programación orientada a objetos) y algoritmia.
 
+> **NOTA** El curso se encuentra en proceso de rediseño por lo que el orden de estas lecciones puede variar.
+
 1. [Introducción](./conferences/01-intro)
 2. [Condicionales](./conferences/02-conditionals)
 3. [Funciones](./conferences/03-functions)
@@ -31,13 +33,15 @@ El primer semestre de programación se dedica a los conceptos fundamentales de l
 
 El segundo semestre se dedica a profundizar en la programación orientada a objetos como paradigma fundamental para la creación de software extensible y mantenible, aunque también se introducen otras nociones de paradigmas alternativos como la programación funcional y orientada a eventos, así como otras nociones de algoritmia más avanzadas.
 
+> **NOTA** El curso se encuentra en proceso de rediseño por lo que el orden de estas lecciones puede variar.
+
 13. [Herencia](./conferences/13-inheritance)
 14. [Clases abstractas](./conferences/14-evaluator)
 15. [Interfaces](./conferences/15-interfaces)
 16. [Genericidad](./conferences/16-generics)
 17. [Delegados](./conferences/17-delegates)
 
-## Proyectos
+## Proyectos (viejos)
 
 Links a los proyectos que han sido orientados en varias ediciones del curso.
 
@@ -47,18 +51,10 @@ Links a los proyectos que han sido orientados en varias ediciones del curso.
 
 ## Ejercicios
 
-- [Recursión](./exercises/exercises.pdf)
+- [Expresiones](./exercises/01_types_expressions.md)
+- [Condicionales](./exercises/02_conditionals_cycles.md)
+- [Ciclos y Arrays](./exercises/03_cycles_arrays.md)
+- [Clases](./exercises/04_clases.md)
+- [Recursión](./exercises/05_recursion.md)
 
 ## Exámenes anteriores
-
-### 2022
-
-#### TCP 1
-
-- [Intensidad de la Señal](./exams/2022/tcp1/wifi)
-- [Turismo Ecológico](./exams/2022/tcp1/tourist)
-
-#### TCP 2
-
-- [TuEnvio](./exams/2022/tcp2/TuEnvio)
-- [WebooSoft](./exams/2022/tcp2/WebooSoft)

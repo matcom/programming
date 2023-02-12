@@ -1,5 +1,15 @@
 # Introducción
 
+## Crear un nuevo proyecto
+
+Para comenzar, debe crear un proyecto de C# nuevo. El tipo de proyecto más sencillo es una aplicación de consola, que se puede crear con el siguiente comando:
+
+```bash
+dotnet new console -o <nombre>
+```
+
+Sustituyendo `<nombre>` por el nombre que desea dar a su proyecto. Esto creará una nueva carpeta. Dentro encontrará un archivo `Program.cs` donde escribir su código.
+
 ## Estructura de un programa en C#
 
 La estructura típica de un programa en C# se puede ver [en el siguiente ejemplo de código](./hello-world-oldskool/Program.cs):
@@ -22,6 +32,8 @@ Para programas sencillos, es posible utilizar una estructura simplificada donde 
 ```cs
 Console.WriteLine("Hello World!");
 ```
+
+Esta forma simplificada es lo que crea por defecto `dotnet new console` para un nuevo proyecto de consola.
 
 ## Expresiones artiméticas
 
@@ -77,8 +89,26 @@ Console.WriteLine("Hola {0}, tu edad es {1}.", nombre, edad);
 
 ## Orden de ejecución de las operaciones
 
+Una noción muy importante en programación es la secuencialidad de las operaciones. En C# (y en todo programa), todas las instrucciones se ejecutan en un orden que (generalmente) está determinado por el orden en que aparecen escritas en el código.
 
+Considere el siguiente programa:
 
-# Ejercicios
+```cs
+int x = 5;
+int y = x;
 
-1.
+// Qué imprime esto?
+System.Console.WriteLine(x);
+System.Console.WriteLine(y);
+
+x = 10;
+
+// Y ahora?
+System.Console.WriteLine(y);
+```
+
+La primera vez que se ejecuta `Console.WriteLine(y)` el valor de `y` es 5. pues justo antes se ejecutó `y=x`.
+
+Más adelante, se ejecuta `x=10`, pero el valor de `y` **no cambia**, pues no está de ninguna forma asociado al valor de x. Por tanto cuando se ejecuta la instrucción final, `y` todavía tiene el valor `5`.
+
+[Ver el ejemplo de código completo](./order/Program.cs).
