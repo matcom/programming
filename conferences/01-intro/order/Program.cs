@@ -8,4 +8,5 @@ System.Console.WriteLine(y);
 x = 10;
 
 // Y ahora?
+System.Console.ReadLine();
 System.Console.WriteLine(y);
