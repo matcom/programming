@@ -21,7 +21,6 @@ public class Program
 
         while (true)
         {
-
             Console.Clear();
             UpdateStatus(name);
             PrintStatus(name);
@@ -234,3 +233,9 @@ public class Program
         return Math.Min(max, Math.Max(value, min));
     }
 }
+
+// EJERCICIOS
+
+// 1. Adicione un nuevo estado `Eufórico` que se activa cuando la energía es alta, el hambre es bajo, y se juega.
+//    Mientras esté en este estado, la felicidad sube más rápidamente y el hambre más lentamente.
+//    El estado termina cuando la energía baja de cierto umbral.
