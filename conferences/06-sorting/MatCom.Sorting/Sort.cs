@@ -53,7 +53,7 @@
                         Swap(array, j, j + 1);
         }
 
-        public static void MinSort(int[] array)
+        public static void SelectionSort(int[] array)
         {
             for (int i = 0; i < array.Length; i++)
             {
@@ -83,51 +83,17 @@
                 array[j + 1] = x;
             }
         }
-
-        #region Black magic
-
-        public static void MergeSort(int[] array)
-        {
-            int[] tmp = new int[array.Length];
-            MergeSort(array, 0, array.Length - 1, tmp);
-        }
-
-        private static void MergeSort(int[] array, int left, int right, int[] tmp)
-        {
-            if (left >= right)
-                return;
-
-            int mid = (left + right) / 2;
-
-            MergeSort(array, left, mid, tmp);
-            MergeSort(array, mid + 1, right, tmp);
-            Merge(array, left, mid, right, tmp);
-        }
-
-        private static void Merge(int[] array, int left, int mid, int right, int[] tmp)
-        {
-            int l = left;
-            int r = mid + 1;
-            int p = left;
-
-            while (l <= mid && r <= right)
-            {
-                if (array[l] <= array[r])
-                    tmp[p++] = array[l++];
-                else
-                    tmp[p++] = array[r++];
-            }
-
-            while (l <= mid)
-                tmp[p++] = array[l++];
-
-            while (r <= right)
-                tmp[p++] = array[r++];
-
-            for (int i = left; i <= right; i++)
-                array[i] = tmp[i];
-        }
-
-        #endregion
     }
 }
+
+// EJERCICIOS
+
+// 1. ¿Qué sucede con BinarySeach cuando existen valores repetidos? Modifique el algoritmo para que en esos casos:
+//    a) Devuelva el índice del valor más a la izquierda.
+//    b) Devuelva el índice del valor más a la derecha.
+
+// 2. En BubbleSort, si una iteración del ciclo más interno no hace ningún intercambio,
+//    se puede garantizar que el array está ordenado (¿Por qué?).
+//    Modifique el algoritmo para que termine en ese caso.
+
+// 3.
