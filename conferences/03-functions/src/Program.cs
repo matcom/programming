@@ -94,7 +94,7 @@ public class Program
         {
             Console.WriteLine("🙂 {0}", id);
         }
-        else if (state == State.Asleep)
+        else if (state == State.Sleep)
         {
             Console.WriteLine("😴 {0}", id);
         }

@@ -2,9 +2,30 @@
 {
     public static class Sort
     {
-        public static bool BinarySearch()
+        public static int BinarySearch(int[] items, int x)
         {
-            return false;
+            int l = 0;
+            int r = items.Length - 1;
+
+            while (l <= r)
+            {
+                int m = (l + r) / 2;
+
+                if (items[m] < x)
+                {
+                    l = m + 1;
+                }
+                else if (items[m] > x)
+                {
+                    r = m - 1;
+                }
+                else
+                {
+                    return m;
+                }
+            }
+
+            return -1;
         }
 
 
