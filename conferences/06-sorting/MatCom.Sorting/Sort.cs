@@ -71,16 +71,13 @@
         {
             for (int i = 1; i < array.Length; i++)
             {
-                int x = array[i];
                 int j = i - 1;
 
-                while (j >= 0 && array[j] > x)
+                while (j >= 0 && array[j] > array[j+1])
                 {
-                    array[j + 1] = array[j];
+                    Swap(array, j, j+1);
                     j = j - 1;
                 }
-
-                array[j + 1] = x;
             }
         }
     }
@@ -96,4 +93,10 @@
 //    se puede garantizar que el array está ordenado (¿Por qué?).
 //    Modifique el algoritmo para que termine en ese caso.
 
-// 3.
+// 2.1) En el mismo algoritmo, note que no siempre es necesario siempre llevar el ciclo más interno
+//      hasta el final (¿Por qué?). Modifique el algoritmo en consecuencia.
+
+// 3. Modifique el método InsertionSort para que haga la menor cantidad de asignaciones posibles.
+//    Hint: En el ciclo más interno, note que Swap(j,j+1), siempre se intercambia con el mismo elemento.
+
+// 4. Bonus track: Modifique búsqueda de forma que no necesite usar ciclos :)

@@ -38,9 +38,8 @@ class Program
         for (int length = 1; length <= 1000; length = (int)(length * 2.5))
         {
             Test(length, Sort.BubbleSort);
-            Test(length, Sort.MinSort);
+            Test(length, Sort.SelectionSort);
             Test(length, Sort.InsertionSort);
-            Test(length, Sort.MergeSort);
         }
     }
 
