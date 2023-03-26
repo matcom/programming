@@ -15,7 +15,7 @@ class BinarySearch(Scene):
         m = (l+r)//2
 
         x = array.items[rand.randint(0, len(array.items) -1)]
-        text = Text(f"Query: {x}", font_size=24).next_to(array.vgroup, 5*UP)
+        text = Text(f"Query: {x}", font_size=24, color=BLACK).next_to(array.vgroup, 5*UP)
 
         left = ArrayPointer(array, "L", l, UP)
         right = ArrayPointer(array, "R", r, UP)
@@ -61,7 +61,7 @@ class BubbleSort(Scene):
         self.wait()
 
         iter = 1
-        iteration = always_redraw(lambda : Text(f"Iteration: {iter}", font_size=24).shift(UP*2))
+        iteration = always_redraw(lambda : Text(f"Iteration: {iter}", font_size=24, color=BLACK).shift(UP*2))
         self.play(Create(iteration))
 
         while iter <= len(array.items):
@@ -144,10 +144,10 @@ class Array:
         self.displacement = self.square_size + self.buffer
 
         for i, x in enumerate(items):
-            s = Square(side_length=square_size).shift(
+            s = Square(side_length=square_size, color=BLACK).shift(
                 RIGHT * (self.displacement) * i
             )
-            t = Text(str(x), font_size=font_size).move_to(s.get_center())
+            t = Text(str(x), font_size=font_size, color=BLACK).move_to(s.get_center())
             g = VGroup(s, t)
             self.squares.append(g)
 
@@ -179,8 +179,8 @@ class ArrayPointer:
         self.index = index
         self.dir = dir
 
-        self.text = Text(self.name, font_size=font_size)
-        self.arrow = Arrow(start=self.text.get_top(), end=self.text.get_top() + self.dir)
+        self.text = Text(self.name, font_size=font_size, color=BLACK)
+        self.arrow = Arrow(start=self.text.get_top(), end=self.text.get_top() + self.dir, color=BLACK)
         self.obj = VGroup(self.text, self.arrow).next_to(array.squares[index], -1 * self.dir)
 
     def update(self, index):

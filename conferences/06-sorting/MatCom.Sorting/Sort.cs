@@ -12,17 +12,11 @@
                 int m = (l + r) / 2;
 
                 if (items[m] < x)
-                {
                     l = m + 1;
-                }
                 else if (items[m] > x)
-                {
                     r = m - 1;
-                }
                 else
-                {
                     return m;
-                }
             }
 
             return -1;
@@ -73,9 +67,9 @@
             {
                 int j = i - 1;
 
-                while (j >= 0 && array[j] > array[j+1])
+                while (j >= 0 && array[j] > array[j + 1])
                 {
-                    Swap(array, j, j+1);
+                    Swap(array, j, j + 1);
                     j = j - 1;
                 }
             }
