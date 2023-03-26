@@ -25,8 +25,6 @@ class BinarySearch(Scene):
         self.wait()
         self.play(Create(left.obj), Create(right.obj))
 
-        self.wait()
-
         while (l <= r):
             m = (l+r)//2
 
@@ -45,6 +43,8 @@ class BinarySearch(Scene):
 
             self.play(FadeOut(middle.obj))
 
+        self.wait(2)
+
 
 class BubbleSort(Scene):
     def construct(self):
@@ -53,8 +53,7 @@ class BubbleSort(Scene):
         array = Array([rand.randint(1,100) for _ in range(10)])
         array.vgroup.move_to((0, 0, 0))
 
-        l = 0
-        pointer = ArrayPointer(array, "i", l, UP)
+        pointer = ArrayPointer(array, "i", 0, UP)
 
         self.play(Create(array.vgroup))
         self.wait()
@@ -75,6 +74,64 @@ class BubbleSort(Scene):
 
             iter = iter+1
             self.play(pointer.update(0), run_time=0.5)
+
+        self.wait(2)
+
+
+class SelectionSort(Scene):
+    def construct(self):
+        rand = random.Random(60)
+
+        array = Array([rand.randint(1,100) for _ in range(10)])
+        array.vgroup.move_to((0, 0, 0))
+
+        self.play(Create(array.vgroup))
+        self.wait()
+
+        pi, pj, pmin = ArrayPointer(array, "i", 0, UP), ArrayPointer(array, "j", 1, UP), ArrayPointer(array, "min")
+        self.play(Create(pi.obj), Create(pj.obj), Create(pmin.obj))
+
+        for i in range(len(array.items) - 1):
+            min = i
+            self.play(pmin.update(min), pi.update(i), run_time=0.5)
+
+            for j in range(i+1, len(array.items)):
+                self.play(pj.update(j), run_time=0.5)
+
+                if array.items[j] < array.items[min]:
+                    min = j
+                    self.play(pmin.update(min), run_time=0.5)
+
+            self.play(array.swap(i, min), run_time=0.5)
+
+        self.wait(2)
+
+
+class InsertionSort(Scene):
+    def construct(self):
+        rand = random.Random(60)
+
+        array = Array([rand.randint(1,100) for _ in range(10)])
+        array.vgroup.move_to((0, 0, 0))
+
+        self.play(Create(array.vgroup))
+        self.wait()
+
+        pi, pj = ArrayPointer(array, "i", 1, UP), ArrayPointer(array, "j", 0, UP)
+        self.play(Create(pi.obj), Create(pj.obj))
+
+        for i in range(1, len(array.items)):
+            j = i - 1
+            self.play(pi.update(i), pj.update(j), run_time=0.5)
+
+            while j >= 0 and array.items[j+1] < array.items[j]:
+                self.play(array.swap(j, j+1), run_time=0.5)
+
+                j -= 1
+                if j >= 0:
+                    self.play(pj.update(j), run_time=0.5)
+
+        self.wait(2)
 
 
 class Array:
