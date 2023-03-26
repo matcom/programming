@@ -97,19 +97,18 @@ public static void InsertionSort(int[] array)
 
 ## Ejercicios
 
-1) ¿Qué sucede con BinarySeach cuando existen valores repetidos? Modifique el algoritmo para que en esos casos:
+1) ¿Qué sucede con `BinarySeach` cuando existen valores repetidos? Modifique el algoritmo para que en esos casos:
    - a) Devuelva el índice del valor más a la izquierda.
    - b) Devuelva el índice del valor más a la derecha.
 
-2) En BubbleSort, si una iteración del ciclo más interno no hace ningún intercambio,
+2) En `BubbleSort`, si una iteración del ciclo más interno no hace ningún intercambio,
    se puede garantizar que el array está ordenado (¿Por qué?).
    Modifique el algoritmo para que termine en ese caso.
 
    - a) En el mismo algoritmo, note que no siempre es necesario siempre llevar el ciclo más interno
         hasta el final (¿Por qué?). Modifique el algoritmo en consecuencia.
 
-3) Modifique el método InsertionSort para que haga la menor cantidad de asignaciones posibles.
-   Hint: En el ciclo más interno, note que Swap(j,j+1), siempre se intercambia con el mismo elemento.
+3) Modifique el método `InsertionSort` para que haga la menor cantidad de asignaciones posibles.
+   Hint: En el ciclo más interno, note que `Swap(j,j+1)`, siempre se intercambia con el mismo elemento.
 
-4) Bonus track: Modifique búsqueda de forma que no necesite usar ciclos :)
-
+4) Bonus track: Modifique `BinarySearch` de forma que no necesite usar ciclos :)
