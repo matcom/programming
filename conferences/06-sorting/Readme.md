@@ -29,7 +29,7 @@ public static int BinarySearch(int[] items, int x)
 }
 ```
 
-<video src="https://user-images.githubusercontent.com/1778204/227782224-d6c62a8a-36e7-41af-9604-ad1b537b38f8.mp4"></video>
+<video src="https://user-images.githubusercontent.com/1778204/227782224-d6c62a8a-36e7-41af-9604-ad1b537b38f8.mp4" controls width="100%" autoplay loop></video>
 
 ## Ordenación
 
@@ -49,7 +49,7 @@ public static void BubbleSort(int[] array)
 }
 ```
 
-<video src="https://user-images.githubusercontent.com/1778204/227782811-72096ba6-41d8-4c99-80d1-dfa85368add4.mp4"></video>
+<video src="https://user-images.githubusercontent.com/1778204/227782811-72096ba6-41d8-4c99-80d1-dfa85368add4.mp4" controls width="100%" autoplay loop></video>
 
 ## Selection sort
 
@@ -71,7 +71,7 @@ public static void SelectionSort(int[] array)
 }
 ```
 
-<video src="https://user-images.githubusercontent.com/1778204/227782837-b139c430-5b77-45b0-af2b-331ec790c5ce.mp4"></video>
+<video src="https://user-images.githubusercontent.com/1778204/227782837-b139c430-5b77-45b0-af2b-331ec790c5ce.mp4" controls width="100%" autoplay loop></video>
 
 ## Insertion sort
 
@@ -93,7 +93,7 @@ public static void InsertionSort(int[] array)
 }
 ```
 
-<video src="https://user-images.githubusercontent.com/1778204/227782855-125f5647-3fd9-4d33-ba38-9c674d7a633b.mp4"></video>
+<video src="https://user-images.githubusercontent.com/1778204/227782855-125f5647-3fd9-4d33-ba38-9c674d7a633b.mp4" controls width="100%" autoplay loop></video>
 
 ## Ejercicios
 
