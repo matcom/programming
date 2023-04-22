@@ -10,31 +10,23 @@ La primera y última semana generalmente se dedican a charlas motivacionales, ex
 
 Las conferencias tienen un estilo muy interactivo. En vez de una clásica presentación de PowerPoint sobre un tema abstracto, en cada conferencia se presenta un proyecto que demuestra las habilidades y conocimientos de interés para esa semana. La conferencia consiste en una presentación del proyecto con código en vivo, discusión de las partes más interestantes y modificación del código en tiempo real. Al final de cada conferencia se dejan orientados ejercicios específicos sobre ese proyecto.
 
-### 1er Semestre
-
-El primer semestre de programación se dedica a los conceptos fundamentales de la programación estructurada (aunque se hace un brevísimo paseo por algunos elementos de programación orientada a objetos) y algoritmia.
-
-> **NOTA** El curso se encuentra en proceso de rediseño por lo que el orden de estas lecciones puede variar.
-
 1. [Introducción](./conferences/01-intro)
 2. [Condicionales](./conferences/02-conditionals)
 3. [Funciones](./conferences/03-functions)
 4. [Arrays](./conferences/04-arrays)
 5. [Clases](./conferences/05-classes)
-6. [Matrices](./conferences/06-matrices)
+6. [Ordenación](./conferences/06-sorting)
+
+### Conferencias pasadas
+
+> **NOTA** El curso se encuentra en proceso de rediseño por lo que el orden de estas lecciones puede variar.
+
 7. [Algebra](./conferences/07-algebra)
-8. [Ordenación](./conferences/08-sorting)
+8. [Matrices](./conferences/08-matrices)
 9. [Backtrack](./conferences/09-backtrack)
 10. [Búsqueda](./conferences/10-search)
 11. [Minimax](./conferences/11-minimax)
 12. [Viajante](./conferences/12-tsp)
-
-### 2do Semestre
-
-El segundo semestre se dedica a profundizar en la programación orientada a objetos como paradigma fundamental para la creación de software extensible y mantenible, aunque también se introducen otras nociones de paradigmas alternativos como la programación funcional y orientada a eventos, así como otras nociones de algoritmia más avanzadas.
-
-> **NOTA** El curso se encuentra en proceso de rediseño por lo que el orden de estas lecciones puede variar.
-
 13. [Herencia](./conferences/13-inheritance)
 14. [Clases abstractas](./conferences/14-evaluator)
 15. [Interfaces](./conferences/15-interfaces)
