@@ -65,3 +65,4 @@
 | Ana Sofía Varona Robaina - C111 | ❌ | 0 | 0 | 100 | 0 | ❌ |
 | Vagner Valik Alfonso Rivero - C121 | ✅ | 100 | 0 | 0 | 0 | ✅ |
 | Samy Sosa C121 | ❌ | 36 | 64 | 0 | 0 | ❌ |
+| Arlette_Matinez_Lemes_C112 | ❌ | 8 | 19 | 73 | 0 | ❌ |
