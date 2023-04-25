@@ -64,3 +64,4 @@
 | Tiffany Valdes Laferte- C121 | ❌ | - | - | - | - | ❌ |
 | Ana Sofía Varona Robaina - C111 | ❌ | 0 | 0 | 100 | 0 | ❌ |
 | Vagner Valik Alfonso Rivero - C121 | ✅ | 100 | 0 | 0 | 0 | ✅ |
+| Samy Sosa C121 | ❌ | 36 | 64 | 0 | 0 | ❌ |
