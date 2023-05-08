@@ -142,6 +142,7 @@ class Array:
         self.square_size = square_size
         self.buffer = buffer
         self.displacement = self.square_size + self.buffer
+        self.font_size = font_size
 
         for i, x in enumerate(items):
             s = Square(side_length=square_size, color=BLACK).shift(
@@ -152,6 +153,11 @@ class Array:
             self.squares.append(g)
 
         self.vgroup = VGroup(*self.squares)
+
+    def pointer(self, name, index, dir):
+        p = ArrayPointer(self, name, index, dir, self.font_size)
+        self.vgroup.add(p)
+        return p
 
     def swap(self, i, j):
         loc_i = self.squares[i].get_center()

@@ -16,13 +16,14 @@ Las conferencias tienen un estilo muy interactivo. En vez de una clásica presen
 4. [Arrays](./conferences/04-arrays)
 5. [Clases](./conferences/05-classes)
 6. [Ordenación](./conferences/06-sorting)
+7. [Algebra](./conferences/07-algebra)
+8. [Matrices](./conferences/08-matrices)
+9. [Recursión](./conferences/09-recursion)
 
 ### Conferencias pasadas
 
 > **NOTA** El curso se encuentra en proceso de rediseño por lo que el orden de estas lecciones puede variar.
 
-7. [Algebra](./conferences/07-algebra)
-8. [Matrices](./conferences/08-matrices)
 9. [Backtrack](./conferences/09-backtrack)
 10. [Búsqueda](./conferences/10-search)
 11. [Minimax](./conferences/11-minimax)

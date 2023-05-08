@@ -1,0 +1,37 @@
+﻿namespace MatCom.Programming
+{
+    class Program
+    {
+        static void Main()
+        {
+            Console.WriteLine(RecursiveSum(5));
+            Console.WriteLine(Factorial(10));
+            Console.WriteLine(RecursiveMin(new[] { 10, 9, 8, 7, -1, 5, 4, 3, 2, 1 }));
+            Console.WriteLine(TaxiDriver(10, 10));
+        }
+
+        static int RecursiveSum(int n)
+        {
+            return n == 0 ? 0 : n + RecursiveSum(n - 1);
+        }
+
+        static int RecursiveMin(int[] array)
+        {
+            return RecursiveMin(array, 0);
+        }
+
+        static int RecursiveMin(int[] array, int start)
+        {
+            if (start == array.Length) return int.MaxValue;
+
+            return Math.Min(array[start], RecursiveMin(array, start + 1));
+        }
+
+        static int TaxiDriver(int m, int n)
+        {
+            if (m == 1 || n == 1) return 1;
+
+            return TaxiDriver(m - 1, n) + TaxiDriver(m, n - 1);
+        }
+    }
+}
