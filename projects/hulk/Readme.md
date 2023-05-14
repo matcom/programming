@@ -177,7 +177,7 @@ En caso de haber más de un error, usted debe detectar solamente **uno** de los 
 
 ## Detalles de implementación
 
-Este proyecto es fundamentalmente para implementar una jerarquía de tipos conveniente que represente el lenguaje HULK (o al menos el subconjunto de lenguaje que usted de soportar).
+Este proyecto es fundamentalmente para implementar una jerarquía de tipos conveniente que represente el lenguaje HULK (o al menos el subconjunto de lenguaje que usted debe soportar).
 Usted deberá tener un conjunto de clases que representen los tipos de expresiones e instrucciones, así como otro conjunto de clases que representen los procesos y conceptos más importantes de su intérprete. 
 
 Para ello, su solución debe consistir al menos en dos proyectos en el lenguaje C#, usando .NET Core 7 o superior:
