@@ -167,7 +167,13 @@ Errores que se producen por el uso incorrecto de los tipos y argumentos. Por eje
 ```js
 > let a = "hello world" in print(a + 5);
 ! SEMANTIC ERROR: Operator `+` cannot be used between `string` and `number`.
+> print(fib("hello world"));
+! SEMANTIC ERROR: Function `fib` receives `number`, not `string`.
+> print(fib(4,3));
+! SEMANTIC ERROR: Function `fib` receives 1 argument(s), but 2 were given.
 ```
+
+En caso de haber más de un error, usted debe detectar solamente **uno** de los errores.
 
 ## Detalles de implementación
 
