@@ -42,7 +42,7 @@
 | LeonardoOjedaHecheverria.cs | ❌ | - | - | - | - | ❌ |
 | LiaLopezRosales_C112 | ❌ | 0 | 19 | 80 | 1 | ❌ |
 | LuisAlejandroArteagaMoralesC111 | ✅ | 100 | 0 | 0 | 0 | ✅ |
-| Luis Andres Maceiro  c113 | ❌ | 16 | 84 | 0 | 0 | ❌ |
+| Luis Andres Maceiro  c113 | ❌ | 16 | 84 | 0 | 0 | ✅ |
 | lvarez Jimenez c112 | ❌ | - | - | - | - | ❌ |
 | Magela Cornelio Gonzalez C111 | ❌ | - | - | - | - | ❌ |
 | MANUEL ALEJANDRO RODRIGUEZ 121 | ❌ | - | - | - | - | ❌ |
