@@ -19,7 +19,8 @@ Las conferencias tienen un estilo muy interactivo. En vez de una clásica presen
 7. [Algebra](./conferences/07-algebra)
 8. [Matrices](./conferences/08-matrices)
 9. [Recursión](./conferences/09-recursion)
-9. [Más Recursión](./conferences/10-more-recursion)
+10. [Más Recursión](./conferences/10-more-recursion)
+11. [Divide y Vencerás](./conferences/11-divide-and-conquer)
 
 ### Conferencias pasadas
 
