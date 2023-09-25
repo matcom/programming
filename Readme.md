@@ -21,6 +21,7 @@ Las conferencias tienen un estilo muy interactivo. En vez de una clásica presen
 9. [Recursión](./conferences/09-recursion)
 10. [Más Recursión](./conferences/10-more-recursion)
 11. [Divide y Vencerás](./conferences/11-divide-and-conquer)
+11. [Divide y Vencerás](./conferences/12-backtrack)
 
 ### Conferencias pasadas
 
