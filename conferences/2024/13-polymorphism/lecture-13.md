@@ -59,6 +59,12 @@ La forma natural en la que se clasifican objetos en tipos (en la vida cotidiana)
 - Tipo estático: el tipo que garantiza el compilador.
 - Tipos dinámico: el tipo real que tendrá el objeto en runtime.
 
+C# nos da dos mecanismos para forzarlo a utilizar un tipo estático.
+- Casteo: `(<StaticType>) <expression>`. Si en runtime el tipo dinámico del objeto al que evaluó la expresión no es descendiente del tipo `<StaticType>` que se haya indica, se lanzará una excepción.
+- Instrucción `as`: `<expression> as <StaticType>`. Si en runtime el tipo dinámico del objeto al que evaluó la expresión no es descendiente del tipo `<StaticType>` que se haya indica, se devolverá `null`.
+
+> **OJOOOOOOOOOOO**: en ninguno de los dos casos el tipo dinámico del objeto cambia.
+
 ## Herencia por especialización
 
 Volviendo al problema de herencia para **especializar** (cambiar alguna de sus funcionalidades, o sea, hacer lo mismo, pero **mejor**, más especializado) veremos una nueva sintaxis (`virtual` y `override`).
