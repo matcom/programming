@@ -19,7 +19,7 @@ class Program
                     new Exp(new Constant(2))
                 ),
                 new Pow(
-                    new Constant(3),
+                    new Constant(10),
                     new Constant(5)
                 )
             )
