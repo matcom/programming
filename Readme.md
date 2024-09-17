@@ -19,6 +19,16 @@ Las conferencias tienen un estilo muy interactivo. En vez de una clásica presen
 7. [Algebra](./conferences/07-algebra)
 8. [Matrices](./conferences/08-matrices)
 9. [Recursión](./conferences/09-recursion)
+10. [Más Recursión](./conferences/10-more-recursion)
+11. [Divide y Vencerás](./conferences/11-divide-and-conquer)
+12. [Backtrack](./conferences/12-backtrack)
+13. [Combinatorial](./conferences/13-combinatorial)
+14. [Inheritance](./conferences/14-inheritance)
+15. [Genericity and Interfaces](./conferences/15-genericity-and-interfaces)
+16. [IEnumerable and IEnumerator](./conferences/16-ienumerable-and-ienumerator)
+17. [IList and ICollection](./conferences/17-ilist-and-icollection)
+18. [Functional Programming](./conferences/18-functional-programming)
+
 
 ### Conferencias pasadas
 
@@ -40,7 +50,7 @@ Links a los proyectos que han sido orientados en varias ediciones del curso.
 
 - [**Moogle!**](https://github.com/matcom/moogle): Primer proyecto de programación, consiste en implementar las funcionalidades básicas de un buscador, incluyendo algún tipo de modelo de documentos (e.g., modelo vectorial), una función de *ranking*, y algunos operadores.
 
-- [**Domino**](https://github.com/matcom/domino): Segundo proyecto de programación, consiste en implementar una biblioteca de clases para experimentar con diferentes variantes del juego Dominó y diferentes estrategias de jugadores virtuales.
+- [**HULK**](./projects/hulk/Readme.md): Segundo proyecto de programación, consiste en implementar un intérprete para un subconjunto del lenguaje de programación HULK.
 
 ## Ejercicios
 
