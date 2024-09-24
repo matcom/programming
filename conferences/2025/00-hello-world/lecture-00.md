@@ -27,17 +27,18 @@
 3. Output shortest height.
 
 - **Correctness**
-  - Discuss how to prove that the algorithm correctly identifies the shortest person:
-    - Use examples to demonstrate that for any input list, the algorithm will return the correct result.
+  - Discuss how to prove that the algorithm correctly identifies the shortest person.
+  - Use examples to demonstrate that for any input list, the algorithm will return the correct result.
+  - Draft a semi-formal proof with an inductive argument in the size of the list.
 
 - **Efficiency**
   - Introduce the concept of efficiency in algorithms, focusing on time complexity.
-  - Explain that this algorithm runs in $$O(N)$$ time, where $$N$$ is the number of people in the list.
+  - Explain that this algorithm runs in $O(N)$ time, where $N$ is the number of people in the list.
 
 - **Adversary Technique**
-  - Briefly explain the adversary technique for proving lower bounds:
-    - Discuss how any algorithm that finds the shortest person must examine each height at least once, thus requiring at least $$N$$ comparisons.
-    - Emphasize that this establishes a lower bound on time complexity for this problem.
+  - Briefly explain the adversary technique for proving lower bounds.
+  - Discuss how any algorithm that finds the shortest person must examine each height at least once, thus requiring at least $N$ comparisons.
+  - Emphasize that this establishes a lower bound on time complexity for this problem.
 
 ### 3. Setting Up the Environment (15 minutes)
 - **Using the Terminal**
