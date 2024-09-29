@@ -6,7 +6,7 @@
         {
             Console.WriteLine(Fibonacci(5));
             Console.WriteLine(Factorial(10));
-            Console.WriteLine(MoverTorresHanoi(3, 'A', 'C', 'B'));
+            MoverTorresHanoi(3, 'A', 'C', 'B');
             Console.WriteLine(RecursiveSum(5));
             Console.WriteLine(RecursiveMin(new[] { 10, 9, 8, 7, -1, 5, 4, 3, 2, 1 }));
             Console.WriteLine(TaxiDriver(10, 10));
@@ -18,7 +18,7 @@
             if (n == 0 || n == 1)
                 return 1;
 
-            return n * CalcularFactorial(n - 1);
+            return n * Factorial(n - 1);
         }
 
         static int Fibonacci(int n)
