@@ -16,11 +16,11 @@ public class Program
 
     static void Main()
     {
-        System.Console.Write("¿Cómo se llama tu mascota? > ");
+        Console.Write("¿Cómo se llama tu mascota? > ");
         string? name = Console.ReadLine();
 
-        if (name == null) {
-            Console.WriteLine("Debes poner un nombre!");
+        if (string.IsNullOrEmpty(name)) {
+            Console.WriteLine("¡Debes poner un nombre!");
             return;
         }
 
