@@ -1,0 +1,80 @@
+name: Verificar Entrega de Proyecto
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    # Only run for issues created from the project submission template
+    if: startsWith(github.event.issue.title, '[Proyecto')
+
+    permissions:
+      issues: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Extract repository URL from issue
+        id: extract
+        run: |
+          ISSUE_BODY=$(cat << 'ISSUE_BODY_EOF'
+          ${{ github.event.issue.body }}
+          ISSUE_BODY_EOF
+          )
+          # Extract URL from the Repositorio field
+          REPO_URL=$(echo "$ISSUE_BODY" | grep -oP 'https://github\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+' | head -1)
+          if [ -z "$REPO_URL" ]; then
+            echo "repo_url=" >> "$GITHUB_OUTPUT"
+            echo "found=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "repo_url=$REPO_URL" >> "$GITHUB_OUTPUT"
+            echo "found=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Post error if no URL found
+        if: steps.extract.outputs.found == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: [
+                "## Verificación Automática — Proyecto I 🤖",
+                "",
+                "❌ No se encontró una URL de repositorio de GitHub en el Issue.",
+                "",
+                "Por favor asegúrate de incluir el enlace completo en el campo **Repositorio**, por ejemplo:",
+                "`https://github.com/tu-usuario/tu-proyecto`",
+              ].join("\n")
+            });
+
+      - name: Verify submission
+        if: steps.extract.outputs.found == 'true'
+        run: |
+          python .github/scripts/verify_submission.py \
+            "${{ steps.extract.outputs.repo_url }}" \
+            /tmp/verification_result.md
+
+      - name: Post verification comment
+        if: steps.extract.outputs.found == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const result = fs.readFileSync('/tmp/verification_result.md', 'utf8');
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: result
+            });
