@@ -97,11 +97,41 @@ def get_dependencies(repo_path):
     return deps
 
 
-def try_run(repo_path, entry_point):
+def setup_venv(repo_path, tmpdir):
+    """Create a venv and install project dependencies. Returns (python_bin, error_msg)."""
+    venv_dir = os.path.join(tmpdir, 'venv')
+    r = run(['python', '-m', 'venv', venv_dir])
+    if r.returncode != 0:
+        return None, f"No se pudo crear el virtualenv: {r.stderr[:200]}"
+
+    python_bin = os.path.join(venv_dir, 'bin', 'python')
+    pip_bin = os.path.join(venv_dir, 'bin', 'pip')
+    path = Path(repo_path)
+
+    if (path / 'pyproject.toml').exists():
+        r = run([pip_bin, 'install', '-e', '.', '--quiet'], cwd=repo_path, timeout=120)
+        if r.returncode == 0:
+            return python_bin, ""
+        # Fall through to requirements.txt if editable install fails
+        err = r.stderr[:200]
+    else:
+        err = ""
+
+    if (path / 'requirements.txt').exists():
+        r = run([pip_bin, 'install', '-r', 'requirements.txt', '--quiet'], cwd=repo_path, timeout=120)
+        if r.returncode == 0:
+            return python_bin, ""
+        err = r.stderr[:200]
+
+    # No deps or install failed — still return the venv python so stdlib code runs
+    return python_bin, err
+
+
+def try_run(repo_path, entry_point, python_bin='python'):
     """Try to run a Python file with a short timeout. Returns (ran_ok, output_snippet)."""
     try:
         r = subprocess.run(
-            ['python', entry_point, '--help'],
+            [python_bin, entry_point, '--help'],
             capture_output=True, text=True, timeout=8,
             cwd=repo_path, input=''
         )
@@ -110,7 +140,7 @@ def try_run(repo_path, entry_point):
             return True, out or "(sin salida)"
         # Try without --help
         r2 = subprocess.run(
-            ['python', entry_point],
+            [python_bin, entry_point],
             capture_output=True, text=True, timeout=5,
             cwd=repo_path, input='\n'
         )
@@ -218,6 +248,10 @@ def build_report(repo_url, results):
 
     # Execution
     lines.append("### 5. Ejecución")
+    install_err = results.get('install_error', '')
+    if install_err:
+        lines.append(f"{warn} Error al instalar dependencias en el virtualenv:")
+        lines.append(f"\n```\n{install_err}\n```")
     if entry:
         ran_ok = results.get('ran_ok', False)
         run_output = results.get('run_output', '')
@@ -305,9 +339,15 @@ def main():
                 entry = find_entry_point(dest)
                 results['entry_point'] = entry
 
+                # Set up virtualenv and install deps before running
+                python_bin, install_err = setup_venv(dest, tmpdir)
+                results['install_error'] = install_err
+                if python_bin is None:
+                    python_bin = 'python'
+
                 # Try to run
                 if entry:
-                    ran_ok, run_output = try_run(dest, entry)
+                    ran_ok, run_output = try_run(dest, entry, python_bin)
                     results['ran_ok'] = ran_ok
                     results['run_output'] = run_output
 
