@@ -1,5 +1,6 @@
 ---
 theme: note
+css: notas.css
 title: "Conferencia 1: lo básico de Python"
 ---
 
@@ -13,16 +14,6 @@ Hoy escribimos nuestros primeros programas en Python. Al terminar la clase vas a
 saber escribir un programa que le pide datos al usuario, hace cuentas con ellos y
 muestra el resultado. Ese programa va a ser una calculadora de las raíces de una
 ecuación de segundo grado, y la vamos a construir pieza a pieza durante la hora.
-
-| Minutos | Tema |
-|---|---|
-| 0–5 | Qué es un programa y cómo se ejecuta |
-| 5–17 | Expresiones y tipos |
-| 17–27 | Instrucciones y variables |
-| 27–37 | Escribir en la consola: `print` y f-strings |
-| 37–45 | Leer de la consola: `input` y conversiones |
-| 45–55 | La biblioteca `math` y la calculadora completa |
-| 55–60 | Resumen y ejercicios |
 
 ## 1. Qué es un programa
 
@@ -161,8 +152,49 @@ print(discriminante)
 ```
 
 El signo `=` significa "calcula lo que está a la derecha y guárdalo con el nombre
-de la izquierda". No es la igualdad de las matemáticas. Por eso esta línea tiene
-sentido en Python y ninguno en álgebra:
+de la izquierda". No es la igualdad de las matemáticas.
+
+### Un programa se ejecuta en el tiempo
+
+Las instrucciones se ejecutan una a una, y cada variable guarda su valor actual, el
+que recibió en la última asignación. Mira este programa y decide, antes de seguir
+leyendo, si imprime `10` o `20`:
+
+```python
+a = 5
+b = a * 2
+a = 10
+print(b)
+```
+
+Para responder, seguimos la memoria paso a paso. Cada fila de la tabla muestra el
+valor de cada variable después de ejecutar esa instrucción, y la casilla en negrita
+es la que cambió:
+
+| Instrucción ejecutada | `a` | `b` |
+|---|---|---|
+| `a = 5` | **5** | no existe |
+| `b = a * 2` | 5 | **10** |
+| `a = 10` | **10** | 10 |
+| `print(b)` | 10 | 10 |
+
+En la segunda fila, Python lee el valor actual de `a`, que es 5, calcula `5 * 2` y
+guarda `10` en `b`. La expresión `a * 2` sirve para calcular ese valor y después se
+descarta. En `b` queda el número 10 y nada más: `b` no recuerda que salió de `a`.
+Por eso, cuando `a` cambia en la tercera fila, `b` sigue valiendo 10.
+
+```{python}
+a = 5
+b = a * 2
+a = 10
+print(b)
+```
+
+Si `=` fuera una igualdad matemática, `b = a * 2` tendría que seguir siendo cierta
+después de cambiar `a`, y el programa imprimiría 20. Es una asignación: ocurre una
+vez, en un momento del tiempo, con los valores que había en ese momento.
+
+Con esa idea, esta línea tiene sentido en Python aunque no lo tenga en álgebra:
 
 ```{python}
 contador = 10
@@ -170,7 +202,13 @@ contador = contador + 1
 print(contador)
 ```
 
-La segunda línea lee el valor viejo de `contador` (10), le suma 1 y guarda el
+| Instrucción ejecutada | `contador` |
+|---|---|
+| `contador = 10` | **10** |
+| `contador = contador + 1` | **11** |
+| `print(contador)` | 11 |
+
+La segunda línea lee el valor actual de `contador` (10), le suma 1 y guarda el
 resultado (11) en la misma variable. El valor viejo se pierde.
 
 Las reglas para nombrar variables son pocas. El nombre puede tener letras, dígitos y
