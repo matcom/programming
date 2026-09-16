@@ -7,7 +7,7 @@ title: "Conferencia 1: lo básico de Python"
 # Conferencia 1: lo básico de Python
 
 ::: meta
-Programación · Ciencia de la Computación · MatCom, Universidad de La Habana · 2026-09-16
+Programación · Ciencia de la Computación y Ciencia de Datos · MatCom, Universidad de La Habana · 2026-09-16
 :::
 
 Hoy escribimos nuestros primeros programas en Python. Al terminar la clase vas a
@@ -22,14 +22,14 @@ arriba hacia abajo. En Python ese texto se guarda en un archivo con extensión
 `.py`. Creamos el archivo `hola.py` con una sola línea:
 
 ```python
-print("Hola, Ciencia de la Computación")
+print("Hola, MatCom")
 ```
 
 y lo ejecutamos desde la terminal:
 
 ```text
 $ python hola.py
-Hola, Ciencia de la Computación
+Hola, MatCom
 ```
 
 Python también tiene un modo interactivo, la consola o REPL. Si escribes `python`
