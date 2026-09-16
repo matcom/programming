@@ -7,7 +7,7 @@ title: "Conferencia 1: lo básico de Python"
 # Conferencia 1: lo básico de Python
 
 ::: meta
-Programación · Ciencia de la Computación y Ciencia de Datos · MatCom, Universidad de La Habana · 2026-09-16
+Programación · Ciencia de la Computación y Ciencia de Datos · MatCom · 2026-09-16
 :::
 
 Hoy escribimos nuestros primeros programas en Python. Al terminar la clase vas a
