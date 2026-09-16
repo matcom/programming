@@ -219,17 +219,8 @@ en minúsculas y separar las palabras con `_`, como en `precio_total`.
 
 Usar una variable que todavía no existe es un error:
 
-```python
+```{python}
 print(radio)
-```
-
-```text
-$ python radio.py
-Traceback (most recent call last):
-  File "radio.py", line 1, in <module>
-    print(radio)
-          ^^^^^
-NameError: name 'radio' is not defined
 ```
 
 Lee el mensaje de error de abajo hacia arriba. La última línea dice qué pasó
@@ -336,34 +327,19 @@ print(f"La suma es {x + y}")
 La conversión falla si el texto no representa un número del tipo pedido. `int("3.5")`
 también falla, porque `"3.5"` no es un entero escrito en texto:
 
-```text
->>> int("3.5")
-Traceback (most recent call last):
-  File "<python-input-0>", line 1, in <module>
-    int("3.5")
-    ~~~^^^^^^^
-ValueError: invalid literal for int() with base 10: '3.5'
+```{python}
+int("3.5")
 ```
 
-```text
->>> int("hola")
-Traceback (most recent call last):
-  File "<python-input-1>", line 1, in <module>
-    int("hola")
-    ~~~^^^^^^^^
-ValueError: invalid literal for int() with base 10: 'hola'
+```{python}
+int("hola")
 ```
 
 Si el usuario puede escribir decimales, convierte con `float`. Y sumar un texto con un
 número sin convertir da otro error, esta vez de tipo:
 
-```text
->>> "5" + 3
-Traceback (most recent call last):
-  File "<python-input-2>", line 1, in <module>
-    "5" + 3
-    ~~~~^~~
-TypeError: can only concatenate str (not "int") to str
+```{python}
+"5" + 3
 ```
 
 ## 6. La biblioteca `math`
