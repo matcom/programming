@@ -102,8 +102,9 @@ mínimo y cuántos aprobaron. La lista como la primera colección, el papel de l
 índices y el conteo desde cero. Recorrer con `for`, con y sin índice. `len`, `append`,
 `in`, el rebanado, y la mutabilidad, que es lo que separa una lista de todo lo visto
 hasta ahora y la fuente de las sorpresas más caras del semestre. Listas de listas como
-matrices, con ciclos anidados para recorrerlas y un ejemplo de tabla numérica. Al
-final de esta conferencia se orienta el **Proyecto I**.
+matrices, con ciclos anidados para recorrerlas y un ejemplo de tabla numérica. En esta
+semana cae la orientación del Proyecto I, que se trata aparte y no forma parte del
+contenido de la conferencia.
 
 ### Conferencia 5. Cadenas y archivos
 
