@@ -10,6 +10,8 @@ La primera y última semana generalmente se dedican a charlas motivacionales, ex
 
 Las conferencias tienen un estilo muy interactivo. En vez de una clásica presentación de PowerPoint sobre un tema abstracto, en cada conferencia se presenta un proyecto que demuestra las habilidades y conocimientos de interés para esa semana. La conferencia consiste en una presentación del proyecto con código en vivo, discusión de las partes más interestantes y modificación del código en tiempo real. Al final de cada conferencia se dejan orientados ejercicios específicos sobre ese proyecto.
 
+> **Curso 2026-2027.** El curso se imparte ahora en Python. El plan del primer semestre, con una descripción de cada conferencia, está en [`conferences/2026/plan.md`](./conferences/2026/plan.md). Las notas de cada conferencia viven en `conferences/2026/<NN>-<tema>/notas.md`, y su PDF se genera con [scriptorium](https://github.com/apiad/scriptorium). La lista de abajo es la del rediseño anterior, en C#, y se conserva como referencia.
+
 1. [Introducción](./conferences/01-intro)
 2. [Condicionales](./conferences/02-conditionals)
 3. [Funciones](./conferences/03-functions)
