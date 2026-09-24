@@ -84,24 +84,32 @@ la búsqueda binaria como algo que vuelve en recursión.
 
 ### Conferencia 3. Funciones
 
-Proyecto: rehacer el juego de adivinar como un programa compuesto de funciones, y
-extenderlo a un torneo al mejor de tres, que sin funciones no se puede escribir sin
-copiar y pegar. `def`, parámetros y argumentos, `return` y las funciones que no
-devuelven nada. El alcance de las variables, con la distinción entre lo local y lo
-global mostrada sobre un error real. Argumentos con valor por defecto y argumentos por
-nombre. Descomponer un problema en funciones como método de trabajo, no como adorno:
-se parte de un programa largo y correcto y se lo reescribe hasta que cada función se
-pueda explicar en una frase. Se orientan como ejercicios una batería de utilidades
-reusables, `es_primo`, `mcd`, `factorial`, que las conferencias siguientes dan por
+Proyecto: decidir si un número es primo, y después imprimir todos los primos hasta un
+tope de dos maneras distintas. `def`, parámetros y argumentos, `return` y las funciones
+que no devuelven nada. El `return` dentro de un ciclo, que sale del ciclo y de la función
+a la vez y sustituye a la bandera booleana. El alcance de las variables, con la
+distinción entre lo local y lo global mostrada sobre un error real. Argumentos con valor
+por defecto y argumentos por nombre. Descomponer un problema en funciones como método de
+trabajo, no como adorno: la pregunta que lo guía es si el pedazo se explica en una frase.
+El argumento a favor de las funciones no es que eviten copiar y pegar, sino que `es_primo`
+se mejora tres veces, hasta `n // 2`, hasta la raíz y saltando los pares, cambiando una
+línea en un solo sitio, y los tres programas que la llaman corren más rápido sin
+enterarse. Cierra con la criba de Eratóstenes, que resuelve el mismo problema sin dividir
+ni una vez, y con las dos cuentas de operaciones una al lado de la otra: al triplicar el
+tope, la criba triplica su trabajo y el método de uno en uno lo multiplica por cinco. La
+criba adelanta una fila de banderas, que es lo único de la conferencia siguiente que hace
+falta aquí, y deja abierto el orden de crecimiento para la séptima. Se orientan como
+ejercicios `mcd`, `factorial` y `combinaciones`, que las conferencias siguientes dan por
 conocidas.
 
 ### Conferencia 4. Listas
 
 Proyecto: un programa que lee las notas de un grupo y reporta la media, el máximo, el
-mínimo y cuántos aprobaron. La lista como la primera colección, el papel de los
-índices y el conteo desde cero. Recorrer con `for`, con y sin índice. `len`, `append`,
-`in`, el rebanado, y la mutabilidad, que es lo que separa una lista de todo lo visto
-hasta ahora y la fuente de las sorpresas más caras del semestre. Listas de listas como
+mínimo y cuántos aprobaron. La lista como la primera colección, de la que la criba de la
+conferencia anterior ya adelantó una fila de banderas; el papel de los índices y el
+conteo desde cero. Recorrer con `for`, con y sin índice. `len`, `append`, `in`, el
+rebanado, y la mutabilidad, que es lo que separa una lista de todo lo visto hasta ahora
+y la fuente de las sorpresas más caras del semestre. Listas de listas como
 matrices, con ciclos anidados para recorrerlas y un ejemplo de tabla numérica. En esta
 semana cae la orientación del Proyecto I, que se trata aparte y no forma parte del
 contenido de la conferencia.
@@ -134,7 +142,7 @@ Proyecto: ordenar las palabras por frecuencia a mano, sin usar la función de la
 biblioteca, y después buscar en el resultado. Búsqueda lineal y búsqueda binaria sobre
 una lista ordenada, ahora escritas y no solo intuidas. Ordenación por selección, por
 inserción y por intercambio, las tres implementadas y comparadas. Contar operaciones
-en lugar de medir segundos, y la diferencia entre $n$, $n \log n$ y $n^2$ vista sobre
+en lugar de medir segundos, que ya se hizo una vez con la criba, y la diferencia entre $n$, $n \log n$ y $n^2$ vista sobre
 listas que crecen, midiendo también el reloj para que el orden de crecimiento deje de
 ser una abstracción. Es una introducción informal a la complejidad, que se retoma con
 rigor en Estructuras de Datos. Cierra el primer tema.

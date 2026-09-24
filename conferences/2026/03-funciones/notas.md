@@ -10,161 +10,214 @@ title: "Conferencia 3: funciones"
 Programación · Ciencia de la Computación y Ciencia de Datos · MatCom · 2026-09-30
 :::
 
-El juego de adivinar de la clase pasada funciona, pero es una pared de veinte líneas
-sin costuras. Si ahora quisieras un torneo al mejor de tres partidas, tendrías que
-copiar esas veinte líneas tres veces, y si después encontraras un error habría que
-arreglarlo en los tres lugares. Hoy aprendemos a ponerle nombre a un pedazo de
-programa para poder usarlo muchas veces sin repetirlo. Al final de la clase el juego va
-a caber en cuatro líneas y el torneo en seis.
+Un número entero mayor que 1 es **primo** si no se puede dividir exactamente entre
+ningún otro salvo 1 y él mismo. Decidirlo para un número dado está al alcance de lo que
+ya sabes: un ciclo, un `if` y el operador `%`. Lo que no está al alcance todavía es
+usar ese programa dentro de otro, y por eso hoy aprendemos a ponerle nombre a un pedazo
+de programa.
 
-## 1. Poner nombre a un pedazo de programa
+Al final de la clase tendremos dos programas que imprimen todos los primos hasta un
+número dado. Uno los va probando de uno en uno, y el otro, que tiene dos mil trescientos
+años, los encuentra sin dividir ni una sola vez.
 
-Llevas dos clases usando funciones. `print`, `input`, `int`, `math.sqrt` y
-`random.randint` son funciones: les das algo entre paréntesis y hacen un trabajo. Lo
-único nuevo de hoy es que vamos a escribir las nuestras.
+## 1. Un programa sin nombre
 
-Una función se define con `def`, un nombre, unos paréntesis y dos puntos. El cuerpo va
-indentado, igual que el de un `if` o un `while`:
+Empecemos por el problema de un solo número. ¿Es 91 primo? Con lo de la clase pasada se
+escribe así:
 
 ```{python}
-def saludar():
-    print("Hola, MatCom")
+n = 91
+primo = True
 
-saludar()
-saludar()
+for d in range(2, n):
+    if n % d == 0:
+        primo = False
+
+print(primo)
 ```
 
-Hay dos momentos distintos y conviene separarlos desde ahora. La **definición** es el
-bloque del `def`: le dice a Python qué significa ese nombre, y no ejecuta nada. La
-**llamada** es `saludar()`, con los paréntesis: ahí es donde el cuerpo se ejecuta de
-verdad. Definir una función y no llamarla nunca es perfectamente legal y no imprime
-nada:
+Es el patrón acumulador con un `bool` en lugar de un número: `primo` empieza en `True`,
+y cualquier divisor que aparezca lo tumba a `False`. El ciclo prueba todos los enteros
+desde 2 hasta `n - 1`, que son todos los candidatos posibles a divisor.
+
+El programa está bien y sirve de poco. Para probar otro número hay que editar la primera
+línea y volver a correrlo. Y si quisieras los primos menores que cien, necesitarías meter
+este programa dentro de otro ciclo cien veces, y no hay manera de hacerlo: **el programa
+no tiene nombre, así que no se puede mencionar.**
+
+Una función es exactamente eso, un nombre para un pedazo de programa. Se define con
+`def`, un nombre, unos paréntesis y dos puntos, y el cuerpo va indentado igual que el de
+un `if` o un `while`:
 
 ```{python}
-def saludar():
-    print("Hola, MatCom")
+def es_primo(n):
+    primo = True
 
-print("El programa terminó")
+    for d in range(2, n):
+        if n % d == 0:
+            primo = False
+
+    return primo
+
+
+print(es_primo(91))
+print(es_primo(97))
+```
+
+Las mismas seis líneas de antes, y ahora `es_primo` es una palabra del vocabulario del
+programa. `91` es `7 * 13`, así que la primera respuesta es `False`; `97` sí es primo.
+
+Hay dos momentos distintos aquí y conviene separarlos desde ahora. La **definición** es
+el bloque del `def`: le dice a Python qué significa ese nombre, y no ejecuta nada. La
+**llamada** es `es_primo(91)`, con los paréntesis: ahí es donde el cuerpo corre de
+verdad. Definir una función y no llamarla nunca es perfectamente legal:
+
+```{python}
+def es_primo(n):
+    print("me llamaron")
+
+
+print("el programa terminó")
 ```
 
 Los paréntesis son obligatorios para llamar. Sin ellos no hay error, pero tampoco pasa
 nada útil, porque el nombre a secas se refiere a la función misma y no a su resultado:
 
 ```{python}
-def saludar():
-    print("Hola, MatCom")
+def es_primo(n):
+    return n == 2
 
-print(saludar)
+
+print(es_primo)
 ```
 
 Eso que imprime es la función como valor. Hoy no lo vamos a usar, pero recuérdalo:
 significa que una función es un dato más, como un número o un texto, y sobre esa idea
 está construida media biblioteca estándar.
 
-## 2. Parámetros
+Antes de seguir, una advertencia sobre nuestra `es_primo`: dice que 1 es primo, y dice
+que 0 también. Los dos son mentira. Lo arreglamos en la sección 3.
 
-Una función que hace siempre exactamente lo mismo sirve de poco. Los **parámetros** son
-variables que se escriben entre los paréntesis de la definición y que reciben un valor
-distinto en cada llamada:
+## 2. Parámetros y argumentos
+
+`n` es un **parámetro**: una variable que se escribe entre los paréntesis de la
+definición y que recibe un valor distinto en cada llamada. Puede haber varios,
+separados por comas, y se emparejan por posición con los valores de la llamada:
 
 ```{python}
-def saludar(nombre):
-    print(f"Hola, {nombre}")
+def es_divisible(n, d):
+    return n % d == 0
 
-saludar("Ana")
-saludar("Pedro")
+
+print(es_divisible(91, 7))
+print(es_divisible(91, 5))
 ```
 
-Puede haber varios, separados por comas, y se emparejan por posición con los valores de
-la llamada:
+Esa función chiquita nos va a servir después. De momento fíjate en dos palabras que se
+confunden todo el tiempo y que vas a oír en los exámenes. **Parámetro** es el nombre que
+aparece en la definición: `n`, `d`. **Argumento** es el valor concreto que se pasa en la
+llamada: `91`, `7`. El parámetro es el hueco y el argumento es lo que se le mete.
+
+Como el emparejamiento es por posición, el orden importa y equivocarlo no da ningún
+error, solo una respuesta falsa:
 
 ```{python}
-def describir(nombre, edad):
-    print(f"{nombre} tiene {edad} años")
+def es_divisible(n, d):
+    return n % d == 0
 
-describir("Ana", 19)
-describir("Pedro", 20)
+
+print(es_divisible(7, 91))
 ```
 
-Dos palabras que se confunden todo el tiempo y que vas a oír en los exámenes.
-**Parámetro** es el nombre que aparece en la definición: `nombre`, `edad`. **Argumento**
-es el valor concreto que se pasa en la llamada: `"Ana"`, `19`. El parámetro es el hueco
-y el argumento es lo que se le mete.
+`7 % 91` es 7, que no es cero, así que la respuesta es `False`. Lo que preguntamos sin
+darnos cuenta fue si 7 es divisible entre 91.
 
-Si el número de argumentos no coincide con el de parámetros, Python se queja antes de
-ejecutar nada del cuerpo:
+Si el número de argumentos no coincide con el de parámetros, ahí sí Python se queja, y
+se queja antes de ejecutar nada del cuerpo:
 
 ```{python}
-def describir(nombre, edad):
-    print(f"{nombre} tiene {edad} años")
+def es_divisible(n, d):
+    return n % d == 0
 
-describir("Ana")
+
+print(es_divisible(91))
 ```
 
 ## 3. `return`
 
-Hasta aquí nuestras funciones imprimen. Lo más útil que puede hacer una función es
-**devolver** un valor, para que quien la llamó haga con él lo que quiera:
+`return` es la instrucción que entrega un valor a quien llamó. Es lo más útil que puede
+hacer una función, porque el que llama se queda con el resultado y hace con él lo que
+quiera:
 
 ```{python}
-def doble(x):
-    return 2 * x
+def es_divisible(n, d):
+    return n % d == 0
 
-print(doble(5))
-print(doble(5) + doble(3))
-y = doble(doble(2))
-print(y)
+
+if es_divisible(100, 4) and es_divisible(100, 25):
+    print("100 se divide entre 4 y entre 25")
 ```
 
-Mira la segunda y la tercera línea. Como `doble(5)` produce un valor, se puede sumar,
-guardar en una variable o pasar a otra función. Recupera la distinción de la primera
-clase: **una función con `return` es una expresión**, y una función que solo imprime es
-una instrucción.
+Recupera la distinción de la primera clase: **una función con `return` es una
+expresión**, y por eso se puede meter dentro de un `and`, de una suma o de otra llamada.
+
+### Imprimir no es devolver
 
 La diferencia entre imprimir y devolver es la que más trabajo cuesta al principio, así
 que vamos a verla de frente. Estas dos funciones parecen hacer lo mismo:
 
 ```{python}
-def area_imprime(lado):
-    print(lado * lado)
+def divisible_imprime(n, d):
+    print(n % d == 0)
 
-def area_devuelve(lado):
-    return lado * lado
 
-area_imprime(3)
-print(area_devuelve(3))
+def divisible_devuelve(n, d):
+    return n % d == 0
+
+
+divisible_imprime(100, 4)
+print(divisible_devuelve(100, 4))
 ```
 
-La salida es idéntica. Pero intenta usarlas para algo:
+La salida es idéntica. Pero intenta contar con ellas los divisores de 100:
 
 ```{python}
-def area_imprime(lado):
-    print(lado * lado)
+def divisible_imprime(n, d):
+    print(n % d == 0)
 
-def area_devuelve(lado):
-    return lado * lado
 
-total = area_devuelve(3) + area_devuelve(4)
-print(f"El total es {total}")
+def divisible_devuelve(n, d):
+    return n % d == 0
 
-total = area_imprime(3) + area_imprime(4)
+
+divisores = 0
+
+for d in range(2, 11):
+    if divisible_devuelve(100, d):
+        divisores += 1
+
+print(f"la que devuelve encontró {divisores} divisores")
+
+print(divisible_imprime(100, 4) + divisible_imprime(100, 5))
 ```
 
 La que imprime no sirve para calcular. Escribe en la pantalla y no deja nada. La regla
 práctica: **una función que calcula algo lo devuelve; imprimir es trabajo del programa
-principal.** Así puedes cambiar la presentación sin tocar el cálculo.
+principal.** Así puedes cambiar la presentación sin tocar el cálculo, y eso es
+justamente lo que vamos a hacer con `es_primo` en un rato.
 
 ### Funciones que no devuelven nada
 
-¿Qué valor tiene entonces `area_imprime(3)`? El error de arriba lo dice: `None`, que es
-el valor que Python devuelve cuando no le dices otra cosa. `None` es un valor de pleno
-derecho, con su propio tipo, y significa «nada»:
+¿Qué valor tiene entonces `divisible_imprime(100, 4)`? El error de arriba lo dice:
+`None`, que es lo que Python devuelve cuando no le dices otra cosa. `None` es un valor de
+pleno derecho, con su propio tipo, y significa «nada»:
 
 ```{python}
-def saludar(nombre):
-    print(f"Hola, {nombre}")
+def divisible_imprime(n, d):
+    print(n % d == 0)
 
-resultado = saludar("Ana")
+
+resultado = divisible_imprime(100, 4)
 print(resultado)
 print(type(resultado))
 ```
@@ -174,287 +227,650 @@ mal es esperar un valor de una función que no devuelve ninguno.
 
 ### `return` termina la función
 
-En cuanto se ejecuta un `return`, la función se acaba y lo que venga después no corre:
+En cuanto se ejecuta un `return`, la función se acaba y lo que venga después no corre.
+Eso arregla los dos problemas que dejamos abiertos:
 
 ```{python}
-def signo(x):
-    if x > 0:
-        return "positivo"
-    if x < 0:
-        return "negativo"
-    return "cero"
+def es_primo(n):
+    if n < 2:
+        return False
 
-print(signo(7), signo(-3), signo(0))
+    for d in range(2, n):
+        if n % d == 0:
+            return False
+
+    return True
+
+
+print(es_primo(0), es_primo(1), es_primo(2), es_primo(91), es_primo(97))
 ```
 
-Fíjate en que no hacen falta `elif` ni `else`: si la primera condición se cumple, la
-función ya salió. Este uso de `return` para salir temprano deja el código más plano y
-más fácil de leer que anidar condicionales.
+Las tres líneas con `return` hacen tres trabajos distintos. La primera es un **filtro de
+entrada**: 0, 1 y los negativos no son primos, y la función lo dice y se va sin entrar al
+ciclo. La segunda está dentro del ciclo, y ahí está lo bueno: en el momento en que
+aparece un divisor ya no hay nada más que averiguar, así que la función contesta y sale.
+No hace falta `break`, porque `return` sale del ciclo y de la función a la vez. La
+tercera solo se alcanza si el ciclo terminó sin encontrar nada.
 
-## 4. Alcance de las variables
-
-Las variables que nacen dentro de una función viven solo ahí. Cuando la función
-termina, desaparecen:
+Compara esa versión con la de la sección 1. La de la sección 1 encuentra el divisor 7 de
+91 y sigue probando hasta el 90, con la respuesta ya decidida. Cuánto cuesta esa
+terquedad se ve poniéndole el reloj. `time.perf_counter()` devuelve un número de segundos
+que solo sirve para restarlo de otro:
 
 ```{python}
-def calcular():
-    resultado = 42
+import time
 
-calcular()
-print(resultado)
+
+def con_bandera(n):
+    if n < 2:
+        return False
+
+    primo = True
+
+    for d in range(2, n):
+        if n % d == 0:
+            primo = False
+
+    return primo
+
+
+def con_return(n):
+    if n < 2:
+        return False
+
+    for d in range(2, n):
+        if n % d == 0:
+            return False
+
+    return True
+
+
+inicio = time.perf_counter()
+print(con_bandera(1000000), f"{time.perf_counter() - inicio:.6f} s")
+
+inicio = time.perf_counter()
+print(con_return(1000000), f"{time.perf_counter() - inicio:.6f} s")
+```
+
+Un millón es par. La primera versión hizo casi un millón de divisiones para decirlo. La
+segunda hizo una.
+
+## 4. Componer funciones
+
+Con `es_primo` en el vocabulario, el programa que la clase pasada era imposible se
+escribe en cuatro líneas:
+
+```{python}
+def es_primo(n):
+    """Dice si n es primo, probándolo contra todos los enteros menores que él."""
+    if n < 2:
+        return False
+
+    for d in range(2, n):
+        if n % d == 0:
+            return False
+
+    return True
+
+
+def primos_hasta(n):
+    """Imprime todos los primos entre 2 y n, separados por espacios."""
+    for k in range(2, n + 1):
+        if es_primo(k):
+            print(k, end=" ")
+
+    print()
+
+
+primos_hasta(100)
+```
+
+Lee `primos_hasta` y fíjate en lo que **no** dice. No dice nada de `%`, ni de divisores,
+ni de ciclos internos. Dice: recorre los números del 2 al `n`, y de cada uno pregunta si
+es primo. Eso es lo que compran las funciones. `primos_hasta` no sabe cómo se decide si
+un número es primo; sabe que hay alguien que lo decide.
+
+El método se llama **descomponer**, y la pregunta que lo guía es siempre la misma:
+*¿puedo explicar lo que hace este pedazo en una sola frase?* Si la respuesta es sí, ese
+pedazo es una función y esa frase es su nombre. «Dice si un número es primo» y «imprime
+los primos hasta n» son dos frases, así que son dos funciones.
+
+Una tercera frase, que vamos a usar todo el resto de la clase: «cuenta cuántos primos
+hay hasta n».
+
+```{python continue}
+def contar_primos(hasta):
+    """Devuelve cuántos primos hay entre 2 y `hasta`."""
+    total = 0
+
+    for k in range(2, hasta + 1):
+        if es_primo(k):
+            total += 1
+
+    return total
+
+
+print(contar_primos(100), "primos hasta 100")
+```
+
+`contar_primos` es el mismo recorrido de `primos_hasta` con un acumulador en lugar de un
+`print`. Devuelve, no imprime, y por eso se puede cronometrar sin llenar la pantalla de
+números.
+
+## 5. Mejorar en un solo lugar
+
+`es_primo` es correcta y es tonta. Para saber si 999983 es primo prueba a dividirlo entre
+999981 números, y casi todos son absurdos. Vamos a arreglarla tres veces, y lo que
+importa de las tres veces es **dónde** se hace el arreglo.
+
+Primero, la medición de partida. `medir` es otra función de una frase: cuenta los primos
+hasta un tope y dice cuánto tardó.
+
+```{python}
+import math
+import time
+
+
+def es_primo(n):
+    if n < 2:
+        return False
+
+    for d in range(2, n):
+        if n % d == 0:
+            return False
+
+    return True
+
+
+def contar_primos(hasta):
+    total = 0
+
+    for k in range(2, hasta + 1):
+        if es_primo(k):
+            total += 1
+
+    return total
+
+
+def medir(hasta):
+    """Cuenta los primos hasta `hasta` e imprime cuánto tardó."""
+    inicio = time.perf_counter()
+    total = contar_primos(hasta)
+    print(f"{total} primos hasta {hasta} en {time.perf_counter() - inicio:.3f} s")
+
+
+medir(10000)
+```
+
+**Primera mejora.** Ningún divisor de `n`, aparte de `n` mismo, puede ser mayor que
+`n // 2`. Probar más arriba es tiempo perdido:
+
+```{python continue}
+def es_primo(n):
+    if n < 2:
+        return False
+
+    for d in range(2, n // 2 + 1):
+        if n % d == 0:
+            return False
+
+    return True
+
+
+medir(10000)
+```
+
+**Segunda mejora.** Si `n = a * b` y los dos factores fueran mayores que $\sqrt{n}$, el
+producto pasaría de `n`. Así que en cualquier descomposición hay un factor que no llega a
+la raíz, y basta buscar ahí:
+
+```{python continue}
+def es_primo(n):
+    if n < 2:
+        return False
+
+    for d in range(2, int(math.sqrt(n)) + 1):
+        if n % d == 0:
+            return False
+
+    return True
+
+
+medir(10000)
+```
+
+**Tercera mejora.** Si `n` es par y no es 2, ya está resuelto. Y si no es par, ningún
+divisor suyo lo es, así que el ciclo puede ir de dos en dos:
+
+```{python continue}
+def es_primo(n):
+    if n < 2:
+        return False
+
+    if n == 2:
+        return True
+
+    if n % 2 == 0:
+        return False
+
+    for d in range(3, int(math.sqrt(n)) + 1, 2):
+        if n % d == 0:
+            return False
+
+    return True
+
+
+medir(10000)
+```
+
+De décimas de segundo a milésimas, sin tocar el ciclo de `medir` ni el de
+`contar_primos` ni el de `primos_hasta`. Los tres siguen diciendo `es_primo(k)`, la misma
+palabra de siempre, y los tres corrieron más rápido porque alguien cambió una línea en
+otro lugar.
+
+Ese es el argumento entero de la clase de hoy, y es mucho más fuerte que «no repitas
+código». Una función es un contrato: dice qué recibe y qué devuelve, y no dice cómo. Todo
+lo que está dentro del contrato se puede cambiar sin avisarle a nadie. Un programa sin
+funciones no tiene contratos, y entonces cualquier mejora hay que aplicarla en todos los
+lugares donde se copió, y descubrir cuáles son es tu problema.
+
+## 6. Alcance de las variables
+
+Las variables que nacen dentro de una función viven solo ahí. Cuando la función termina,
+desaparecen, y eso incluye a la variable del ciclo:
+
+```{python}
+import math
+
+
+def primer_divisor(n):
+    """Devuelve el menor divisor de n mayor que 1, o n mismo si es primo."""
+    for d in range(2, int(math.sqrt(n)) + 1):
+        if n % d == 0:
+            return d
+
+    return n
+
+
+print(primer_divisor(91))
+print(d)
 ```
 
 Eso se llama **alcance local**, y no es una limitación sino la razón de ser de las
-funciones. Puedes escribir una función de cien líneas usando una variable `i` sin
-preocuparte de si el resto del programa usa otra `i`. Cada función es una caja cerrada.
+funciones. `primer_divisor` usa una `d` sin preguntarle permiso a nadie, y ninguna otra
+parte del programa puede estorbarla. Cada función es una caja cerrada.
 
 Al revés sí funciona: desde dentro se puede **leer** una variable de afuera, llamada
 global.
 
 ```{python}
-limite = 100
+TOPE = 100
 
-def esta_en_rango(x):
-    return 0 < x <= limite
+
+def esta_en_rango(n):
+    return 2 <= n <= TOPE
+
 
 print(esta_en_rango(50))
-print(esta_en_rango(200))
+print(esta_en_rango(500))
 ```
 
-Pero si intentas **asignarle** un valor a esa misma variable global desde dentro, pasa
-algo que sorprende a todo el mundo la primera vez:
+Pero si intentas **asignarle** un valor a una variable global desde dentro, pasa algo que
+sorprende a todo el mundo la primera vez. Digamos que queremos saber cuántas divisiones
+hace `es_primo`, y llevamos la cuenta en una variable de afuera:
 
 ```{python}
-contador = 0
+import math
 
-def incrementar():
-    contador = contador + 1
+divisiones = 0
 
-incrementar()
+
+def es_primo(n):
+    if n < 2:
+        return False
+
+    for d in range(2, int(math.sqrt(n)) + 1):
+        divisiones = divisiones + 1
+
+        if n % d == 0:
+            return False
+
+    return True
+
+
+print(es_primo(97))
 ```
 
 Python decide si una variable es local o global mirando el cuerpo entero de la función
-antes de ejecutarlo. Como ahí dentro hay una asignación a `contador`, la declara local
+antes de ejecutarlo. Como ahí dentro hay una asignación a `divisiones`, la declara local
 para toda la función, incluida la línea que intenta leerla. Y esa variable local todavía
 no tiene valor cuando se la quiere leer.
 
-Existe la palabra `global` para forzar el otro comportamiento. Casi nunca es la
-solución correcta, y en este curso no la vamos a usar: si una función necesita un valor
-de afuera, se lo pasas como parámetro, y si produce un valor, lo devuelve con `return`.
-Ese es el contrato, y respetarlo es lo que hace que una función se pueda entender sin
-leer el resto del programa.
-
-## 5. Valores por defecto y argumentos con nombre
-
-Un parámetro puede traer un valor de fábrica, que se usa cuando la llamada no lo
-menciona:
+Existe la palabra `global` para forzar el otro comportamiento. Casi nunca es la solución
+correcta, y en este curso no la vamos a usar. **Si una función necesita un valor de
+afuera, se lo pasas como parámetro; si produce un valor, lo devuelve con `return`.** Ese
+es el contrato de la sección anterior, y el contador de divisiones respeta el contrato
+así:
 
 ```{python}
-def saludar(nombre, saludo="Hola"):
-    print(f"{saludo}, {nombre}")
+import math
 
-saludar("Ana")
-saludar("Pedro", "Buenas tardes")
+
+def divisiones_para(n):
+    """Devuelve cuántas divisiones hacen falta para decidir si n es primo."""
+    cuenta = 0
+
+    for d in range(2, int(math.sqrt(n)) + 1):
+        cuenta += 1
+
+        if n % d == 0:
+            return cuenta
+
+    return cuenta
+
+
+print(divisiones_para(1000000), "divisiones para 1000000")
+print(divisiones_para(999983), "divisiones para 999983")
+```
+
+Un número par se descarta con una sola división. Un primo de seis cifras cuesta casi mil.
+Contar operaciones en lugar de medir segundos es una idea a la que le vamos a dedicar una
+conferencia entera.
+
+## 7. Valores por defecto y argumentos con nombre
+
+Un parámetro puede traer un valor de fábrica, que se usa cuando la llamada no lo
+menciona. `contar_primos` cuenta desde 2, y si alguna vez queremos otro punto de partida
+no hace falta una segunda función:
+
+```{python}
+import math
+
+
+def es_primo(n):
+    if n < 2:
+        return False
+
+    if n == 2:
+        return True
+
+    if n % 2 == 0:
+        return False
+
+    for d in range(3, int(math.sqrt(n)) + 1, 2):
+        if n % d == 0:
+            return False
+
+    return True
+
+
+def contar_primos(hasta, desde=2):
+    """Devuelve cuántos primos hay entre `desde` y `hasta`."""
+    total = 0
+
+    for k in range(desde, hasta + 1):
+        if es_primo(k):
+            total += 1
+
+    return total
+
+
+print(contar_primos(100))
+print(contar_primos(100, 50))
+print(contar_primos(100, desde=90))
 ```
 
 Los parámetros con valor por defecto van siempre al final de la lista, porque si no
-Python no sabría cómo emparejar los argumentos por posición.
-
-Y en la llamada se puede nombrar el parámetro explícitamente, en cuyo caso el orden ya
-no importa:
-
-```{python}
-def rango_valido(x, minimo=0, maximo=100):
-    return minimo <= x <= maximo
-
-print(rango_valido(50))
-print(rango_valido(50, maximo=10))
-print(rango_valido(50, maximo=10, minimo=1))
-```
+Python no sabría cómo emparejar los argumentos por posición. Y en la llamada se puede
+nombrar el parámetro explícitamente, como en la última línea, en cuyo caso el orden ya no
+importa.
 
 Esto sirve para dos cosas. Una función con buenos valores por defecto es cómoda en el
-caso corriente y sigue siendo flexible en el raro. Y una llamada como
-`rango_valido(50, maximo=10)` se lee sin ir a mirar la definición, cosa que
-`rango_valido(50, 0, 10)` no.
+caso corriente y sigue siendo flexible en el raro: la mayoría de las llamadas van a ser
+`contar_primos(100)`. Y una llamada como `contar_primos(100, desde=90)` se lee sin ir a
+mirar la definición, cosa que `contar_primos(100, 90)` no.
 
-## 6. El juego, otra vez
+## 8. La criba de Eratóstenes
 
-Ahora el proyecto de la clase. Vamos a tomar el juego de adivinar tal como quedó la
-semana pasada y reescribirlo en funciones. La pregunta que guía el trabajo es siempre
-la misma: **¿puedo explicar lo que hace este pedazo en una sola frase?** Si la respuesta
-es sí, ese pedazo es una función y esa frase es su nombre.
+Todo lo de hoy comparte una idea: para saber si un número es primo, lo interrogamos. Hay
+otra manera, y es de las más antiguas que se conocen. En lugar de preguntar número por
+número, **se tacha.**
 
-En el programa de la clase pasada hay tres frases así. Pedirle un número al jugador.
-Decirle si se pasó o se quedó corto. Jugar una partida completa.
+Escribe los números del 2 al 25 en una fila. El 2 es primo, y de un tirón tacha todos sus
+múltiplos. El siguiente sin tachar es el 3, que por eso mismo es primo, y tacha todos los
+suyos. Después el 5. Lo que queda sin tachar son los primos, y no se hizo ni una
+división:
 
-La primera pide un número y se asegura de que esté en el rango:
-
-```python
-def pedir_intento(minimo, maximo):
-    """Pide un número al usuario hasta que escriba uno dentro del rango."""
-    while True:
-        intento = int(input(f"Adivina mi número ({minimo}-{maximo}): "))
-
-        if minimo <= intento <= maximo:
-            return intento
-
-        print(f"Tiene que estar entre {minimo} y {maximo}")
+```text
+  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25
+  2  3  .  5  .  7  .  9  . 11  . 13  . 15  . 17  . 19  . 21  . 23  . 25
+  2  3  .  5  .  7  .  .  . 11  . 13  .  .  . 17  . 19  .  .  . 23  . 25
+  2  3  .  5  .  7  .  .  . 11  . 13  .  .  . 17  . 19  .  .  . 23  .  .
 ```
 
-No se limita a leer: repite hasta que el número sirva. Es el `while True` con `break` de
-la clase pasada, y aquí queda más limpio porque `return` sale del ciclo y de la función
-a la vez.
+Eso es la **criba de Eratóstenes**, y para escribirla en Python hace falta un dato que no
+hemos visto: una fila de casillas donde anotar los tachones. Se llama **lista**, la clase
+que viene es entera sobre ellas, y hoy solo necesitas cuatro cosas:
 
-La segunda es la más corta, y es la única que no devuelve nada, porque su trabajo
-entero es escribir en la pantalla:
+| Se escribe | Qué hace |
+|---|---|
+| `[False] * (n + 1)` | una fila de `n + 1` casillas, todas con `False` |
+| `casillas[k]` | lee la casilla número `k`, contando desde cero |
+| `casillas[k] = True` | escribe en la casilla número `k` |
+| `primos.append(k)` | añade `k` al final de la lista `primos` |
 
-```python
-def dar_pista(intento, secreto):
-    """Le dice al jugador si el número secreto es mayor o menor que su intento."""
-    if intento < secreto:
-        print("Mi número es mayor")
-    else:
-        print("Mi número es menor")
-```
-
-Y la tercera usa a las otras dos:
-
-```python
-import random
-
-
-def jugar_partida(minimo=1, maximo=100, max_intentos=7):
-    """Juega una partida completa. Devuelve True si el jugador adivinó."""
-    secreto = random.randint(minimo, maximo)
-
-    for numero_de_intento in range(1, max_intentos + 1):
-        intento = pedir_intento(minimo, maximo)
-
-        if intento == secreto:
-            print(f"¡Acertaste en {numero_de_intento} intentos!")
-            return True
-
-        dar_pista(intento, secreto)
-
-    print(f"Se acabaron los intentos. Era {secreto}")
-    return False
-```
-
-Dos detalles. Cuenta los intentos con un `for` sobre `range` en lugar de la variable
-`intentos` que llevábamos a mano, porque el número de vueltas se conoce de antemano y
-esa es la regla de la clase pasada. Y **devuelve** si el jugador ganó en vez de
-imprimirlo, que es lo que permite escribir el programa principal así:
-
-```python
-if jugar_partida():
-    print("Ganaste")
-else:
-    print("Perdiste")
-```
-
-Cuatro líneas. Si `jugar_partida` imprimiera el resultado en lugar de devolverlo, ni
-este `if` ni el torneo de la próxima sección serían posibles.
-
-### Los docstrings
-
-Ese texto entre comillas triples en la primera línea del cuerpo se llama **docstring**,
-y es la forma normal de decir qué hace una función. No es un comentario: Python lo
-guarda y lo puede mostrar.
+Con eso la criba cabe en doce líneas:
 
 ```{python}
-def area_circulo(radio):
-    """Devuelve el área de un círculo del radio dado."""
-    return 3.1416 * radio ** 2
+def criba(n):
+    """Devuelve la lista de los primos hasta n, por el método de Eratóstenes."""
+    compuesto = [False] * (n + 1)
+    primos = []
 
-print(area_circulo.__doc__)
+    for candidato in range(2, n + 1):
+        if compuesto[candidato]:
+            continue
+
+        primos.append(candidato)
+
+        for multiplo in range(candidato * candidato, n + 1, candidato):
+            compuesto[multiplo] = True
+
+    return primos
+
+
+print(criba(25))
+```
+
+Léela contra la fila de arriba. `compuesto[k]` es el tachón del número `k`. El ciclo de
+afuera va recorriendo los candidatos; si uno viene tachado, `continue` salta a la vuelta
+siguiente. Si no viene tachado es primo, se anota, y el ciclo de adentro tacha sus
+múltiplos.
+
+Dos detalles que pagan la pena de leerlos despacio. El ciclo de adentro empieza en
+`candidato * candidato`, no en `candidato * 2`, porque cualquier múltiplo menor que el
+cuadrado ya tiene un factor más chico que lo tachó antes: cuando llegamos al 5, el 10 y
+el 15 y el 20 ya están tachados por el 2 y por el 3. Y el paso del `range` es
+`candidato`, que es lo que hace que el ciclo salte de múltiplo en múltiplo sin tener que
+comprobar nada.
+
+### Los dos programas, cronometrados
+
+El mismo trabajo hecho por los dos métodos: contar los primos que hay hasta un millón.
+
+```{python continue}
+import math
+import time
+
+
+def es_primo(n):
+    if n < 2:
+        return False
+
+    if n == 2:
+        return True
+
+    if n % 2 == 0:
+        return False
+
+    for d in range(3, int(math.sqrt(n)) + 1, 2):
+        if n % d == 0:
+            return False
+
+    return True
+
+
+def contar_primos(hasta):
+    total = 0
+
+    for k in range(2, hasta + 1):
+        if es_primo(k):
+            total += 1
+
+    return total
+
+
+inicio = time.perf_counter()
+print(contar_primos(1000000), "primos, uno por uno")
+print(f"{time.perf_counter() - inicio:.2f} s")
+
+inicio = time.perf_counter()
+print(len(criba(1000000)), "primos, tachando")
+print(f"{time.perf_counter() - inicio:.2f} s")
+```
+
+Segundos contra décimas de segundo, y las dos respuestas son la misma. Pero los segundos
+no son un buen instrumento: dependen de la máquina, de lo que esté haciendo el sistema
+operativo y de la versión de Python. Corre ese bloque dos veces y te van a salir números
+distintos.
+
+Lo que no cambia es **cuántas operaciones hace cada método**. El de uno en uno divide, así
+que se cuentan sus divisiones. La criba tacha, así que se cuentan sus tachones. Esos dos
+números son exactos y siempre los mismos:
+
+```{python}
+import math
+
+
+def divisiones_hasta(n):
+    """Cuenta las divisiones que hace el método de uno en uno para llegar a n."""
+    total = 0
+
+    for k in range(2, n + 1):
+        for d in range(2, int(math.sqrt(k)) + 1):
+            total += 1
+
+            if k % d == 0:
+                break
+
+    return total
+
+
+def tachones_hasta(n):
+    """Cuenta los tachones que hace la criba para llegar a n."""
+    compuesto = [False] * (n + 1)
+    total = 0
+
+    for candidato in range(2, n + 1):
+        if compuesto[candidato]:
+            continue
+
+        for multiplo in range(candidato * candidato, n + 1, candidato):
+            compuesto[multiplo] = True
+            total += 1
+
+    return total
+
+
+for tope in [100000, 300000, 900000]:
+    print(f"hasta {tope:>7}: {divisiones_hasta(tope):>10} divisiones"
+          f"   contra {tachones_hasta(tope):>8} tachones")
+```
+
+Mira esa tabla por columnas y no por filas. Cada línea multiplica el tope por tres. Los
+tachones de la criba también se multiplican por tres, más o menos: hacer el triple de
+trabajo para resolver el triple de números es lo mejor que se puede esperar. Las
+divisiones del otro método se multiplican por casi cinco.
+
+Ahí está la diferencia, y no es que un programa sea diez veces más lento que el otro. Es
+que **la distancia entre los dos se ensancha cada vez que crece `n`.** Un factor de diez
+se paga comprando una computadora mejor. Esto no.
+
+Eso se llama **orden de crecimiento** y es el tema de la conferencia siete, donde esta
+tabla se vuelve a hacer con nombres y con fórmulas. Por ahora quédate con la razón
+intuitiva de por qué la criba gana. El método de uno en uno empieza de cero con cada
+número y no aprende nada de los que ya resolvió: para decidir si 1009 es primo no usa
+absolutamente nada de lo que averiguó sobre 1008. La criba hace lo contrario. Cada primo
+que encuentra lo gasta inmediatamente en descartar de golpe a muchos otros, así que cada
+respuesta que consigue le abarata las siguientes.
+
+Dejar de recalcular y empezar a recordar es la idea de la última conferencia del
+semestre.
+
+## 9. Los docstrings
+
+Ese texto entre comillas triples en la primera línea del cuerpo, que llevamos usando toda
+la clase, se llama **docstring**, y es la forma normal de decir qué hace una función. No
+es un comentario: Python lo guarda y lo puede mostrar.
+
+```{python}
+def es_primo(n):
+    """Dice si n es primo."""
+    return n == 2
+
+
+print(es_primo.__doc__)
 ```
 
 La misma función `help` que puedes usar en la consola con `help(print)` lee esos
-docstrings. Escríbelos en una línea y en presente: «devuelve», «calcula», «pide».
+docstrings. Escríbelos en una línea y en presente: «devuelve», «dice», «cuenta».
 
-## 7. El torneo
+Y úsalos como prueba. Si no te sale un docstring de una sola frase, la función hace más
+de una cosa y hay dos funciones ahí dentro.
 
-Ahora sí, lo que la clase pasada era imposible. Tres partidas y un marcador:
-
-```python
-victorias = 0
-
-for numero_de_partida in range(1, 4):
-    print(f"--- Partida {numero_de_partida} de 3 ---")
-
-    if jugar_partida():
-        victorias += 1
-
-print(f"Ganaste {victorias} de 3 partidas")
-```
-
-Seis líneas, y ninguna de ellas sabe nada de números al azar ni de pistas. Eso es lo que
-compran las funciones: el torneo se escribe pensando en partidas, no en intentos.
-
-Y como `jugar_partida` tiene valores por defecto, subir la dificultad en cada ronda no
-cuesta nada:
-
-```python
-victorias = 0
-
-for numero_de_partida in range(1, 4):
-    tope = 10 ** numero_de_partida
-    print(f"--- Partida {numero_de_partida}: del 1 al {tope} ---")
-
-    if jugar_partida(maximo=tope):
-        victorias += 1
-
-print(f"Ganaste {victorias} de 3 partidas")
-```
-
-```text
-$ python torneo.py
---- Partida 1: del 1 al 10 ---
-Adivina mi número (1-10): 5
-Mi número es mayor
-Adivina mi número (1-10): 8
-¡Acertaste en 2 intentos!
---- Partida 2: del 1 al 100 ---
-Adivina mi número (1-100): 50
-...
-```
-
-La primera ronda va del 1 al 10, la segunda al 100 y la tercera al 1000, y el `7` de
-`max_intentos` se quedó donde estaba. Esa llamada, `jugar_partida(maximo=tope)`, se
-entiende sola.
-
-Queda un detalle honesto: siete intentos alcanzan de sobra para cien números, pero para
-mil hacen falta diez. Arréglalo, y fíjate en que el arreglo es **una sola línea en una
-sola función**. Ese es el argumento entero de la clase de hoy.
-
-## 8. Resumen
+## 10. Resumen
 
 - `def` define una función; los paréntesis la llaman. Definir no ejecuta.
-- Los **parámetros** están en la definición, los **argumentos** en la llamada.
+- Los **parámetros** están en la definición, los **argumentos** en la llamada, y se
+  emparejan por posición.
 - `return` devuelve un valor y termina la función. Una función con `return` es una
   expresión y se puede usar dentro de otra cuenta.
+- Un `return` dentro de un ciclo sale del ciclo y de la función a la vez. No necesita
+  `break`.
 - Una función que calcula devuelve; imprimir es trabajo del programa principal.
 - Una función sin `return` devuelve `None`.
 - Las variables de dentro no se ven desde fuera. Desde dentro se puede leer una global,
-  pero asignarle crea una local y da error.
-- Los parámetros pueden traer valor por defecto, y en la llamada se pueden nombrar.
-- Descomponer es buscar los pedazos que se explican en una frase. Esa frase es el
-  nombre de la función.
+  pero asignarle crea una local y da error. Los valores entran por parámetros y salen por
+  `return`.
+- Los parámetros pueden traer valor por defecto, siempre al final, y en la llamada se
+  pueden nombrar.
+- Descomponer es buscar los pedazos que se explican en una frase. Esa frase es el nombre
+  de la función, y el mejor sitio para escribirla es el docstring.
+- Una función es un contrato. Mejorarla por dentro mejora gratis a todos los que la
+  llaman, y eso es lo que hicimos cuatro veces con `es_primo`.
 
 ## Ejercicios
 
-1. Escribe `es_primo(n)` que devuelva `True` o `False`. Después úsala para imprimir
-   todos los primos menores que 100. Cuida los casos `n = 0`, `n = 1` y los negativos.
-2. Escribe `mcd(a, b)`, el máximo común divisor, con el algoritmo de Euclides: el mcd
-   de `a` y `b` es el mcd de `b` y el resto de dividir `a` entre `b`, hasta que el resto
-   sea cero. Con ella escribe `mcm(a, b)` en una sola línea.
-3. Escribe `factorial(n)` y úsala para escribir `combinaciones(n, k)`, que calcula de
+1. Escribe `mcd(a, b)`, el máximo común divisor, con el algoritmo de Euclides: el mcd de
+   `a` y `b` es el mcd de `b` y el resto de dividir `a` entre `b`, hasta que el resto sea
+   cero. Con ella escribe `mcm(a, b)` en una sola línea.
+2. Escribe `factorial(n)` y úsala para escribir `combinaciones(n, k)`, que calcula de
    cuántas maneras se pueden escoger `k` elementos de un conjunto de `n`. La fórmula es
    $\binom{n}{k} = \frac{n!}{k!\,(n-k)!}$. Comprueba que `combinaciones(5, 2)` da 10.
+3. Escribe `suma_de_divisores(n)`, que devuelve la suma de los divisores propios de `n`
+   (los que son menores que `n`). Con ella escribe `es_perfecto(n)` en una línea, y con
+   esa imprime todos los números perfectos menores que 10000. Compara este programa con
+   el que escribiste la clase pasada para lo mismo.
 4. Escribe `longitud_collatz(n)`, que devuelve cuántos pasos tarda la secuencia de
-   Collatz de la clase pasada en llegar a 1. Úsala para encontrar el número menor que
-   1000 con la secuencia más larga.
-5. Escribe `dibujar_triangulo(altura, caracter="*")` que imprima un triángulo. Con
+   Collatz de la clase pasada en llegar a 1. Úsala para encontrar el número menor que 1000
+   con la secuencia más larga.
+5. Los **primos gemelos** son parejas de primos que difieren en 2, como 11 y 13, o 41 y
+   43. Escribe `contar_gemelos(n)` que cuente cuántas parejas hay hasta `n`. Hazlo primero
+   con `es_primo` y después con `criba`, y cronometra las dos.
+6. Cuenta los primos menores que un millón con la criba, y después prueba con diez
+   millones y con cien millones. En algún punto el programa deja de ser lento y empieza a
+   ser imposible. Di en qué punto y por qué; la respuesta no tiene que ver con el tiempo.
+7. Escribe `dibujar_triangulo(altura, caracter="*")` que imprima un triángulo. Con
    `dibujar_triangulo(4)` debe salir:
 
    ```text
@@ -465,8 +881,7 @@ sola función**. Ese es el argumento entero de la clase de hoy.
    ```
 
    Añádele un parámetro `invertido=False` que lo dibuje al revés cuando valga `True`.
-6. Sin ejecutarlos, di qué imprime cada uno de estos tres programas. Después
-   compruébalo.
+8. Sin ejecutarlos, di qué imprime cada uno de estos tres programas. Después compruébalo.
 
    **(a)**
 
@@ -484,12 +899,12 @@ sola función**. Ese es el argumento entero de la clase de hoy.
 
    ```python
    def g(n):
-       if n > 0:
-           return "positivo"
-       print("no era positivo")
+       if n > 1:
+           return "puede ser primo"
+       print("seguro que no")
 
    print(g(5))
-   print(g(-5))
+   print(g(1))
    ```
 
    **(c)**
