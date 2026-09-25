@@ -1,1 +1,4 @@
 thead th code { text-transform: none; letter-spacing: 0; font-size: 8.5pt; }
+
+/* el número y el `@fig-…` los pone el tema `base`; aquí solo el centrado */
+figure[id^="fig-"] { margin: 5mm 0; text-align: center; }

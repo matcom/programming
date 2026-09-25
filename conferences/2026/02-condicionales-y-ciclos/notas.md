@@ -1,6 +1,12 @@
 ---
 theme: note
 css: notas.css
+vars:
+  figure-label: "Figura"
+  figure-ref-label: "figura"
+execute:
+  interpreters:
+    python: ["uv", "run", "--quiet", "--python", "3.14", "--with", "tesserax", "python", "-"]
 title: "Conferencia 2: condicionales y ciclos"
 ---
 
@@ -328,6 +334,18 @@ Todo ciclo `while` tiene tres partes, y conviene aprender a buscarlas:
 1. **Inicializar**: `n = 5`, antes del ciclo, deja la variable en su valor de partida.
 2. **Condición**: `n > 0`, se evalúa antes de cada vuelta.
 3. **Avanzar**: `n = n - 1`, dentro del bloque, acerca la variable al final.
+
+```{python echo=false output=asis}
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath(".."))   # conferences/2026, donde vive figuras.py
+import figuras as F
+
+print(F.partes_del_while(
+    pie="Si falta la tercera parte, la condición nunca deja de ser cierta y el "
+        "ciclo no termina."))
+```
 
 Sigamos la memoria como hicimos la clase pasada. Cada fila es una evaluación de la
 condición:
@@ -705,9 +723,28 @@ Tu número es 68, y me tomó 7 preguntas
 ```
 
 El ciclo termina cuando `bajo` y `alto` se juntan, porque entonces solo queda un número
-posible. Y el rango se encoge a la mitad cada vez: 100, 50, 25, 13, 7, 4, 2, 1. Siete
-preguntas en el peor caso, contra cien de la versión anterior. Con un millón de números
-serían veinte.
+posible. Y el rango se encoge a la mitad cada vez.
+
+```{python echo=false output=asis}
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath(".."))   # conferences/2026, donde vive figuras.py
+import figuras as F
+
+# el mismo encogimiento que hace el programa, contado por el peor caso
+_vivos = [100]
+
+while _vivos[-1] > 1:
+    _vivos.append(_vivos[-1] - _vivos[-1] // 2)
+
+print(F.rango_que_se_parte(
+    _vivos, pie="Cada pregunta descarta la mitad de lo que quedaba. Siete "
+                "preguntas bastan para cien números; con un millón serían veinte."))
+```
+
+Siete preguntas en el peor caso, contra cien de la versión anterior. Con un millón de
+números serían veinte.
 
 Eso se llama **búsqueda binaria**, y es uno de los algoritmos más importantes que vas a
 aprender. Vuelve, con nombre y apellidos, en el tema de recursión.

@@ -1,6 +1,12 @@
 ---
 theme: note
 css: notas.css
+vars:
+  figure-label: "Figura"
+  figure-ref-label: "figura"
+execute:
+  interpreters:
+    python: ["uv", "run", "--quiet", "--python", "3.14", "--with", "tesserax", "python", "-"]
 title: "Conferencia 5: cadenas y archivos"
 ---
 
@@ -34,6 +40,21 @@ print(palabra[-1])
 print(palabra[0:5])
 print(palabra[5:])
 print(palabra[::-1])
+```
+
+```{python echo=false output=asis}
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath(".."))   # conferences/2026, donde vive figuras.py
+import figuras as F
+
+_palabra = "computación"
+
+print(F.fila_de_casillas(
+    list(_palabra), nombre="palabra", ident="cadena",
+    pie="La misma fila de casillas de la clase pasada, con un carácter en cada "
+        "una. Lo único que cambia es que estas no se pueden modificar."))
 ```
 
 Y se recorre con `for`, elemento por elemento, que en una cadena significa carácter por
@@ -142,6 +163,22 @@ palabras = linea.split()
 print(palabras)
 print(len(palabras))
 print(palabras[2])
+```
+
+```{python echo=false output=asis}
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath(".."))   # conferences/2026, donde vive figuras.py
+import figuras as F
+
+_linea = "En un lugar de la Mancha"
+
+print(F.split_visual(
+    _linea, _linea.split(), ident="split",
+    pie="<code>split</code> parte por los espacios y los descarta. Lo que "
+        "devuelve es una "
+        "lista, así que todo lo de la clase pasada vuelve a servir."))
 ```
 
 `join` hace el camino inverso: recibe una lista y la pega en una sola cadena. Se escribe

@@ -304,3 +304,152 @@ def crecimiento(pasos, ident="crecimiento", pie=""):
         _txt("criba", ancho + 12, -6, ACENTO, PIE, ancla="left")
         _txt("uno por uno", ancho + 12, 8, ALARMA, PIE, ancla="left")
     return _figura(canvas, ident, pie)
+
+
+# --------------------------------------------------------------------------
+# conferencia 1: lo básico
+# --------------------------------------------------------------------------
+
+def traza_de_memoria(pasos, nace=None, sin_vinculo=None, ident="traza", pie=""):
+    """`pasos` es [(instrucción, {nombre: valor})], tal como quedó la memoria
+    después de ejecutar esa instrucción. `nace` es (columna, origen, destino,
+    etiqueta) y dibuja de dónde salió un valor; `sin_vinculo` es la columna en la
+    que ese vínculo ya no existe."""
+    ancho, alto_caja, paso_fila = 116.0, 24.0, 34.0
+    nombres = []
+    for _, estado in pasos:
+        for n in estado:
+            if n not in nombres:
+                nombres.append(n)
+
+    def caja(col, nombre):
+        x = col * ancho + 30
+        y = 24 + nombres.index(nombre) * paso_fila
+        return x, y
+
+    with Canvas() as canvas:
+        for col, (instruccion, estado) in enumerate(pasos):
+            x0 = col * ancho
+            _codigo(instruccion, x0 + ancho / 2, 6, TINTA, PIE)
+            for nombre in nombres:
+                x, y = caja(col, nombre)
+                _codigo(nombre, x - 6, y + alto_caja / 2, APAGADO, PIE,
+                        ancla="right")
+                if nombre not in estado:
+                    _txt("no existe", x + 26, y + alto_caja / 2, REGLA.darker(0.4),
+                         PIE)
+                    continue
+                cambio = col == 0 or estado.get(nombre) != pasos[col - 1][1].get(nombre)
+                color = ACENTO if cambio else REGLA.darker(0.25)
+                Rect(52, alto_caja, fill=ACENTO.transparent(0.16) if cambio
+                     else REGLA.transparent(0.35), stroke=color,
+                     width=1.4 if cambio else 0.9).move_to(Point(x, y),
+                                                           anchor="topleft")
+                _codigo(str(estado[nombre]), x + 26, y + alto_caja / 2, TINTA)
+
+        if nace:
+            col, origen, destino, etiqueta = nace
+            xo, yo = caja(col, origen)
+            xd, yd = caja(col, destino)
+            _flecha(xo + 26, yo + alto_caja + 1, xd + 26, yd - 1, CALIDO)
+            _codigo(etiqueta, xo + 58, (yo + alto_caja + yd) / 2, CALIDO, PIE,
+                    ancla="left")
+
+        if sin_vinculo is not None and nace:
+            col, origen, destino, _ = sin_vinculo, nace[1], nace[2], None
+            xo, yo = caja(col, origen)
+            xd, yd = caja(col, destino)
+            medio = (yo + alto_caja + yd) / 2
+            Line(Point(xo + 26, yo + alto_caja + 2), Point(xd + 26, yd - 2),
+                 stroke=REGLA.darker(0.3), width=0.9)
+            _txt("✗", xo + 26, medio, ALARMA, CUERPO)
+            _txt("sin vínculo", xd + 26, yd + alto_caja + 11, APAGADO, PIE)
+    return _figura(canvas, ident, pie)
+
+
+# --------------------------------------------------------------------------
+# conferencia 2: condicionales y ciclos
+# --------------------------------------------------------------------------
+
+def partes_del_while(ident="partes-while", pie=""):
+    """Las tres partes de un ciclo, sobre la cuenta atrás de la conferencia."""
+    x, ancho = 70.0, 150.0
+    filas = [("inicializar", "n = 5", OSCURO, 0),
+             ("condición", "n > 0", CALIDO, 46),
+             ("cuerpo", "print(n)", TINTA, 100),
+             ("avanzar", "n = n - 1", OSCURO, 146)]
+    with Canvas() as canvas:
+        for etiqueta, codigo, color, y in filas:
+            _caja(x, y, ancho, 26, color if color is not TINTA else ACENTO)
+            _codigo(codigo, x + ancho / 2, y + 13, TINTA)
+            _txt(etiqueta, x + 2, y - 6, color if color is not TINTA else APAGADO,
+                 PIE, ancla="left")
+        for y in (26, 126):
+            _flecha(x + ancho / 2, y, x + ancho / 2, y + 20, APAGADO)
+        _flecha(x + ancho / 2, 72, x + ancho / 2, 100, APAGADO)
+        _codigo("True", x + ancho / 2 + 8, 86, CALIDO, PIE, ancla="left")
+
+        # la salida por la condición falsa
+        _flecha(x + ancho, 59, x + ancho + 70, 59, CALIDO)
+        _codigo("False", x + ancho + 34, 49, CALIDO, PIE)
+        _txt("sigue el programa", x + ancho + 76, 59, APAGADO, PIE, ancla="left")
+
+        # la vuelta al principio
+        Line(Point(x, 159), Point(x - 40, 159), stroke=APAGADO, width=1.0)
+        Line(Point(x - 40, 159), Point(x - 40, 59), stroke=APAGADO, width=1.0)
+        _flecha(x - 40, 59, x, 59, APAGADO)
+        _txt("otra vuelta", x - 20, 176, APAGADO, PIE)
+    return _figura(canvas, ident, pie)
+
+
+def rango_que_se_parte(tamanos, ident="rango-binario", pie=""):
+    """`tamanos` son los números que quedan vivos después de cada pregunta, tal
+    como los produjo el ciclo de la búsqueda binaria."""
+    ancho, alto, paso = 300.0, 15.0, 21.0
+    tope = tamanos[0]
+    with Canvas() as canvas:
+        for i, n in enumerate(tamanos):
+            y = i * paso
+            largo = max(n / tope * ancho, 1.2)
+            color = ACENTO if i == len(tamanos) - 1 else OSCURO
+            Rect(largo, alto, fill=color.transparent(0.22), stroke=color,
+                 width=1.0).move_to(Point(0, y), anchor="topleft")
+            _codigo(f"{n}", largo + 16, y + alto / 2, color, PIE)
+            etiqueta = "al empezar" if i == 0 else f"pregunta {i}"
+            _txt(etiqueta, -10, y + alto / 2, APAGADO, PIE, ancla="right")
+        _txt("números que todavía pueden ser", ancho / 2,
+             len(tamanos) * paso + 6, APAGADO, PIE)
+    return _figura(canvas, ident, pie)
+
+
+# --------------------------------------------------------------------------
+# conferencia 5: cadenas
+# --------------------------------------------------------------------------
+
+def split_visual(texto, piezas, ident="split", pie=""):
+    """`piezas` es lo que devolvió `split`, no una lista escrita a mano."""
+    lado, hueco = 13.0, 10.0
+    with Canvas() as canvas:
+        for i, ch in enumerate(texto):
+            x = i * lado
+            hueca = ch == " "
+            Rect(lado, 22, fill=REGLA.transparent(0.15 if hueca else 0.35),
+                 stroke=REGLA.darker(0.1 if hueca else 0.25),
+                 width=0.8).move_to(Point(x, 0), anchor="topleft")
+            _codigo("·" if hueca else ch, x + lado / 2, 11,
+                    APAGADO if hueca else TINTA, PIE)
+        ancho = len(texto) * lado
+        _codigo("texto", -10, 11, TINTA, PIE, ancla="right")
+
+        _flecha(ancho / 2, 26, ancho / 2, 48, CALIDO)
+        _codigo(".split()", ancho / 2 + 8, 37, CALIDO, PIE, ancla="left")
+
+        x = 0.0
+        for pieza in piezas:
+            w = len(pieza) * lado
+            _caja(x, 54, w, 22, ACENTO, relleno=0.16)
+            _codigo(pieza, x + w / 2, 65, TINTA, PIE)
+            x += w + hueco
+        _txt("una lista, y los espacios ya no están", (x - hueco) / 2, 88,
+             APAGADO, PIE)
+    return _figura(canvas, ident, pie)

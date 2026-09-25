@@ -1,6 +1,12 @@
 ---
 theme: note
 css: notas.css
+vars:
+  figure-label: "Figura"
+  figure-ref-label: "figura"
+execute:
+  interpreters:
+    python: ["uv", "run", "--quiet", "--python", "3.14", "--with", "tesserax", "python", "-"]
 title: "Conferencia 1: lo básico de Python"
 ---
 
@@ -188,6 +194,29 @@ a = 5
 b = a * 2
 a = 10
 print(b)
+```
+
+```{python echo=false output=asis}
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath(".."))   # conferences/2026, donde vive figuras.py
+import figuras as F
+
+# los valores salen de ejecutar el mismo programa, no de escribirlos a mano
+_pasos = []
+a = 5
+_pasos.append(("a = 5", {"a": a}))
+b = a * 2
+_pasos.append(("b = a * 2", {"a": a, "b": b}))
+a = 10
+_pasos.append(("a = 10", {"a": a, "b": b}))
+
+print(F.traza_de_memoria(
+    _pasos, nace=(1, "a", "b", "a * 2"), sin_vinculo=2,
+    pie="La flecha existe solo en el instante de la asignación. Cuando "
+        "<code>a</code> cambia, "
+        "ya no queda nada que una las dos casillas."))
 ```
 
 Si `=` fuera una igualdad matemática, `b = a * 2` tendría que seguir siendo cierta
