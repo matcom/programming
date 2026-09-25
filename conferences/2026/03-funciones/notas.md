@@ -16,9 +16,9 @@ ya sabes: un ciclo, un `if` y el operador `%`. Lo que no está al alcance todav�
 usar ese programa dentro de otro, y por eso hoy aprendemos a ponerle nombre a un pedazo
 de programa.
 
-Al final de la clase tendremos dos programas que imprimen todos los primos hasta un
-número dado. Uno los va probando de uno en uno, y el otro, que tiene dos mil trescientos
-años, los encuentra sin dividir ni una sola vez.
+Al final de la clase vamos a tener un programa que imprime todos los primos hasta un
+número dado y otro que los cuenta, los dos construidos sobre la misma pieza. Y vamos a
+dejar planteado, sin poder escribirlo todavía, un método mucho mejor.
 
 ## 1. Un programa sin nombre
 
@@ -399,7 +399,7 @@ def medir(hasta):
     print(f"{total} primos hasta {hasta} en {time.perf_counter() - inicio:.3f} s")
 
 
-medir(10000)
+medir(30000)
 ```
 
 **Primera mejora.** Ningún divisor de `n`, aparte de `n` mismo, puede ser mayor que
@@ -417,7 +417,7 @@ def es_primo(n):
     return True
 
 
-medir(10000)
+medir(30000)
 ```
 
 **Segunda mejora.** Si `n = a * b` y los dos factores fueran mayores que $\sqrt{n}$, el
@@ -436,7 +436,7 @@ def es_primo(n):
     return True
 
 
-medir(10000)
+medir(30000)
 ```
 
 **Tercera mejora.** Si `n` es par y no es 2, ya está resuelto. Y si no es par, ningún
@@ -460,10 +460,10 @@ def es_primo(n):
     return True
 
 
-medir(10000)
+medir(30000)
 ```
 
-De décimas de segundo a milésimas, sin tocar el ciclo de `medir` ni el de
+De segundos a centésimas de segundo, sin tocar el ciclo de `medir` ni el de
 `contar_primos` ni el de `primos_hasta`. Los tres siguen diciendo `es_primo(k)`, la misma
 palabra de siempre, y los tres corrieron más rápido porque alguien cambió una línea en
 otro lugar.
@@ -630,184 +630,7 @@ caso corriente y sigue siendo flexible en el raro: la mayoría de las llamadas v
 `contar_primos(100)`. Y una llamada como `contar_primos(100, desde=90)` se lee sin ir a
 mirar la definición, cosa que `contar_primos(100, 90)` no.
 
-## 8. La criba de Eratóstenes
-
-Todo lo de hoy comparte una idea: para saber si un número es primo, lo interrogamos. Hay
-otra manera, y es de las más antiguas que se conocen. En lugar de preguntar número por
-número, **se tacha.**
-
-Escribe los números del 2 al 25 en una fila. El 2 es primo, y de un tirón tacha todos sus
-múltiplos. El siguiente sin tachar es el 3, que por eso mismo es primo, y tacha todos los
-suyos. Después el 5. Lo que queda sin tachar son los primos, y no se hizo ni una
-división:
-
-```text
-  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25
-  2  3  .  5  .  7  .  9  . 11  . 13  . 15  . 17  . 19  . 21  . 23  . 25
-  2  3  .  5  .  7  .  .  . 11  . 13  .  .  . 17  . 19  .  .  . 23  . 25
-  2  3  .  5  .  7  .  .  . 11  . 13  .  .  . 17  . 19  .  .  . 23  .  .
-```
-
-Eso es la **criba de Eratóstenes**, y para escribirla en Python hace falta un dato que no
-hemos visto: una fila de casillas donde anotar los tachones. Se llama **lista**, la clase
-que viene es entera sobre ellas, y hoy solo necesitas cuatro cosas:
-
-| Se escribe | Qué hace |
-|---|---|
-| `[False] * (n + 1)` | una fila de `n + 1` casillas, todas con `False` |
-| `casillas[k]` | lee la casilla número `k`, contando desde cero |
-| `casillas[k] = True` | escribe en la casilla número `k` |
-| `primos.append(k)` | añade `k` al final de la lista `primos` |
-
-Con eso la criba cabe en doce líneas:
-
-```{python}
-def criba(n):
-    """Devuelve la lista de los primos hasta n, por el método de Eratóstenes."""
-    compuesto = [False] * (n + 1)
-    primos = []
-
-    for candidato in range(2, n + 1):
-        if compuesto[candidato]:
-            continue
-
-        primos.append(candidato)
-
-        for multiplo in range(candidato * candidato, n + 1, candidato):
-            compuesto[multiplo] = True
-
-    return primos
-
-
-print(criba(25))
-```
-
-Léela contra la fila de arriba. `compuesto[k]` es el tachón del número `k`. El ciclo de
-afuera va recorriendo los candidatos; si uno viene tachado, `continue` salta a la vuelta
-siguiente. Si no viene tachado es primo, se anota, y el ciclo de adentro tacha sus
-múltiplos.
-
-Dos detalles que pagan la pena de leerlos despacio. El ciclo de adentro empieza en
-`candidato * candidato`, no en `candidato * 2`, porque cualquier múltiplo menor que el
-cuadrado ya tiene un factor más chico que lo tachó antes: cuando llegamos al 5, el 10 y
-el 15 y el 20 ya están tachados por el 2 y por el 3. Y el paso del `range` es
-`candidato`, que es lo que hace que el ciclo salte de múltiplo en múltiplo sin tener que
-comprobar nada.
-
-### Los dos programas, cronometrados
-
-El mismo trabajo hecho por los dos métodos: contar los primos que hay hasta un millón.
-
-```{python continue}
-import math
-import time
-
-
-def es_primo(n):
-    if n < 2:
-        return False
-
-    if n == 2:
-        return True
-
-    if n % 2 == 0:
-        return False
-
-    for d in range(3, int(math.sqrt(n)) + 1, 2):
-        if n % d == 0:
-            return False
-
-    return True
-
-
-def contar_primos(hasta):
-    total = 0
-
-    for k in range(2, hasta + 1):
-        if es_primo(k):
-            total += 1
-
-    return total
-
-
-inicio = time.perf_counter()
-print(contar_primos(1000000), "primos, uno por uno")
-print(f"{time.perf_counter() - inicio:.2f} s")
-
-inicio = time.perf_counter()
-print(len(criba(1000000)), "primos, tachando")
-print(f"{time.perf_counter() - inicio:.2f} s")
-```
-
-Segundos contra décimas de segundo, y las dos respuestas son la misma. Pero los segundos
-no son un buen instrumento: dependen de la máquina, de lo que esté haciendo el sistema
-operativo y de la versión de Python. Corre ese bloque dos veces y te van a salir números
-distintos.
-
-Lo que no cambia es **cuántas operaciones hace cada método**. El de uno en uno divide, así
-que se cuentan sus divisiones. La criba tacha, así que se cuentan sus tachones. Esos dos
-números son exactos y siempre los mismos:
-
-```{python}
-import math
-
-
-def divisiones_hasta(n):
-    """Cuenta las divisiones que hace el método de uno en uno para llegar a n."""
-    total = 0
-
-    for k in range(2, n + 1):
-        for d in range(2, int(math.sqrt(k)) + 1):
-            total += 1
-
-            if k % d == 0:
-                break
-
-    return total
-
-
-def tachones_hasta(n):
-    """Cuenta los tachones que hace la criba para llegar a n."""
-    compuesto = [False] * (n + 1)
-    total = 0
-
-    for candidato in range(2, n + 1):
-        if compuesto[candidato]:
-            continue
-
-        for multiplo in range(candidato * candidato, n + 1, candidato):
-            compuesto[multiplo] = True
-            total += 1
-
-    return total
-
-
-for tope in [100000, 300000, 900000]:
-    print(f"hasta {tope:>7}: {divisiones_hasta(tope):>10} divisiones"
-          f"   contra {tachones_hasta(tope):>8} tachones")
-```
-
-Mira esa tabla por columnas y no por filas. Cada línea multiplica el tope por tres. Los
-tachones de la criba también se multiplican por tres, más o menos: hacer el triple de
-trabajo para resolver el triple de números es lo mejor que se puede esperar. Las
-divisiones del otro método se multiplican por casi cinco.
-
-Ahí está la diferencia, y no es que un programa sea diez veces más lento que el otro. Es
-que **la distancia entre los dos se ensancha cada vez que crece `n`.** Un factor de diez
-se paga comprando una computadora mejor. Esto no.
-
-Eso se llama **orden de crecimiento** y es el tema de la conferencia siete, donde esta
-tabla se vuelve a hacer con nombres y con fórmulas. Por ahora quédate con la razón
-intuitiva de por qué la criba gana. El método de uno en uno empieza de cero con cada
-número y no aprende nada de los que ya resolvió: para decidir si 1009 es primo no usa
-absolutamente nada de lo que averiguó sobre 1008. La criba hace lo contrario. Cada primo
-que encuentra lo gasta inmediatamente en descartar de golpe a muchos otros, así que cada
-respuesta que consigue le abarata las siguientes.
-
-Dejar de recalcular y empezar a recordar es la idea de la última conferencia del
-semestre.
-
-## 9. Los docstrings
+## 8. Los docstrings
 
 Ese texto entre comillas triples en la primera línea del cuerpo, que llevamos usando toda
 la clase, se llama **docstring**, y es la forma normal de decir qué hace una función. No
@@ -827,6 +650,39 @@ docstrings. Escríbelos en una línea y en presente: «devuelve», «dice», «c
 
 Y úsalos como prueba. Si no te sale un docstring de una sola frase, la función hace más
 de una cosa y hay dos funciones ahí dentro.
+
+## 9. Lo que falta
+
+`es_primo` quedó rápida, pero `primos_hasta` sigue siendo tonta de una manera que no se
+arregla mejorando `es_primo`. Mira lo que hace. Para decidir si 1009 es primo no usa
+absolutamente nada de lo que averiguó sobre 1008, ni sobre 1007, ni sobre ninguno de los
+mil anteriores. Empieza de cero mil veces.
+
+Hace dos mil trescientos años, a Eratóstenes se le ocurrió lo contrario. En lugar de
+preguntar número por número, **se tacha.** Escribe los números del 2 al 25 en una fila. El
+2 es primo, y de un tirón tacha todos sus múltiplos. El siguiente sin tachar es el 3, que
+por eso mismo es primo, y tacha todos los suyos. Después el 5. Lo que queda sin tachar
+son los primos, y no se hizo ni una sola división:
+
+```text
+  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25
+  2  3  .  5  .  7  .  9  . 11  . 13  . 15  . 17  . 19  . 21  . 23  . 25
+  2  3  .  5  .  7  .  .  . 11  . 13  .  .  . 17  . 19  .  .  . 23  . 25
+  2  3  .  5  .  7  .  .  . 11  . 13  .  .  . 17  . 19  .  .  . 23  .  .
+```
+
+Cada primo que aparece se gasta inmediatamente en descartar de golpe a muchos otros, que
+es justamente lo que el método de hoy no hace. Y hoy no lo podemos escribir.
+
+Piensa qué haría falta. Para tachar hay que acordarse de los tachones: por cada número
+entre 2 y `n`, un sí o un no. Con variables eso son `n` variables, y el problema no es que
+sean muchas. **El problema es que `n` lo escoge quien usa el programa, y las variables hay
+que escribirlas antes, cuando el programa se escribe.** No se puede teclear una cantidad
+de nombres que todavía no se sabe cuál es.
+
+Ahí se acaba lo que da de sí una variable por valor, y esa es exactamente la pregunta con
+la que abre la clase que viene. La respuesta tiene nombre, y la criba la escribimos allí,
+al final, con la cuenta de operaciones puesta al lado del método de hoy.
 
 ## 10. Resumen
 
@@ -865,12 +721,9 @@ de una cosa y hay dos funciones ahí dentro.
    Collatz de la clase pasada en llegar a 1. Úsala para encontrar el número menor que 1000
    con la secuencia más larga.
 5. Los **primos gemelos** son parejas de primos que difieren en 2, como 11 y 13, o 41 y
-   43. Escribe `contar_gemelos(n)` que cuente cuántas parejas hay hasta `n`. Hazlo primero
-   con `es_primo` y después con `criba`, y cronometra las dos.
-6. Cuenta los primos menores que un millón con la criba, y después prueba con diez
-   millones y con cien millones. En algún punto el programa deja de ser lento y empieza a
-   ser imposible. Di en qué punto y por qué; la respuesta no tiene que ver con el tiempo.
-7. Escribe `dibujar_triangulo(altura, caracter="*")` que imprima un triángulo. Con
+   43. Escribe `contar_gemelos(n)` que cuente cuántas parejas hay hasta `n`. Guarda la
+   respuesta, que la clase que viene vas a escribir otra versión y a compararlas.
+6. Escribe `dibujar_triangulo(altura, caracter="*")` que imprima un triángulo. Con
    `dibujar_triangulo(4)` debe salir:
 
    ```text
@@ -881,7 +734,7 @@ de una cosa y hay dos funciones ahí dentro.
    ```
 
    Añádele un parámetro `invertido=False` que lo dibuje al revés cuando valga `True`.
-8. Sin ejecutarlos, di qué imprime cada uno de estos tres programas. Después compruébalo.
+7. Sin ejecutarlos, di qué imprime cada uno de estos tres programas. Después compruébalo.
 
    **(a)**
 

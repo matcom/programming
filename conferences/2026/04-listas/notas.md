@@ -10,12 +10,31 @@ title: "Conferencia 4: listas"
 Programación · Ciencia de la Computación y Ciencia de Datos · MatCom · 2026-10-07
 :::
 
-Con lo que sabes hasta ahora podrías leer las notas de un grupo y calcular el
-promedio: un acumulador que suma y un contador que cuenta. Pero no podrías calcular la
-mediana, ni imprimir las notas ordenadas, ni decir cuántas están por encima del
-promedio. El problema es el mismo en los tres casos: en cuanto lees la nota siguiente,
-la anterior se perdió, porque cada variable guarda un solo valor. Hoy aprendemos a
-guardar muchos valores con un solo nombre.
+Hay que procesar las notas de un grupo. Con tres estudiantes se resuelve con lo que ya
+sabes:
+
+```python
+nota1 = int(input("Nota: "))
+nota2 = int(input("Nota: "))
+nota3 = int(input("Nota: "))
+```
+
+Con treinta da vergüenza escribirlo, pero todavía se puede. El problema de verdad aparece
+cuando no sabes cuántos son. Un programa que sirva para cualquier grupo necesitaría
+tantas variables como estudiantes tenga el grupo, y las variables hay que escribirlas
+antes, cuando el programa se escribe, mucho antes de que nadie diga cuántos estudiantes
+hay. **No se puede teclear una cantidad de nombres que todavía no se sabe cuál es.**
+
+Ese es el límite con el que cerró la clase pasada, y no se arregla con más variables ni
+con nombres más listos. Hace falta otra cosa: un solo nombre que guarde muchos valores,
+tantos como haga falta y decididos mientras el programa corre. Se llama **lista**, y es
+todo el contenido de hoy.
+
+Mira además lo que se abre con eso. Hasta ahora un acumulador te daba el promedio de las
+notas, pero no la mediana, ni las notas ordenadas, ni cuántas están por encima del
+promedio, porque en cuanto leías la nota siguiente la anterior se perdía. Guardarlas todas
+es lo que permite mirarlas dos veces. Y al final de la clase, con eso solo, cae la criba
+de Eratóstenes.
 
 ## 1. La lista
 
@@ -457,7 +476,186 @@ print(tabla)
 `[0] * 3` sí está bien, porque los ceros son inmutables y no importa que se compartan.
 Lo que no se puede repetir con `*` es una lista que después vas a modificar.
 
-## 7. Resumen
+## 7. La criba de Eratóstenes
+
+La clase pasada quedó planteado un problema y no se pudo resolver. Recuérdalo: para
+imprimir los primos hasta `n`, `es_primo` los interroga de uno en uno, y para decidir si
+1009 es primo no usa nada de lo que averiguó sobre los mil anteriores. Eratóstenes hace lo
+contrario. En lugar de preguntar número por número, **tacha.** El 2 es primo, y de un
+tirón se tachan todos sus múltiplos; el siguiente sin tachar es el 3, que por eso mismo es
+primo, y se tachan los suyos; después el 5:
+
+```text
+  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25
+  2  3  .  5  .  7  .  9  . 11  . 13  . 15  . 17  . 19  . 21  . 23  . 25
+  2  3  .  5  .  7  .  .  . 11  . 13  .  .  . 17  . 19  .  .  . 23  . 25
+  2  3  .  5  .  7  .  .  . 11  . 13  .  .  . 17  . 19  .  .  . 23  .  .
+```
+
+Lo que faltaba era dónde anotar los tachones: un sí o un no por cada número entre 2 y `n`,
+con `n` decidido por quien usa el programa. Eso ya es una sola línea:
+
+```{python}
+n = 25
+compuesto = [False] * (n + 1)
+
+print(len(compuesto))
+print(compuesto[0], compuesto[25])
+```
+
+Veintiséis casillas, todas en `False`, y el 26 salió de una variable. Con casillas de la 0
+a la `n`, el número `k` vive en la casilla `k`; cuesta dos casillas que no se usan y
+ahorra estar restando. Y `[False] * (n + 1)` es seguro, a diferencia de la tabla de la
+sección anterior, porque `False` es inmutable: da igual que las veintiséis casillas
+compartan el mismo, porque nadie lo va a modificar en el lugar, solo reemplazarlo.
+
+Con eso la criba cabe en doce líneas:
+
+```{python}
+def criba(n):
+    """Devuelve la lista de los primos hasta n, por el método de Eratóstenes."""
+    compuesto = [False] * (n + 1)
+    primos = []
+
+    for candidato in range(2, n + 1):
+        if compuesto[candidato]:
+            continue
+
+        primos.append(candidato)
+
+        for multiplo in range(candidato * candidato, n + 1, candidato):
+            compuesto[multiplo] = True
+
+    return primos
+
+
+print(criba(25))
+```
+
+Léela contra la fila de arriba. `compuesto[k]` es el tachón del número `k`. El ciclo de
+afuera recorre los candidatos; si uno viene tachado, `continue` salta a la vuelta
+siguiente. Si no viene tachado es primo, se anota con `append`, y el ciclo de adentro
+tacha sus múltiplos.
+
+Dos detalles que pagan la pena de leerlos despacio. El ciclo de adentro empieza en
+`candidato * candidato`, no en `candidato * 2`, porque cualquier múltiplo menor que el
+cuadrado ya tiene un factor más chico que lo tachó antes: cuando llegamos al 5, el 10 y el
+15 y el 20 ya están tachados por el 2 y por el 3. Y el paso del `range` es `candidato`,
+que es lo que hace que el ciclo salte de múltiplo en múltiplo sin comprobar nada.
+
+### Los dos métodos, medidos
+
+El mismo trabajo por los dos caminos: contar los primos que hay hasta un millón.
+
+```{python continue}
+import math
+import time
+
+
+def es_primo(n):
+    if n < 2:
+        return False
+
+    if n == 2:
+        return True
+
+    if n % 2 == 0:
+        return False
+
+    for d in range(3, int(math.sqrt(n)) + 1, 2):
+        if n % d == 0:
+            return False
+
+    return True
+
+
+def contar_primos(hasta):
+    total = 0
+
+    for k in range(2, hasta + 1):
+        if es_primo(k):
+            total += 1
+
+    return total
+
+
+inicio = time.perf_counter()
+print(contar_primos(1000000), "primos, uno por uno")
+print(f"{time.perf_counter() - inicio:.2f} s")
+
+inicio = time.perf_counter()
+print(len(criba(1000000)), "primos, tachando")
+print(f"{time.perf_counter() - inicio:.2f} s")
+```
+
+Segundos contra décimas de segundo, y las dos respuestas son la misma. Pero los segundos
+no son un buen instrumento: dependen de la máquina, de lo que esté haciendo el sistema
+operativo y de la versión de Python. Corre ese bloque dos veces y te van a salir números
+distintos.
+
+Lo que no cambia es **cuántas operaciones hace cada método**. El de uno en uno divide, así
+que se cuentan sus divisiones. La criba tacha, así que se cuentan sus tachones. Esos dos
+números son exactos y siempre los mismos:
+
+```{python}
+import math
+
+
+def divisiones_hasta(n):
+    """Cuenta las divisiones que hace el método de uno en uno para llegar a n."""
+    total = 0
+
+    for k in range(2, n + 1):
+        for d in range(2, int(math.sqrt(k)) + 1):
+            total += 1
+
+            if k % d == 0:
+                break
+
+    return total
+
+
+def tachones_hasta(n):
+    """Cuenta los tachones que hace la criba para llegar a n."""
+    compuesto = [False] * (n + 1)
+    total = 0
+
+    for candidato in range(2, n + 1):
+        if compuesto[candidato]:
+            continue
+
+        for multiplo in range(candidato * candidato, n + 1, candidato):
+            compuesto[multiplo] = True
+            total += 1
+
+    return total
+
+
+for tope in [100000, 300000, 900000]:
+    print(f"hasta {tope:>7}: {divisiones_hasta(tope):>10} divisiones"
+          f"   contra {tachones_hasta(tope):>8} tachones")
+```
+
+Mira esa tabla por columnas y no por filas. Cada línea multiplica el tope por tres. Los
+tachones de la criba también se multiplican por tres, más o menos: hacer el triple de
+trabajo para resolver el triple de números es lo mejor que se puede esperar. Las
+divisiones del otro método se multiplican por casi cinco.
+
+Ahí está la diferencia, y no es que un programa sea diez veces más lento que el otro. Es
+que **la distancia entre los dos se ensancha cada vez que crece `n`.** Un factor de diez se
+paga comprando una computadora mejor. Esto no.
+
+Eso se llama **orden de crecimiento**, es el tema de la conferencia siete, y esta tabla se
+va a volver a hacer allí con nombres y con fórmulas. Por ahora quédate con la razón
+intuitiva de por qué la criba gana. El método de uno en uno empieza de cero con cada
+número y tira a la basura todo lo que averiguó. La criba hace lo contrario: cada primo que
+encuentra lo gasta inmediatamente en descartar de golpe a muchos otros, así que cada
+respuesta que consigue le abarata las siguientes.
+
+Dejar de recalcular y empezar a recordar es la idea de la última conferencia del semestre,
+y para recordar hace falta dónde guardar, que es lo de hoy.
+
+## 8. Resumen
 
 - Una lista guarda muchos valores con un solo nombre. Se escribe con corchetes y su
   tamaño se pide con `len`.
@@ -472,7 +670,10 @@ Lo que no se puede repetir con `*` es una lista que después vas a modificar.
 - `sum`, `max`, `min` y `sorted` existen, pero conviene saber escribirlos.
 - Una lista de listas es una tabla: `tabla[fila][columna]`, y se recorre con dos ciclos
   anidados.
-- `[[0] * 3] * 2` no construye dos filas. Constrúyelas en un ciclo.
+- `[[0] * 3] * 2` no construye dos filas. Constrúyelas en un ciclo. `[False] * n` sí está
+  bien, porque `False` es inmutable.
+- Una lista es lo que permite guardar tantos resultados intermedios como haga falta sin
+  saber cuántos son al escribir el programa. La criba de Eratóstenes vive entera de eso.
 
 ## Ejercicios
 
@@ -490,7 +691,14 @@ Lo que no se puede repetir con `*` es una lista que después vas a modificar.
 5. Con una tabla de números como la de la sección 6, escribe `transpuesta(tabla)` que
    devuelva una tabla nueva donde las filas son las columnas de la original. Comprueba
    que la transpuesta de la transpuesta es la tabla de partida.
-6. Sin ejecutarlos, di qué imprime cada uno de estos tres programas. Después
+6. Vuelve a escribir `contar_gemelos(n)` del ejercicio 5 de la clase pasada, ahora sobre
+   la lista que devuelve `criba`. Cronometra las dos versiones con `n` de un millón y
+   compara el resultado, que tiene que ser el mismo número.
+7. Cuenta los primos menores que un millón con la criba, y después prueba con diez
+   millones y con cien millones. En algún punto el programa deja de ser lento y pasa a ser
+   imposible. Di en qué punto y por qué; la respuesta no tiene que ver con el tiempo sino
+   con lo que ocupa `compuesto`. Estima cuántos bytes hacen falta por casilla.
+8. Sin ejecutarlos, di qué imprime cada uno de estos tres programas. Después
    compruébalo.
 
    **(a)**
