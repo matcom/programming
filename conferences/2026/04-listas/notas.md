@@ -1,6 +1,9 @@
 ---
 theme: note
 css: notas.css
+execute:
+  interpreters:
+    python: ["uv", "run", "--quiet", "--python", "3.14", "--with", "tesserax", "python", "-"]
 title: "Conferencia 4: listas"
 ---
 
@@ -81,6 +84,19 @@ print(notas[6])
 
 Ese `IndexError` lo vas a ver muchas veces este semestre, y casi siempre significa lo
 mismo: un ciclo que dio una vuelta de más.
+
+```{python echo=false output=asis}
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath(".."))   # conferences/2026, donde vive figuras.py
+import figuras as F
+
+print(F.fila_de_casillas([4, 5, 3, 5, 2, 4], nombre="notas", ident="indices",
+                         pie="Un solo nombre para seis casillas. Arriba el índice, "
+                             "que empieza en cero; abajo el índice negativo, que "
+                             "cuenta desde el final."))
+```
 
 Python admite además índices negativos, que cuentan desde el final. `-1` es el último,
 `-2` el penúltimo. Es cómodo y evita escribir `notas[len(notas) - 1]`:
@@ -236,6 +252,18 @@ print(b)
 **nombre**. Después de esa línea hay una sola lista con dos nombres, y modificarla por
 cualquiera de los dos la modifica para ambos.
 
+```{python echo=false output=asis}
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath(".."))   # conferences/2026, donde vive figuras.py
+import figuras as F
+
+print(F.dos_nombres_una_lista([1, 2, 3], ident="alias",
+                              pie="<code>b = a</code> no duplica las casillas. "
+                                  "Duplica la flecha."))
+```
+
 Esto no pasaba antes porque los números no se pueden modificar en el lugar; la única
 manera de cambiar `a` era asignarle otra cosa, y eso rompe el vínculo. Con una lista,
 `a.append(4)` no asigna nada: modifica el objeto que los dos nombres comparten.
@@ -284,6 +312,19 @@ print(notas[::-1])
 Si omites el primer índice, empieza desde el principio; si omites el segundo, llega
 hasta el final. Un tercer número es el paso, y `-1` recorre al revés, que es la forma
 más corta de invertir una lista.
+
+```{python echo=false output=asis}
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath(".."))   # conferences/2026, donde vive figuras.py
+import figuras as F
+
+print(F.fila_de_casillas([4, 5, 3, 5, 2, 4], negativos=False, resaltar=(1, 4),
+                         etiqueta="notas[1:4]", ident="rebanada",
+                         pie="El primer índice entra y el segundo no, la misma "
+                             "convención de <code>range</code>."))
+```
 
 Una rebanada siempre construye una **lista nueva**. Por eso `notas[:]` es otra manera de
 copiar, y por eso modificar la rebanada no toca el original:
@@ -485,11 +526,20 @@ contrario. En lugar de preguntar número por número, **tacha.** El 2 es primo, 
 tirón se tachan todos sus múltiplos; el siguiente sin tachar es el 3, que por eso mismo es
 primo, y se tachan los suyos; después el 5:
 
-```text
-  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25
-  2  3  .  5  .  7  .  9  . 11  . 13  . 15  . 17  . 19  . 21  . 23  . 25
-  2  3  .  5  .  7  .  .  . 11  . 13  .  .  . 17  . 19  .  .  . 23  . 25
-  2  3  .  5  .  7  .  .  . 11  . 13  .  .  . 17  . 19  .  .  . 23  .  .
+```{python echo=false output=asis}
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath(".."))   # conferences/2026, donde vive figuras.py
+import figuras as F
+
+# los primos hasta 25 salen del método de la conferencia pasada, dividiendo
+_primos = [k for k in range(2, 26)
+           if k > 1 and all(k % d != 0 for d in range(2, k))]
+
+print(F.criba_visual(25, _primos, ident="criba",
+                     pie="Cada color es el primo que tachó esa casilla. Lo que "
+                         "sobrevive son los primos, y no hubo una sola división."))
 ```
 
 Lo que faltaba era dónde anotar los tachones: un sí o un no por cada número entre 2 y `n`,
@@ -532,7 +582,7 @@ def criba(n):
 print(criba(25))
 ```
 
-Léela contra la fila de arriba. `compuesto[k]` es el tachón del número `k`. El ciclo de
+Léela contra la @fig-criba. `compuesto[k]` es el tachón del número `k`. El ciclo de
 afuera recorre los candidatos; si uno viene tachado, `continue` salta a la vuelta
 siguiente. Si no viene tachado es primo, se anota con `append`, y el ciclo de adentro
 tacha sus múltiplos.
@@ -631,15 +681,44 @@ def tachones_hasta(n):
     return total
 
 
-for tope in [100000, 300000, 900000]:
-    print(f"hasta {tope:>7}: {divisiones_hasta(tope):>10} divisiones"
-          f"   contra {tachones_hasta(tope):>8} tachones")
+topes = [100000, 300000, 900000]
+divisiones = []
+tachones = []
+
+for tope in topes:
+    divisiones.append(divisiones_hasta(tope))
+    tachones.append(tachones_hasta(tope))
+
+    print(f"hasta {tope:>7}: {divisiones[-1]:>10} divisiones"
+          f"   contra {tachones[-1]:>8} tachones")
 ```
+
+Las dos cuentas se van guardando en sendas listas, que es justo lo de hoy: no sabemos
+de antemano cuántos topes vamos a probar.
 
 Mira esa tabla por columnas y no por filas. Cada línea multiplica el tope por tres. Los
 tachones de la criba también se multiplican por tres, más o menos: hacer el triple de
 trabajo para resolver el triple de números es lo mejor que se puede esperar. Las
 divisiones del otro método se multiplican por casi cinco.
+
+```{python continue echo=false output=asis}
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath(".."))
+import figuras as F
+
+pasos = []
+
+for i in range(1, len(topes)):
+    pasos.append((f"{topes[i - 1]:,} → {topes[i]:,}".replace(",", " "),
+                  divisiones[i] / divisiones[i - 1],
+                  tachones[i] / tachones[i - 1]))
+
+print(F.crecimiento(pasos, pie="Lo que se multiplica cada cuenta cuando el tope se "
+                               "multiplica por tres. La criba se mantiene en el "
+                               "triple; el otro método se va a casi el quíntuple."))
+```
 
 Ahí está la diferencia, y no es que un programa sea diez veces más lento que el otro. Es
 que **la distancia entre los dos se ensancha cada vez que crece `n`.** Un factor de diez se

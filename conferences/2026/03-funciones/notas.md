@@ -1,6 +1,9 @@
 ---
 theme: note
 css: notas.css
+execute:
+  interpreters:
+    python: ["uv", "run", "--quiet", "--python", "3.14", "--with", "tesserax", "python", "-"]
 title: "Conferencia 3: funciones"
 ---
 
@@ -117,6 +120,17 @@ Esa función chiquita nos va a servir después. De momento fíjate en dos palabr
 confunden todo el tiempo y que vas a oír en los exámenes. **Parámetro** es el nombre que
 aparece en la definición: `n`, `d`. **Argumento** es el valor concreto que se pasa en la
 llamada: `91`, `7`. El parámetro es el hueco y el argumento es lo que se le mete.
+
+```{python echo=false output=asis}
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath(".."))   # conferences/2026, donde vive figuras.py
+import figuras as F
+
+print(F.parametro_y_argumento(
+    pie="La definición abre un hueco y cada llamada le mete un valor distinto."))
+```
 
 Como el emparejamiento es por posición, el orden importa y equivocarlo no da ningún
 error, solo una respuesta falsa:
@@ -249,7 +263,21 @@ Las tres líneas con `return` hacen tres trabajos distintos. La primera es un **
 entrada**: 0, 1 y los negativos no son primos, y la función lo dice y se va sin entrar al
 ciclo. La segunda está dentro del ciclo, y ahí está lo bueno: en el momento en que
 aparece un divisor ya no hay nada más que averiguar, así que la función contesta y sale.
-No hace falta `break`, porque `return` sale del ciclo y de la función a la vez. La
+No hace falta `break`, porque `return` sale del ciclo y de la función a la vez.
+
+```{python echo=false output=asis}
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath(".."))   # conferences/2026, donde vive figuras.py
+import figuras as F
+
+print(F.return_y_break(
+    pie="<code>break</code> termina el ciclo y el programa sigue dentro de la "
+        "función. <code>return</code> atraviesa los dos bordes de una vez."))
+```
+
+La
 tercera solo se alcanza si el ciclo terminó sin encontrar nada.
 
 Compara esa versión con la de la sección 1. La de la sección 1 encuentra el divisor 7 de
@@ -468,6 +496,18 @@ De segundos a centésimas de segundo, sin tocar el ciclo de `medir` ni el de
 palabra de siempre, y los tres corrieron más rápido porque alguien cambió una línea en
 otro lugar.
 
+```{python echo=false output=asis}
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath(".."))   # conferences/2026, donde vive figuras.py
+import figuras as F
+
+print(F.un_solo_lugar(
+    pie="Ninguno de los tres sabe cómo se decide si un número es primo, así que "
+        "la mejora se hace una vez y les llega a los tres."))
+```
+
 Ese es el argumento entero de la clase de hoy, y es mucho más fuerte que «no repitas
 código». Una función es un contrato: dice qué recibe y qué devuelve, y no dice cómo. Todo
 lo que está dentro del contrato se puede cambiar sin avisarle a nadie. Un programa sin
@@ -664,11 +704,21 @@ preguntar número por número, **se tacha.** Escribe los números del 2 al 25 en
 por eso mismo es primo, y tacha todos los suyos. Después el 5. Lo que queda sin tachar
 son los primos, y no se hizo ni una sola división:
 
-```text
-  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25
-  2  3  .  5  .  7  .  9  . 11  . 13  . 15  . 17  . 19  . 21  . 23  . 25
-  2  3  .  5  .  7  .  .  . 11  . 13  .  .  . 17  . 19  .  .  . 23  . 25
-  2  3  .  5  .  7  .  .  . 11  . 13  .  .  . 17  . 19  .  .  . 23  .  .
+```{python echo=false output=asis}
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath(".."))   # conferences/2026, donde vive figuras.py
+import figuras as F
+
+# los primos hasta 25 salen del método de hoy, dividiendo uno por uno
+_primos = [k for k in range(2, 26)
+           if k > 1 and all(k % d != 0 for d in range(2, k))]
+
+print(F.criba_visual(25, _primos, ident="criba-3",
+                     pie="Tachar los múltiplos de cada primo que va apareciendo. "
+                         "Lo que sobrevive son los primos, y no hubo una sola "
+                         "división."))
 ```
 
 Cada primo que aparece se gasta inmediatamente en descartar de golpe a muchos otros, que

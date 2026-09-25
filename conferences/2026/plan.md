@@ -40,6 +40,14 @@ scriptorium, que ejecuta los bloques de código al construir el documento. Un ej
 que no corre no llega al PDF, y los mensajes de error que aparecen en las notas son
 los que Python imprime de verdad en la versión que se usa en clase.
 
+Las figuras se dibujan con tesserax desde `conferences/2026/figuras.py` y siguen la
+misma regla: una figura que ilustra un algoritmo recibe el estado que el algoritmo
+calculó, nunca posiciones puestas a mano. La criba coloreada recibe la lista de primos
+que devolvió el código de la conferencia, y las barras de crecimiento reciben los
+conteos que el documento acaba de medir, así que una figura no puede contradecir al
+texto que tiene al lado. El procedimiento está en
+`repos/algos/know-how/ilustrando-una-conferencia.md`.
+
 El curso no asume ningún conocimiento previo de programación. Sí asume el
 preuniversitario completo: aritmética, álgebra elemental, la ecuación de segundo
 grado, funciones y el lenguaje de conjuntos.
