@@ -1,9 +1,5 @@
 thead th code { text-transform: none; letter-spacing: 0; font-size: 8.5pt; }
 
-/* contadores de figura: el tema `note` no los trae, el tema `book` sí */
-body { counter-reset: figura; }
-figure { counter-increment: figura; margin: 5mm 0; text-align: center; }
-figure svg { display: block; margin: 0 auto; max-width: 100%; height: auto; }
-figcaption { text-align: center; }
-figcaption::before { content: "Figura " counter(figura) ". "; font-weight: 600; }
-a.ref-fig::after { content: "figura " target-counter(attr(href url), figura); }
+/* el número y el `@fig-…` los pone ahora el tema `base`; aquí solo el centrado,
+   que es una decisión de apariencia de estas notas y no del motor */
+figure[id^="fig-"] { margin: 5mm 0; text-align: center; }

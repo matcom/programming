@@ -1,6 +1,9 @@
 ---
 theme: note
 css: notas.css
+vars:
+  figure-label: "Figura"
+  figure-ref-label: "figura"
 execute:
   interpreters:
     python: ["uv", "run", "--quiet", "--python", "3.14", "--with", "tesserax", "python", "-"]
