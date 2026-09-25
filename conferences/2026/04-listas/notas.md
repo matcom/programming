@@ -658,6 +658,11 @@ Lo que no cambia es **cuántas operaciones hace cada método**. El de uno en uno
 que se cuentan sus divisiones. La criba tacha, así que se cuentan sus tachones. Esos dos
 números son exactos y siempre los mismos:
 
+<!-- Cadena: este bloque llena `topes`, `divisiones` y `tachones`, y la figura
+     de las barras de crecimiento lo continúa con `continue`. Un bloque SIN marca
+     metido entre los dos corta la cadena y la figura revienta con un NameError
+     sin que el render deje de devolver 0. -->
+
 ```{python}
 import math
 

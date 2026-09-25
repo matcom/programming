@@ -397,6 +397,13 @@ importa de las tres veces es **dónde** se hace el arreglo.
 Primero, la medición de partida. `medir` es otra función de una frase: cuenta los primos
 hasta un tope y dice cuánto tardó.
 
+<!-- Cadena: este bloque abre una y los tres `continue` que vienen detrás la
+     continúan, que es lo que deja ver que entre una versión y la siguiente solo
+     cambia el `range`. Un bloque SIN marca metido en medio la corta: el
+     `continue` siguiente pasaría a encadenar sobre él y perdería `contar_primos`
+     y `medir`, con un NameError y rc=0. Si hace falta una figura aquí, va antes
+     de este bloque o después del último `continue`. -->
+
 ```{python}
 import math
 import time

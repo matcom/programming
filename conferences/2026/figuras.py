@@ -47,8 +47,12 @@ def _figura(canvas, ident, pie, padding=14):
 
 def _txt(texto, x, y, color=TINTA, size=CUERPO, font=SANS, ancla="center"):
     """`ancla` dice qué parte del texto cae sobre (x, y): "center", "left" para
-    alinear por la izquierda, "right" para alinear por la derecha. El `anchor`
-    del propio Text no sirve, porque `move_to` recentra la caja después."""
+    alinear por la izquierda, "right" para alinear por la derecha.
+
+    El `anchor` del propio `Text` no sirve para colocar. No es que esté roto:
+    tesserax compensa el translate de cada `text-anchor`, así que las tres anclas
+    producen exactamente la misma caja, y después `move_to` la recentra sobre el
+    punto. El ancla que coloca es la de `move_to`, que es de caja."""
     return Text(texto, size=size, fill=color, anchor="middle",
                 font=font).move_to(Point(x, y), anchor=ancla)
 
