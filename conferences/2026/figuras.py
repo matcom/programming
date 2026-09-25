@@ -15,8 +15,11 @@ El procedimiento, las trampas y la verificación están en
 from tesserax import Canvas, Circle, Line, Point, Rect, Text
 from tesserax.color import hex
 
-# Paleta tomada del tema `note` de scriptorium, para que las figuras y el
-# documento sean el mismo objeto visual.
+# Paleta copiada de `themes/note/theme.yml` de scriptorium, para que las figuras y
+# el documento sean el mismo objeto visual. Está duplicada a propósito: WeasyPrint no
+# resuelve `currentColor` ni `var(--x)` dentro de un SVG en línea, así que el color
+# tiene que ser un hex literal en el Python. La misma paleta vive en
+# `repos/algos/Lectures/2026/figuras.py`; si una cambia, cotejar la otra.
 TINTA = hex("#1a1a1a")
 APAGADO = hex("#6b7280")
 REGLA = hex("#d8dce3")
@@ -199,20 +202,35 @@ def dos_nombres_una_lista(valores, ident="alias", pie=""):
     return _figura(canvas, ident, pie)
 
 
-def criba_visual(n, primos, por_fila=12, ident="criba", pie=""):
-    """`primos` es la lista que devolvió el código de la conferencia. De ahí se
-    deriva qué primo tachó a cada compuesto —su menor factor primo—, así que si
-    esa lista estuviera mal la figura se equivocaría igual y no podría mentir."""
+def rastro_de_la_criba(n, primos):
+    """{número: primo que lo tachó}, derivado de la lista que devolvió el código de
+    la conferencia. El primo que tacha a un compuesto es su menor factor primo, así
+    que si esa lista estuviera mal la figura se equivocaría igual y no podría mentir."""
     sin_tachar = set(primos)
-    tachado_por = {}
+    rastro = {}
     for k in range(2, n + 1):
         if k in sin_tachar:
             continue
         for q in primos:
             if k % q == 0:
-                tachado_por[k] = q
+                rastro[k] = q
                 break
+    return rastro
 
+
+def reparto_de_tachones(n, primos):
+    """{primo: cuántas casillas tachó}. Sirve para decir en el pie de la figura lo
+    desparejo que es el reparto, en vez de maquillarlo."""
+    reparto = {}
+    for q in rastro_de_la_criba(n, primos).values():
+        reparto[q] = reparto.get(q, 0) + 1
+    return reparto
+
+
+def criba_visual(n, primos, por_fila=12, ident="criba", pie=""):
+    """Dibuja la criba hasta `n`, con cada casilla tachada del color del primo que
+    la tachó."""
+    tachado_por = rastro_de_la_criba(n, primos)
     lado = 28.0
     colores = {2: CALIDO, 3: VERDE, 5: ALARMA, 7: APAGADO}
     with Canvas() as canvas:

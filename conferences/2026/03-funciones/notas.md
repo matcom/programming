@@ -715,10 +715,17 @@ import figuras as F
 _primos = [k for k in range(2, 26)
            if k > 1 and all(k % d != 0 for d in range(2, k))]
 
+_reparto = sorted(F.reparto_de_tachones(25, _primos).items())
+_trozos = [f"el {q} tacha {c}" for q, c in _reparto]
+_detalle = ", ".join(_trozos[:-1]) + " y " + _trozos[-1]
+_total = sum(c for _, c in _reparto)
+
 print(F.criba_visual(25, _primos, ident="criba-3",
-                     pie="Tachar los múltiplos de cada primo que va apareciendo. "
-                         "Lo que sobrevive son los primos, y no hubo una sola "
-                         "división."))
+                     pie="Cada color es el primo que tachó esa casilla, y no hubo "
+                         "una sola división. El reparto es muy desparejo: de las "
+                         f"{_total} casillas tachadas, {_detalle}. El primer primo "
+                         "hace casi todo el trabajo, y de ahí sale lo barata que "
+                         "es la criba."))
 ```
 
 Cada primo que aparece se gasta inmediatamente en descartar de golpe a muchos otros, que
