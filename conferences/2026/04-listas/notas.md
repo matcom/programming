@@ -161,6 +161,9 @@ for i, nota in enumerate(notas):
     print(f"Estudiante {i + 1}: {nota}")
 ```
 
+Las dos variables separadas por coma tienen una explicación, que llega en la sección 6. Por
+ahora tómalo como la forma de escribirlo.
+
 La regla: recorre con `for nota in notas` siempre que puedas, y usa el índice solo
 cuando de verdad lo necesites.
 
@@ -439,7 +442,130 @@ print(mediana([4, 5, 3]))
 en el lugar y no devuelve nada. Hoy los usamos como cajas negras. Dentro de tres
 semanas vamos a escribir nosotros el algoritmo que hay dentro.
 
-## 6. Listas de listas
+## 6. Tuplas
+
+Python tiene otra secuencia que se parece mucho a la lista. Se llama **tupla** y se
+escribe con paréntesis en lugar de corchetes:
+
+```{python}
+punto = (3, 4)
+print(punto)
+print(type(punto))
+print(punto[0], punto[1], len(punto))
+```
+
+Se indexa, se rebana y se recorre con `for` igual que una lista. La diferencia es una
+sola, y es la de la sección 3: **una tupla no se puede modificar.**
+
+```{python}
+punto = (3, 4)
+punto[0] = 10
+```
+
+No tiene `append`, ni `pop`, ni `sort`. Una vez construida se queda como está, y por eso
+la sorpresa de `b = a` no puede pasar con una tupla: los dos nombres comparten el mismo
+objeto, pero ninguno de los dos lo puede cambiar.
+
+### Para qué sirve una lista que no se puede cambiar
+
+Una lista guarda muchos valores, cuántos no se sabe de antemano, y todos significan lo
+mismo: todos son notas. Una tupla guarda unos pocos valores, siempre la misma cantidad, y
+cada posición significa algo distinto. En `(3, 4)` el primero es la x y el segundo la y.
+En `("Ana", 5)` el primero es un nombre y el segundo una nota. Agregarle un tercer
+elemento a un punto del plano no tiene sentido, y la tupla no deja hacerlo.
+
+Las dos cosas se combinan. Un grupo es una lista, porque no se sabe cuántos estudiantes
+tiene, y cada estudiante es una tupla, porque siempre es un nombre y una nota:
+
+```{python}
+grupo = [("Ana", 5), ("Luis", 3), ("Marta", 4)]
+
+for estudiante in grupo:
+    print(estudiante[0], "sacó", estudiante[1])
+```
+
+### Desempaquetar
+
+Los índices `[0]` y `[1]` funcionan, pero obligan a recordar qué había en cada posición.
+Python permite repartir una tupla entre varias variables de un golpe, una por posición:
+
+```{python}
+punto = (3, 4)
+x, y = punto
+print(x)
+print(y)
+```
+
+Eso se llama **desempaquetar**. A la izquierda tiene que haber tantas variables como
+elementos tenga la tupla:
+
+```{python}
+x, y = (3, 4, 5)
+```
+
+Y se puede desempaquetar en el mismo `for`, que es como se recorre de verdad una lista de
+tuplas:
+
+```{python}
+grupo = [("Ana", 5), ("Luis", 3), ("Marta", 4)]
+
+for nombre, nota in grupo:
+    print(nombre, "sacó", nota)
+```
+
+Con esto ya se puede leer lo que hacía `enumerate` en la sección 2. `enumerate` produce
+tuplas de dos elementos, la posición y el valor, y `for i, nota in enumerate(notas)`
+desempaqueta cada una:
+
+```{python}
+notas = [4, 5, 3]
+print(list(enumerate(notas)))
+```
+
+### La coma es la que hace la tupla
+
+Los paréntesis son casi siempre opcionales. Lo que construye la tupla es la coma:
+
+```{python}
+t = 3, 4
+print(t, type(t))
+
+u = (5)
+v = (5,)
+print(type(u), type(v))
+```
+
+`(5)` es el número 5 entre paréntesis, como en `(5 + 1) * 2`. Una tupla de un solo
+elemento necesita la coma al final.
+
+De ahí salen dos cosas que vas a usar todo el tiempo. La primera es que una función puede
+devolver varios valores, porque `return a, b` devuelve una tupla, y quien la llama la
+desempaqueta:
+
+```{python}
+def minimo_y_maximo(notas):
+    """Devuelve el menor y el mayor elemento de una lista no vacía."""
+    return min(notas), max(notas)
+
+
+menor, mayor = minimo_y_maximo([4, 5, 3, 5, 2, 4])
+print(menor, mayor)
+```
+
+La segunda es el intercambio de dos variables. Escribir `a = b` y después `b = a` no
+sirve, porque la primera línea pierde el valor viejo de `a`. Con tuplas sale en una línea:
+
+```{python}
+a = 1
+b = 2
+a, b = b, a
+print(a, b)
+```
+
+La derecha se evalúa primero y construye la tupla `(2, 1)` con los valores viejos;
+después la izquierda la desempaqueta. Te va a servir en el ejercicio 3.
+
+## 7. Listas de listas
 
 Un elemento de una lista puede ser cualquier cosa, incluso otra lista. Así se
 representa una tabla: las notas de varios estudiantes en varias asignaturas, una lista
@@ -520,7 +646,7 @@ print(tabla)
 `[0] * 3` sí está bien, porque los ceros son inmutables y no importa que se compartan.
 Lo que no se puede repetir con `*` es una lista que después vas a modificar.
 
-## 7. La criba de Eratóstenes
+## 8. La criba de Eratóstenes
 
 La clase pasada quedó planteado un problema y no se pudo resolver. Recuérdalo: para
 imprimir los primos hasta `n`, `es_primo` los interroga de uno en uno, y para decidir si
@@ -750,7 +876,7 @@ respuesta que consigue le abarata las siguientes.
 Dejar de recalcular y empezar a recordar es la idea de la última conferencia del semestre,
 y para recordar hace falta dónde guardar, que es lo de hoy.
 
-## 8. Resumen
+## 9. Resumen
 
 - Una lista guarda muchos valores con un solo nombre. Se escribe con corchetes y su
   tamaño se pide con `len`.
@@ -763,6 +889,12 @@ y para recordar hace falta dónde guardar, que es lo de hoy.
 - Una función que recibe una lista puede modificarla, y el cambio se ve desde fuera.
 - Una rebanada `a[i:j]` construye una lista nueva.
 - `sum`, `max`, `min` y `sorted` existen, pero conviene saber escribirlos.
+- Una tupla es una secuencia que no se puede modificar. Lo que la construye es la coma,
+  y sirve para unos pocos valores donde cada posición significa algo: un punto, un
+  nombre con su nota.
+- `x, y = punto` desempaqueta una tupla. `for nombre, nota in grupo` y
+  `for i, nota in enumerate(notas)` hacen lo mismo en cada vuelta, `return a, b`
+  devuelve dos valores y `a, b = b, a` los intercambia.
 - Una lista de listas es una tabla: `tabla[fila][columna]`, y se recorre con dos ciclos
   anidados.
 - `[[0] * 3] * 2` no construye dos filas. Constrúyelas en un ciclo. `[False] * n` sí está
@@ -775,25 +907,27 @@ y para recordar hace falta dónde guardar, que es lo de hoy.
 1. Escribe `segundo_mayor(lista)` que devuelva el segundo elemento más grande, sin
    ordenar la lista y recorriéndola una sola vez. Piensa qué debe pasar con
    `[5, 5, 3]`.
-2. Escribe `invertir(lista)` que devuelva una lista nueva con los elementos al revés,
+2. Escribe `minimo_y_maximo(lista)` que devuelva una tupla con el menor y el mayor
+   elemento, sin usar `min` ni `max` y recorriendo la lista una sola vez.
+3. Escribe `invertir(lista)` que devuelva una lista nueva con los elementos al revés,
    sin usar `[::-1]` ni `reverse`. Después escribe `invertir_en_el_lugar(lista)` que no
    devuelva nada y modifique la que recibió, intercambiando el primero con el último, el
    segundo con el penúltimo, y así. ¿Hasta dónde tiene que llegar el ciclo?
-3. Escribe `sin_repetidos(lista)` que devuelva una lista nueva con los elementos de la
+4. Escribe `sin_repetidos(lista)` que devuelva una lista nueva con los elementos de la
    original, en el mismo orden, pero sin repeticiones.
-4. Escribe `es_capicua(lista)` que diga si la lista se lee igual al derecho y al revés.
+5. Escribe `es_capicua(lista)` que diga si la lista se lee igual al derecho y al revés.
    Resuélvelo sin construir ninguna lista nueva.
-5. Con una tabla de números como la de la sección 6, escribe `transpuesta(tabla)` que
+6. Con una tabla de números como la de la sección 7, escribe `transpuesta(tabla)` que
    devuelva una tabla nueva donde las filas son las columnas de la original. Comprueba
    que la transpuesta de la transpuesta es la tabla de partida.
-6. Vuelve a escribir `contar_gemelos(n)` del ejercicio 5 de la clase pasada, ahora sobre
+7. Vuelve a escribir `contar_gemelos(n)` del ejercicio 5 de la clase pasada, ahora sobre
    la lista que devuelve `criba`. Cronometra las dos versiones con `n` de un millón y
    compara el resultado, que tiene que ser el mismo número.
-7. Cuenta los primos menores que un millón con la criba, y después prueba con diez
+8. Cuenta los primos menores que un millón con la criba, y después prueba con diez
    millones y con cien millones. En algún punto el programa deja de ser lento y pasa a ser
    imposible. Di en qué punto y por qué; la respuesta no tiene que ver con el tiempo sino
    con lo que ocupa `compuesto`. Estima cuántos bytes hacen falta por casilla.
-8. Sin ejecutarlos, di qué imprime cada uno de estos tres programas. Después
+9. Sin ejecutarlos, di qué imprime cada uno de estos tres programas. Después
    compruébalo.
 
    **(a)**

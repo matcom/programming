@@ -118,7 +118,10 @@ declare tantas variables como estudiantes tenga el grupo, porque las variables s
 antes de saber cuántos son. La lista como la primera colección, el papel de los índices y
 el conteo desde cero. Recorrer con `for`, con y sin índice. `len`, `append`, `in`, el
 rebanado, y la mutabilidad, que es lo que separa una lista de todo lo visto hasta ahora y
-la fuente de las sorpresas más caras del semestre. Listas de listas como matrices, con
+la fuente de las sorpresas más caras del semestre. La tupla como la secuencia que no se
+puede modificar, para unos pocos valores donde cada posición significa algo; el
+desempaquetado, que explica el `for i, x in enumerate(...)` y permite devolver dos valores
+y escribir `a, b = b, a`. Listas de listas como matrices, con
 ciclos anidados para recorrerlas y un ejemplo de tabla numérica. Cierra con la criba de
 Eratóstenes, que es la deuda de la conferencia tres y no necesita más que
 `[False] * (n + 1)`, y con las dos cuentas de operaciones una al lado de la otra: al
