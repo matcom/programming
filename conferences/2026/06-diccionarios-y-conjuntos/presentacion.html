@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Conferencia 6: diccionarios y conjuntos</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+
+html,body{
+  width:100%;height:100%;
+  background:#0d1117;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+}
+
+#deck{
+  width:min(100vw,177.78vh);
+  aspect-ratio:16/9;
+  position:relative;
+  overflow:hidden;
+  background:#0d1117;
+  container-type:size;
+  color:#e6edf3;
+}
+
+.slide{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;
+  justify-content:center;
+  padding:3.4cqw 5cqw;
+  opacity:0;
+  transform:translateX(4%);
+  transition:opacity .35s ease,transform .35s ease;
+  pointer-events:none;
+  --ac:#4fc3f7;
+}
+.slide.active{opacity:1;transform:none;pointer-events:auto}
+.slide.prev{opacity:0;transform:translateX(-4%)}
+.slide.ctr{align-items:center;text-align:center}
+
+/* un color por sección */
+.a0{--ac:#e6edf3}
+.a1{--ac:#4fc3f7}
+.a2{--ac:#ffb74d}
+.a3{--ac:#81c784}
+.a4{--ac:#f48fb1}
+.a5{--ac:#ce93d8}
+
+.lbl{
+  font-size:.9cqw;font-weight:700;
+  letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ac);margin-bottom:1cqw;
+}
+h1{
+  font-size:3.4cqw;font-weight:800;
+  line-height:1.12;color:#e6edf3;
+  margin-bottom:1.3cqw;max-width:30ch;
+}
+h1 em{color:var(--ac);font-style:normal}
+h1.hero{font-size:5.6cqw;max-width:100%}
+h1 code,.sub code,li code,.cb code,td code,.kick code,.note code{
+  font-family:'JetBrains Mono','Fira Code',ui-monospace,Menlo,Consolas,monospace;
+  font-size:.92em;color:var(--ac);
+  background:rgba(255,255,255,.06);padding:.05em .3em;border-radius:.25em;
+}
+
+.sub{
+  font-size:1.6cqw;color:#8b949e;
+  line-height:1.5;max-width:60ch;
+  margin-bottom:1.1cqw;
+}
+.sub b{color:#e6edf3}
+
+ul.pts{list-style:none;margin-top:.3cqw}
+ul.pts li{
+  font-size:1.45cqw;line-height:1.45;
+  padding:.35cqw 0 .35cqw 1.9cqw;
+  position:relative;color:#e6edf3;
+}
+ul.pts li::before{content:'→';position:absolute;left:0;color:var(--ac)}
+ul.pts li strong{color:var(--ac)}
+ul.pts.sm li{font-size:1.2cqw}
+
+.c2{display:grid;grid-template-columns:1fr 1fr;gap:1.6cqw;width:100%;margin-top:1cqw;align-items:start}
+.c2.wl{grid-template-columns:1.25fr 1fr}
+.c3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.25cqw;width:100%;margin-top:1.2cqw}
+
+.card{
+  background:#161b22;border-radius:.75cqw;
+  padding:1.3cqw 1.5cqw;border:1px solid rgba(255,255,255,.08);
+}
+.card.ac{border-color:color-mix(in srgb,var(--ac) 40%,transparent)}
+.card.bad{border-color:rgba(239,83,80,.55)}
+.ct{
+  font-size:.9cqw;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;
+  margin-bottom:.6cqw;color:var(--ac);
+}
+.card.bad .ct{color:#ef5350}
+.cb{font-size:1.18cqw;color:#8b949e;line-height:1.55}
+.cb em{color:#e6edf3;font-style:normal}
+
+.kick{font-size:1.5cqw;color:#e6edf3;line-height:1.5;max-width:70ch;margin-top:1.2cqw}
+.kick b{color:var(--ac)}
+.note{font-size:1.1cqw;color:#8b949e;line-height:1.55;margin-top:.8cqw;max-width:80ch}
+.note b{color:#e6edf3}
+
+/* código */
+pre.code,pre.out{
+  font-family:'JetBrains Mono','Fira Code',ui-monospace,Menlo,Consolas,monospace;
+  font-size:1.3cqw;line-height:1.5;
+  background:#161b22;border:1px solid rgba(255,255,255,.08);
+  border-radius:.6cqw;padding:1cqw 1.3cqw;
+  white-space:pre;overflow:hidden;color:#e6edf3;
+}
+pre.code.sm,pre.out.sm{font-size:1.08cqw}
+pre.code.xs{font-size:.98cqw}
+.kw{color:#ff7b72}.st{color:#a5d6ff}.cm{color:#6e7681;font-style:italic}
+.bi{color:#d2a8ff}.nu{color:#79c0ff}.fn{color:#ffa657}
+
+pre.out{
+  position:relative;margin-top:.6cqw;
+  border-style:dashed;border-color:rgba(255,255,255,.18);
+  color:#c9d1d9;
+}
+pre.out::before{
+  content:'salida';position:absolute;top:.35cqw;right:.7cqw;
+  font-family:-apple-system,system-ui,sans-serif;font-size:.75cqw;
+  letter-spacing:.14em;text-transform:uppercase;color:#6e7681;
+}
+pre.out .err{color:#ff7b72}
+pre.out.hidden{color:transparent;cursor:pointer}
+pre.out.hidden .err{color:transparent}
+pre.out.hidden::after{
+  content:'¿qué imprime? (R o clic para ver)';
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:-apple-system,system-ui,sans-serif;font-size:1.1cqw;color:#8b949e;
+  letter-spacing:.04em;
+}
+
+/* demo en vivo */
+.live{
+  display:inline-flex;align-items:center;gap:.6cqw;
+  background:#ef5350;color:#fff;
+  font-size:.95cqw;font-weight:800;letter-spacing:.16em;text-transform:uppercase;
+  padding:.45cqw 1cqw;border-radius:2cqw;margin-bottom:1cqw;align-self:flex-start;
+}
+.live svg{width:1.4cqw;height:1.4cqw}
+.slide.ctr .live{align-self:center}
+.steps{list-style:none;counter-reset:s;margin-top:.4cqw}
+.steps li{
+  counter-increment:s;font-size:1.25cqw;line-height:1.45;color:#e6edf3;
+  padding:.35cqw 0 .35cqw 2.4cqw;position:relative;
+}
+.steps li::before{
+  content:counter(s);position:absolute;left:0;top:.35cqw;
+  width:1.7cqw;height:1.7cqw;border-radius:50%;
+  background:#ef5350;color:#fff;font-size:.95cqw;font-weight:800;
+  display:flex;align-items:center;justify-content:center;
+}
+.steps li code{
+  font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
+  font-size:.92em;color:#ffa657;background:rgba(255,255,255,.06);
+  padding:.05em .3em;border-radius:.25em;
+}
+.steps li em{color:#8b949e;font-style:normal}
+
+/* tablas */
+table.br{width:100%;border-collapse:collapse;margin-top:1cqw;font-size:1.15cqw}
+table.br th{text-align:left;font-size:.85cqw;letter-spacing:.12em;text-transform:uppercase;color:#8b949e;padding:.55cqw .9cqw;border-bottom:1px solid #30363d}
+table.br td{padding:.6cqw .9cqw;border-bottom:1px solid rgba(255,255,255,.05);color:#c9d1d9;vertical-align:top}
+table.br td:first-child{white-space:nowrap}
+table.br td code{font-size:1em}
+
+/* recorrido del curso */
+.road{display:grid;grid-template-columns:repeat(6,1fr);gap:.8cqw;width:100%;margin-top:1.6cqw}
+.road .stop{background:#161b22;border:1px solid rgba(255,255,255,.08);border-radius:.6cqw;padding:1cqw 1.1cqw;position:relative}
+.road .stop .n{font-size:2.2cqw;font-weight:900;color:#3d4450;line-height:1}
+.road .stop .t{font-size:1.1cqw;font-weight:700;color:#e6edf3;margin-top:.5cqw}
+.road .stop .d{font-size:.95cqw;color:#8b949e;margin-top:.35cqw;line-height:1.4}
+.road .stop.now{border-color:var(--ac);background:color-mix(in srgb,var(--ac) 10%,#161b22)}
+.road .stop.now .n{color:var(--ac)}
+.road .stop.next{border-style:dashed}
+
+svg.fig{width:100%;height:auto;display:block;margin-top:.8cqw}
+svg text{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif}
+svg .mono{font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace}
+
+/* chrome */
+#bar{position:absolute;left:0;bottom:0;height:.3cqw;background:#4fc3f7;transition:width .3s ease;z-index:5}
+#num{position:absolute;right:1.6cqw;bottom:1cqw;font-size:.85cqw;color:#6e7681;z-index:5;letter-spacing:.08em}
+#foot{position:absolute;left:1.6cqw;bottom:1cqw;font-size:.85cqw;color:#484f58;z-index:5;letter-spacing:.08em}
+#help{
+  position:absolute;inset:0;background:rgba(13,17,23,.94);z-index:10;
+  display:none;align-items:center;justify-content:center;
+}
+#help.on{display:flex}
+#help .box{background:#161b22;border:1px solid #30363d;border-radius:1cqw;padding:2.4cqw 3cqw;font-size:1.3cqw;color:#c9d1d9;line-height:2}
+#help kbd{font-family:ui-monospace,Menlo,monospace;background:#0d1117;border:1px solid #30363d;border-radius:.3cqw;padding:.1cqw .5cqw;color:#e6edf3}
+</style>
+</head>
+<body>
+<div id="deck">
+
+<!-- ============================================================ portada -->
+<section class="slide a1 ctr">
+  <div class="lbl">Programación · MatCom · Conferencia 6 · 21 de octubre de 2026</div>
+  <h1 class="hero">Diccionarios <em>y conjuntos</em></h1>
+  <p class="sub" style="max-width:56ch">Proyecto de hoy: cuántas veces aparece cada palabra de un texto, y cuáles son las diez más comunes.</p>
+  <svg class="fig" viewBox="0 0 1000 120" style="max-width:66cqw;margin-top:2cqw">
+    <defs><marker id="ah0" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e7681"/></marker></defs>
+    <g class="mono" font-size="24" text-anchor="middle">
+      <rect x="10" y="25" width="250" height="70" rx="10" fill="#161b22" stroke="#4fc3f7"/>
+      <text x="135" y="68" fill="#e6edf3">quijote-cap1.txt</text>
+      <path d="M270 60 H350" stroke="#6e7681" stroke-width="3" marker-end="url(#ah0)"/>
+      <rect x="360" y="25" width="280" height="70" rx="10" fill="#161b22" stroke="#6e7681"/>
+      <text x="500" y="68" fill="#c9d1d9">frecuencias.py</text>
+      <path d="M650 60 H730" stroke="#6e7681" stroke-width="3" marker-end="url(#ah0)"/>
+      <rect x="740" y="25" width="250" height="70" rx="10" fill="#161b22" stroke="#ce93d8"/>
+      <text x="865" y="68" fill="#ce93d8">nombre  13 …</text>
+    </g>
+  </svg>
+</section>
+
+<!-- ============================================================ dónde estamos -->
+<section class="slide a1">
+  <div class="lbl">Dónde estamos</div>
+  <h1>La pregunta que quedó <em>abierta</em> la clase pasada</h1>
+  <p class="sub">Contamos las palabras de <code>quijote.txt</code>: 196, la más larga <code>entresemana</code>. Lo que no pudimos decir es <b>cuántas veces aparece cada una</b>.</p>
+  <div class="road">
+    <div class="stop"><div class="n">2</div><div class="t">Condicionales y ciclos</div><div class="d">adivinar un número del 1 al 100</div></div>
+    <div class="stop"><div class="n">3</div><div class="t">Funciones</div><div class="d"><code style="font-size:.9em">es_primo</code>, mejorada cambiando una línea</div></div>
+    <div class="stop"><div class="n">4</div><div class="t">Listas</div><div class="d">notas del grupo, tuplas, la criba</div></div>
+    <div class="stop"><div class="n">5</div><div class="t">Cadenas y archivos</div><div class="d">contar las palabras de un archivo</div></div>
+    <div class="stop now"><div class="n">6</div><div class="t">Diccionarios y conjuntos</div><div class="d">cuántas veces aparece cada palabra</div></div>
+    <div class="stop next"><div class="n">7</div><div class="t">Búsqueda, ordenación y costo</div><div class="d">ordenar las palabras a mano</div></div>
+  </div>
+</section>
+
+<!-- ============================================================ el plan -->
+<section class="slide a1">
+  <div class="lbl">El plan de la hora</div>
+  <h1>Cuatro piezas y <em>un programa</em> que las junta</h1>
+  <svg class="fig" viewBox="0 0 1200 330">
+    <defs><marker id="ah1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e7681"/></marker></defs>
+    <g text-anchor="middle">
+      <rect x="10" y="40" width="250" height="150" rx="12" fill="#161b22" stroke="#ffb74d" stroke-width="2"/>
+      <text x="135" y="85" fill="#ffb74d" font-size="17" font-weight="700" letter-spacing="2">1 · DICCIONARIO</text>
+      <text x="135" y="125" fill="#e6edf3" font-size="22" class="mono">{"de": 20}</text>
+      <text x="135" y="160" fill="#8b949e" font-size="17">claves, valores, get</text>
+
+      <rect x="310" y="40" width="250" height="150" rx="12" fill="#161b22" stroke="#81c784" stroke-width="2"/>
+      <text x="435" y="85" fill="#81c784" font-size="17" font-weight="700" letter-spacing="2">2 · CONTEO</text>
+      <text x="435" y="125" fill="#e6edf3" font-size="22" class="mono">get(p, 0) + 1</text>
+      <text x="435" y="160" fill="#8b949e" font-size="17">y las diez más comunes</text>
+
+      <rect x="610" y="40" width="250" height="150" rx="12" fill="#161b22" stroke="#f48fb1" stroke-width="2"/>
+      <text x="735" y="85" fill="#f48fb1" font-size="17" font-weight="700" letter-spacing="2">3 · CONJUNTOS</text>
+      <text x="735" y="125" fill="#e6edf3" font-size="22" class="mono">{1, 2, 3}  |  &amp;  -</text>
+      <text x="735" y="160" fill="#8b949e" font-size="17">sin repetidos, sin orden</text>
+
+      <rect x="910" y="40" width="250" height="150" rx="12" fill="#161b22" stroke="#4fc3f7" stroke-width="2"/>
+      <text x="1035" y="85" fill="#4fc3f7" font-size="17" font-weight="700" letter-spacing="2">4 · COSTO</text>
+      <text x="1035" y="125" fill="#e6edf3" font-size="22" class="mono">x in conjunto</text>
+      <text x="1035" y="160" fill="#8b949e" font-size="17">mil o un millón, igual</text>
+
+      <path d="M135 195 C135 250 500 240 560 262" stroke="#ffb74d" stroke-width="2" fill="none" marker-end="url(#ah1)" opacity=".7"/>
+      <path d="M435 195 C435 235 560 240 585 260" stroke="#81c784" stroke-width="2" fill="none" marker-end="url(#ah1)" opacity=".7"/>
+      <path d="M735 195 C735 235 640 240 615 260" stroke="#f48fb1" stroke-width="2" fill="none" marker-end="url(#ah1)" opacity=".7"/>
+      <path d="M1035 195 C1035 250 700 240 640 262" stroke="#4fc3f7" stroke-width="2" fill="none" marker-end="url(#ah1)" opacity=".7"/>
+      <rect x="400" y="265" width="400" height="56" rx="12" fill="#1c1626" stroke="#ce93d8" stroke-width="2"/>
+      <text x="600" y="301" fill="#ce93d8" font-size="22" font-weight="700">5 · las diez palabras más comunes</text>
+    </g>
+  </svg>
+</section>
+
+<!-- ============================================================ 0. el problema -->
+<section class="slide a1">
+  <span class="live"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M1 20h22"/></svg>En vivo · archivo frecuencias.py, con lo que ya sabemos</span>
+  <h1>Primero, <em>con dos listas</em> en paralelo</h1>
+  <div class="c2 wl">
+    <div>
+      <pre class="code sm" data-hl>def frecuencias_con_listas(palabras):
+    """Dos listas paralelas: palabras distintas y conteos."""
+    vistas = []
+    conteos = []
+
+    for palabra in palabras:
+        if palabra in vistas:
+            i = vistas.index(palabra)
+            conteos[i] += 1
+        else:
+            vistas.append(palabra)
+            conteos.append(1)
+
+    return vistas, conteos</pre>
+    </div>
+    <div>
+      <pre class="code sm" data-hl>vistas, conteos = frecuencias_con_listas(
+    palabras_de("quijote.txt"))
+print(len(vistas))
+print(vistas[:6])
+print(conteos[:6])</pre>
+      <pre class="out sm hidden">126
+['en', 'un', 'lugar', 'de', 'la', 'mancha']
+[5, 3, 1, 20, 4, 1]</pre>
+      <ol class="steps">
+        <li>Copia <code>limpiar</code> y <code>palabras_de</code> de la clase pasada.</li>
+        <li>Escribe la función y córrela. <em>Funciona: "de" aparece 20 veces.</em></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section class="slide a1">
+  <div class="lbl">Por qué no nos basta</div>
+  <h1>Cada palabra <em>recorre la lista</em> de las vistas</h1>
+  <div class="c2 wl">
+    <svg class="fig" viewBox="0 0 640 330">
+      <defs><marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ef5350"/></marker></defs>
+      <g class="mono" font-size="20" text-anchor="middle">
+        <text x="20" y="35" fill="#8b949e" font-size="17" text-anchor="start" font-family="system-ui">llega "mancha": ¿está en vistas?</text>
+        <g fill="#161b22" stroke="#30363d" stroke-width="2">
+          <rect x="20" y="60" width="95" height="60"/><rect x="115" y="60" width="95" height="60"/><rect x="210" y="60" width="95" height="60"/><rect x="305" y="60" width="95" height="60"/><rect x="400" y="60" width="95" height="60"/><rect x="495" y="60" width="115" height="60" stroke-dasharray="5 4"/>
+        </g>
+        <g fill="#e6edf3"><text x="67" y="97">en</text><text x="162" y="97">un</text><text x="257" y="97">lugar</text><text x="352" y="97">de</text><text x="447" y="97">la</text><text x="552" y="97" fill="#6e7681">…</text></g>
+        <path d="M30 140 H600" stroke="#ef5350" stroke-width="3" marker-end="url(#ah2)"/>
+        <text x="315" y="175" fill="#ef5350" font-size="17" font-family="system-ui">una comparación por cada palabra distinta vista hasta ahora</text>
+        <text x="20" y="245" fill="#8b949e" font-size="17" text-anchor="start" font-family="system-ui">primer capítulo completo:</text>
+        <text x="20" y="285" fill="#e6edf3" font-size="26" text-anchor="start">1895 palabras · 719 distintas</text>
+      </g>
+    </svg>
+    <div>
+      <div class="card bad"><div class="ct">Lento</div><div class="cb"><code>palabra in vistas</code> mira de una en una, y <code>index</code> vuelve a mirar. La lista de vistas <em>no para de crecer</em>.</div></div>
+      <div class="card bad" style="margin-top:1cqw"><div class="ct">Incómodo</div><div class="cb">Que <code>"de"</code> vale 20 no está escrito en ningún sitio. Lo sostiene <em>la coincidencia de posiciones</em> entre dos listas.</div></div>
+      <p class="kick">Queremos preguntar <b>"¿cuánto vale "de"?"</b> y obtener la respuesta directamente.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ 1. diccionario -->
+<section class="slide a2 ctr">
+  <div class="lbl">Parte 1</div>
+  <h1 class="hero">El <em>diccionario</em></h1>
+  <p class="sub">Una colección de parejas <b>clave: valor</b>. A cada valor se llega por su clave, no por su posición.</p>
+</section>
+
+<section class="slide a2">
+  <div class="lbl">Claves y valores</div>
+  <h1>Entre llaves, <em>con dos puntos</em> en cada pareja</h1>
+  <div class="c2">
+    <div>
+      <pre class="code" data-hl>conteo = {"de": 20, "que": 9, "hidalgo": 2}
+
+print(conteo["de"])
+print(len(conteo))</pre>
+      <pre class="out">20
+3</pre>
+      <p class="note">Los corchetes son los de la lista, pero dentro no va una posición sino <b>una clave</b>. <code>len</code> cuenta las parejas.</p>
+    </div>
+    <svg class="fig" viewBox="0 0 560 330">
+      <defs><marker id="ah3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ffb74d"/></marker></defs>
+      <g class="mono" text-anchor="middle" font-size="24">
+        <text x="140" y="40" fill="#8b949e" font-size="16" letter-spacing="2" font-family="system-ui">CLAVES</text>
+        <text x="440" y="40" fill="#8b949e" font-size="16" letter-spacing="2" font-family="system-ui">VALORES</text>
+        <rect x="40" y="65" width="200" height="60" rx="8" fill="#161b22" stroke="#ffb74d"/><text x="140" y="103" fill="#a5d6ff">"de"</text>
+        <rect x="40" y="150" width="200" height="60" rx="8" fill="#161b22" stroke="#ffb74d"/><text x="140" y="188" fill="#a5d6ff">"que"</text>
+        <rect x="40" y="235" width="200" height="60" rx="8" fill="#161b22" stroke="#ffb74d"/><text x="140" y="273" fill="#a5d6ff">"hidalgo"</text>
+        <path d="M245 95 H375" stroke="#ffb74d" stroke-width="3" marker-end="url(#ah3)"/>
+        <path d="M245 180 H375" stroke="#ffb74d" stroke-width="3" marker-end="url(#ah3)"/>
+        <path d="M245 265 H375" stroke="#ffb74d" stroke-width="3" marker-end="url(#ah3)"/>
+        <rect x="380" y="65" width="120" height="60" rx="8" fill="#161b22" stroke="#30363d"/><text x="440" y="103" fill="#79c0ff">20</text>
+        <rect x="380" y="150" width="120" height="60" rx="8" fill="#161b22" stroke="#30363d"/><text x="440" y="188" fill="#79c0ff">9</text>
+        <rect x="380" y="235" width="120" height="60" rx="8" fill="#161b22" stroke="#30363d"/><text x="440" y="273" fill="#79c0ff">2</text>
+      </g>
+    </svg>
+  </div>
+</section>
+
+<section class="slide a2">
+  <span class="live"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M1 20h22"/></svg>En vivo · consola interactiva</span>
+  <h1>Leer, agregar, cambiar <em>y quitar</em></h1>
+  <div class="c2">
+    <div>
+      <pre class="code sm" data-hl>conteo = {"de": 20, "que": 9, "hidalgo": 2}
+
+conteo["rocín"] = 1
+conteo["de"] = 21
+conteo["hidalgo"] += 1
+print(conteo)
+
+print("hidalgo" in conteo)
+print(20 in conteo)
+
+del conteo["que"]
+print(conteo)</pre>
+      <pre class="out sm hidden">{'de': 21, 'que': 9, 'hidalgo': 3, 'rocín': 1}
+True
+False
+{'de': 21, 'hidalgo': 3, 'rocín': 1}</pre>
+    </div>
+    <div>
+      <ol class="steps">
+        <li><code>conteo["rocín"]</code> antes de asignarlo. <em>KeyError: 'rocín', el IndexError de los diccionarios.</em></li>
+        <li>La misma asignación <b style="color:#ffb74d">agrega</b> si la clave no estaba y <b style="color:#ffb74d">reemplaza</b> si estaba.</li>
+        <li>Pregunta al aula qué da <code>20 in conteo</code>. <em>False: <code>in</code> mira solo las claves.</em></li>
+        <li>Contrasta con una lista: <code>lista[10] = x</code> en una de tres elementos <em>da IndexError</em>.</li>
+      </ol>
+      <pre class="out sm" style="margin-top:1cqw"><span class="err">KeyError: 'rocín'</span></pre>
+    </div>
+  </div>
+</section>
+
+<section class="slide a2">
+  <div class="lbl">Una regla sobre las claves</div>
+  <h1>Las claves <em>no pueden cambiar</em></h1>
+  <div class="c2">
+    <div class="card bad">
+      <div class="ct">Una lista como clave</div>
+      <pre class="code sm" data-hl>posiciones = {}
+posiciones[[3, 4]] = "reina"</pre>
+      <pre class="out sm"><span class="err">TypeError: cannot use 'list' as a dict key
+(unhashable type: 'list')</span></pre>
+      <p class="cb" style="margin-top:.6cqw">La lista se puede modificar, así que no sirve. La palabra <em>unhashable</em> se entiende al final de la clase.</p>
+    </div>
+    <div class="card ac">
+      <div class="ct">Una tupla como clave</div>
+      <pre class="code sm" data-hl>tablero = {}
+tablero[(3, 4)] = "reina"
+tablero[(0, 0)] = "torre"
+
+print(tablero[(3, 4)])
+print((5, 5) in tablero)</pre>
+      <pre class="out sm">reina
+False</pre>
+      <p class="cb" style="margin-top:.6cqw">La tupla de la conferencia 4, ahora como <em>coordenadas</em> de una casilla.</p>
+    </div>
+  </div>
+  <p class="kick">Claves: números, cadenas, tuplas. Valores: <b>cualquier cosa</b>, también listas y otros diccionarios.</p>
+</section>
+
+<section class="slide a2">
+  <div class="lbl">Recorrer</div>
+  <h1><code>items</code> da las parejas, <em>y el for las desempaqueta</em></h1>
+  <div class="c2">
+    <div>
+      <pre class="code sm" data-hl>conteo = {"de": 20, "que": 9, "hidalgo": 2}
+
+for palabra in conteo:
+    print(palabra, conteo[palabra])
+
+for palabra, veces in conteo.items():
+    print(f"{palabra:>8} aparece {veces} veces")
+
+print(sum(conteo.values()))</pre>
+      <pre class="out sm hidden">de 20
+que 9
+hidalgo 2
+      de aparece 20 veces
+     que aparece 9 veces
+ hidalgo aparece 2 veces
+31</pre>
+    </div>
+    <div>
+      <ul class="pts sm">
+        <li>Un <code>for</code> sobre el diccionario recorre <strong>las claves</strong>.</li>
+        <li>El orden es <strong>el orden en que se agregaron</strong>.</li>
+        <li><code>for palabra, veces in conteo.items()</code> es el mismo desempaquetado de <code>for i, x in enumerate(lista)</code>.</li>
+        <li><code>values()</code> da los valores solos, para <code>sum</code> o <code>max</code>. <code>keys()</code> existe pero casi no hace falta.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ 2. conteo -->
+<section class="slide a3 ctr">
+  <div class="lbl">Parte 2</div>
+  <h1 class="hero">El patrón <em>de conteo</em></h1>
+  <p class="sub">Si la palabra ya tiene entrada, se le suma uno. Si no, se crea con uno.</p>
+</section>
+
+<section class="slide a3">
+  <div class="lbl">Paso a paso</div>
+  <h1>Cada palabra toca <em>una sola casilla</em></h1>
+  <div class="c2 wl">
+    <svg class="fig" viewBox="0 0 700 400">
+      <g class="mono" font-size="17" text-anchor="middle">
+        <text x="50" y="22" fill="#8b949e" font-size="14" font-family="system-ui">leída</text>
+        <text x="380" y="22" fill="#8b949e" font-size="14" font-family="system-ui">conteo después de leerla</text>
+        <g fill="#ffa657"><text x="50" y="66">"de"</text><text x="50" y="126">"los"</text><text x="50" y="186">"de"</text><text x="50" y="246">"lanza"</text><text x="50" y="306">"en"</text><text x="50" y="366">"astillero"</text></g>
+        <!-- fila 1 -->
+        <rect x="120" y="40" width="100" height="40" rx="5" fill="rgba(129,199,132,.18)" stroke="#81c784" stroke-width="2"/><text x="170" y="66" fill="#e6edf3">de: 1</text>
+        <!-- fila 2 -->
+        <rect x="120" y="100" width="100" height="40" rx="5" fill="#161b22" stroke="#30363d"/><text x="170" y="126" fill="#8b949e">de: 1</text>
+        <rect x="225" y="100" width="100" height="40" rx="5" fill="rgba(129,199,132,.18)" stroke="#81c784" stroke-width="2"/><text x="275" y="126" fill="#e6edf3">los: 1</text>
+        <!-- fila 3 -->
+        <rect x="120" y="160" width="100" height="40" rx="5" fill="rgba(255,183,77,.18)" stroke="#ffb74d" stroke-width="2"/><text x="170" y="186" fill="#e6edf3">de: 2</text>
+        <rect x="225" y="160" width="100" height="40" rx="5" fill="#161b22" stroke="#30363d"/><text x="275" y="186" fill="#8b949e">los: 1</text>
+        <!-- fila 4 -->
+        <rect x="120" y="220" width="100" height="40" rx="5" fill="#161b22" stroke="#30363d"/><text x="170" y="246" fill="#8b949e">de: 2</text>
+        <rect x="225" y="220" width="100" height="40" rx="5" fill="#161b22" stroke="#30363d"/><text x="275" y="246" fill="#8b949e">los: 1</text>
+        <rect x="330" y="220" width="120" height="40" rx="5" fill="rgba(129,199,132,.18)" stroke="#81c784" stroke-width="2"/><text x="390" y="246" fill="#e6edf3">lanza: 1</text>
+        <!-- fila 5 -->
+        <rect x="120" y="280" width="100" height="40" rx="5" fill="#161b22" stroke="#30363d"/><text x="170" y="306" fill="#8b949e">de: 2</text>
+        <rect x="225" y="280" width="100" height="40" rx="5" fill="#161b22" stroke="#30363d"/><text x="275" y="306" fill="#8b949e">los: 1</text>
+        <rect x="330" y="280" width="120" height="40" rx="5" fill="#161b22" stroke="#30363d"/><text x="390" y="306" fill="#8b949e">lanza: 1</text>
+        <rect x="455" y="280" width="90" height="40" rx="5" fill="rgba(129,199,132,.18)" stroke="#81c784" stroke-width="2"/><text x="500" y="306" fill="#e6edf3">en: 1</text>
+        <!-- fila 6 -->
+        <rect x="120" y="340" width="100" height="40" rx="5" fill="#161b22" stroke="#30363d"/><text x="170" y="366" fill="#8b949e">de: 2</text>
+        <rect x="225" y="340" width="100" height="40" rx="5" fill="#161b22" stroke="#30363d"/><text x="275" y="366" fill="#8b949e">los: 1</text>
+        <rect x="330" y="340" width="120" height="40" rx="5" fill="#161b22" stroke="#30363d"/><text x="390" y="366" fill="#8b949e">lanza: 1</text>
+        <rect x="455" y="340" width="90" height="40" rx="5" fill="#161b22" stroke="#30363d"/><text x="500" y="366" fill="#8b949e">en: 1</text>
+        <rect x="550" y="340" width="145" height="40" rx="5" fill="rgba(129,199,132,.18)" stroke="#81c784" stroke-width="2"/><text x="622" y="366" fill="#e6edf3">astillero: 1</text>
+      </g>
+    </svg>
+    <div>
+      <pre class="code sm" data-hl>def frecuencias(palabras):
+    """Cada palabra a las veces que aparece."""
+    conteo = {}
+
+    for palabra in palabras:
+        if palabra in conteo:
+            conteo[palabra] += 1
+        else:
+            conteo[palabra] = 1
+
+    return conteo</pre>
+      <p class="note"><b style="color:#81c784">Verde</b>: la clave es nueva. <b style="color:#ffb74d">Naranja</b>: ya estaba y suma uno. El segundo <code>"de"</code> no agrega nada.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide a3">
+  <div class="lbl">La forma que vas a ver en todas partes</div>
+  <h1><code>get</code> funde el <code>if</code> y el <code>else</code> <em>en una línea</em></h1>
+  <div class="c2">
+    <div>
+      <pre class="code sm" data-hl>conteo = {"de": 2, "los": 1}
+
+print(conteo.get("de", 0))
+print(conteo.get("rocín", 0))</pre>
+      <pre class="out sm hidden">2
+0</pre>
+      <p class="note"><code>get(clave, defecto)</code> devuelve el valor, o el defecto si la clave no está. <b>Nunca da KeyError.</b></p>
+    </div>
+    <div>
+      <pre class="code sm" data-hl>def frecuencias(palabras):
+    """Cada palabra a las veces que aparece."""
+    conteo = {}
+
+    for palabra in palabras:
+        conteo[palabra] = conteo.get(palabra, 0) + 1
+
+    return conteo</pre>
+      <p class="note">Hace lo mismo que la versión con <code>if</code>. Aquella dice mejor lo que pasa; esta es la que vas a encontrar escrita en todas partes.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide a3">
+  <span class="live"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M1 20h22"/></svg>En vivo · frecuencias.py sobre el capítulo entero</span>
+  <h1>Las dos soluciones, <em>con el reloj puesto</em></h1>
+  <div class="c2">
+    <div>
+      <pre class="code xs" data-hl>import time
+
+palabras = palabras_de("quijote-cap1.txt")
+
+inicio = time.perf_counter()
+vistas, conteos = frecuencias_con_listas(palabras)
+con_listas = time.perf_counter() - inicio
+
+inicio = time.perf_counter()
+conteo = frecuencias(palabras)
+con_diccionario = time.perf_counter() - inicio
+
+print(f"{len(palabras)} palabras, {len(conteo)} distintas")
+print(f"con dos listas:     {con_listas * 1000:.2f} ms")
+print(f"con un diccionario: {con_diccionario * 1000:.2f} ms")</pre>
+      <pre class="out sm hidden">1895 palabras, 719 distintas
+con dos listas:     15.80 ms
+con un diccionario: 0.32 ms</pre>
+    </div>
+    <div>
+      <ol class="steps">
+        <li>Abre <code>quijote-cap1.txt</code> y muestra que es el capítulo primero entero.</li>
+        <li>Corre la carrera. <em>Mismo resultado, decenas de veces más rápido. Los milisegundos cambian en cada corrida; la diferencia no.</em></li>
+        <li>Córrela dos veces más para que se vea que el número baila.</li>
+        <li>Pregunta: ¿qué pasa con la novela entera? <em>Las listas empeoran con cada palabra nueva; el diccionario no.</em></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section class="slide a3">
+  <div class="lbl">Del conteo a la respuesta</div>
+  <h1>La más común es <em>el acumulador de siempre</em></h1>
+  <div class="c2">
+    <div>
+      <pre class="code sm" data-hl>def mas_comun(conteo):
+    """La pareja (palabra, veces) con más apariciones."""
+    mejor, maximo = "", 0
+
+    for palabra, veces in conteo.items():
+        if veces > maximo:
+            mejor, maximo = palabra, veces
+
+    return mejor, maximo</pre>
+      <pre class="out sm">('de', 20)</pre>
+    </div>
+    <div>
+      <div class="card ac"><div class="ct">La clase pasada</div><div class="cb"><code>mas_larga</code> guardaba la palabra más larga vista hasta ahora, comparando <em>len(palabra)</em>.</div></div>
+      <div class="card ac" style="margin-top:1cqw"><div class="ct">Hoy</div><div class="cb">Lo mismo, comparando <em>el conteo</em>. Y <code>mejor, maximo = palabra, veces</code> cambia los dos nombres a la vez, como el <code>a, b = b, a</code> de las tuplas.</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide a3">
+  <div class="lbl">Las diez primeras</div>
+  <h1>Buscar el mayor, <em>apartarlo</em> y volver a buscar</h1>
+  <div class="c2">
+    <div>
+      <pre class="code sm" data-hl>def mas_comunes(conteo, k):
+    """Las k parejas más frecuentes, de mayor a menor."""
+    quedan = dict(conteo)
+    resultado = []
+
+    for vuelta in range(k):
+        palabra, veces = mas_comun(quedan)
+        resultado.append((palabra, veces))
+        del quedan[palabra]
+
+    return resultado</pre>
+      <p class="note">Esto es una forma de ordenar. La conferencia 7 le pone nombre y le cuenta las operaciones.</p>
+    </div>
+    <div class="card bad">
+      <div class="ct">¿Para qué es <code>dict(conteo)</code>?</div>
+      <p class="cb">Hace una <em>copia</em>. Sin ella, el <code>del</code> borra del diccionario del que nos llamó:</p>
+      <pre class="code sm" data-hl style="margin-top:.6cqw">print(len(conteo))
+mas_comunes(conteo, 10)   # versión sin la copia
+print(len(conteo), "de" in conteo)</pre>
+      <pre class="out sm hidden">719
+709 False</pre>
+      <p class="cb" style="margin-top:.6cqw">La sorpresa de los dos nombres de la conferencia 4: un diccionario <em>se modifica</em>, igual que una lista.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide a3">
+  <span class="live"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M1 20h22"/></svg>En vivo · frecuencias.py, romper la copia</span>
+  <h1>El resultado <em>decepciona</em></h1>
+  <div class="c2 wl">
+    <div>
+      <pre class="code sm" data-hl>conteo = frecuencias(palabras_de("quijote-cap1.txt"))
+
+for palabra, veces in mas_comunes(conteo, 10):
+    print(f"{palabra:>6} {veces:4}")</pre>
+      <pre class="out sm hidden">    de  122
+     y  106
+   que   89
+     a   44
+    el   40
+    en   38
+    la   35
+    su   35
+    se   30
+   con   27</pre>
+    </div>
+    <div>
+      <ol class="steps">
+        <li>Corre el top 10. <em>Que adivinen antes cuál gana.</em></li>
+        <li>Quita <code>dict(…)</code> de <code>mas_comunes</code>, llama dos veces y compara. <em>La segunda llamada empieza por "le": las diez primeras ya no están.</em></li>
+        <li>Restaura la copia.</li>
+      </ol>
+      <p class="kick">Las palabras más frecuentes de cualquier texto en español son <b>las que no dicen nada</b>. Para sacarlas hace falta una colección nueva.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ 3. conjuntos -->
+<section class="slide a4 ctr">
+  <div class="lbl">Parte 3</div>
+  <h1 class="hero">Conjuntos</h1>
+  <p class="sub">Una colección <b>sin repeticiones y sin orden</b>, como los conjuntos de la matemática.</p>
+</section>
+
+<section class="slide a4">
+  <div class="lbl">Sin repetidos</div>
+  <h1>Llaves <em>sin los dos puntos</em></h1>
+  <div class="c2">
+    <div>
+      <pre class="code sm" data-hl>dados = {3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5}
+print(dados)
+print(4 in dados)
+
+palabras = palabras_de("quijote-cap1.txt")
+print(len(palabras), len(set(palabras)))</pre>
+      <pre class="out sm hidden">{1, 2, 3, 4, 5, 6, 9}
+True
+1895 719</pre>
+      <p class="note"><code>set(lista)</code> quita los repetidos. Es el uso más frecuente de los conjuntos.</p>
+    </div>
+    <div>
+      <div class="card bad"><div class="ct">Trampa 1 · el vacío</div><div class="cb"><code>{}</code> es un diccionario vacío; el conjunto vacío es <code>set()</code>.</div>
+        <pre class="code sm" data-hl style="margin-top:.5cqw">print(type({}))</pre><pre class="out sm">&lt;class 'dict'&gt;</pre></div>
+      <div class="card bad" style="margin-top:1cqw"><div class="ct">Trampa 2 · sin posiciones</div><div class="cb">No hay primer elemento, y el orden en que se imprime <em>no tiene por qué</em> ser el orden en que se agregaron.</div>
+        <pre class="out sm"><span class="err">TypeError: 'set' object is not subscriptable</span></pre></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide a4">
+  <div class="lbl">Operaciones</div>
+  <h1><code>|</code> unión · <code>&amp;</code> intersección · <code>-</code> diferencia</h1>
+  <div class="c2 wl">
+    <svg class="fig" viewBox="0 0 640 360">
+      <circle cx="235" cy="185" r="150" fill="rgba(79,195,247,.10)" stroke="#4fc3f7" stroke-width="2.5"/>
+      <circle cx="405" cy="185" r="150" fill="rgba(255,183,77,.10)" stroke="#ffb74d" stroke-width="2.5"/>
+      <g text-anchor="middle">
+        <text x="170" y="25" fill="#4fc3f7" font-size="19" font-weight="700">primer párrafo · 50</text>
+        <text x="470" y="25" fill="#ffb74d" font-size="19" font-weight="700">tercer párrafo · 49</text>
+        <text x="160" y="185" fill="#4fc3f7" font-size="44" font-weight="800">43</text>
+        <text x="160" y="212" fill="#8b949e" font-size="15">primero - tercero</text>
+        <text x="480" y="185" fill="#ffb74d" font-size="44" font-weight="800">42</text>
+        <text x="480" y="212" fill="#8b949e" font-size="15">tercero - primero</text>
+        <g class="mono" fill="#e6edf3" font-size="19">
+          <text x="320" y="105">de</text><text x="320" y="132">en</text><text x="320" y="159" fill="#f48fb1">hidalgo</text><text x="320" y="186">la</text><text x="320" y="213">los</text><text x="320" y="240">que</text><text x="320" y="267">y</text>
+        </g>
+        <text x="320" y="352" fill="#8b949e" font-size="15">primero &amp; tercero: 7 · primero | tercero: 92</text>
+      </g>
+    </svg>
+    <div>
+      <pre class="code sm" data-hl>with open("quijote.txt", encoding="utf-8") as archivo:
+    parrafos = archivo.read().split("\n\n")
+
+primero = set(limpiar(parrafos[0]).split())
+tercero = set(limpiar(parrafos[2]).split())
+
+print(sorted(primero &amp; tercero))</pre>
+      <pre class="out sm hidden">['de', 'en', 'hidalgo', 'la', 'los', 'que', 'y']</pre>
+      <p class="note">Lo que dos párrafos comparten son <b>las palabras vacías</b>. La única que habla del texto es <code>hidalgo</code>.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide a4">
+  <span class="live"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M1 20h22"/></svg>En vivo · frecuencias.py, sin las palabras vacías</span>
+  <h1>Ahora sí <em>habla el capítulo</em></h1>
+  <div class="c2">
+    <div>
+      <pre class="code xs" data-hl>VACIAS = {
+    "a", "al", "así", "bien", "como", "con", "cual", "cuando",
+    "de", "del", "dél", "el", "él", "en", "era", "estaba", "fue",
+    "ha", "había", "la", "las", "le", "les", "lo", "los", "más",
+    "mas", "me", "mi", "muy", "ni", "no", "o", "para", "pero",
+    "por", "porque", "que", "quien", "se", "ser", "si", "sí",
+    "sido", "sin", "su", "sus", "tan", "tenía", "todo", "todos",
+    "un", "una", "y", "ya",
+}
+
+def frecuencias_sin_vacias(palabras):
+    conteo = {}
+    for palabra in palabras:
+        if palabra not in VACIAS:
+            conteo[palabra] = conteo.get(palabra, 0) + 1
+    return conteo</pre>
+      <ol class="steps">
+        <li>Empieza con cinco palabras en <code>VACIAS</code>, corre, mira el top 10 y <em>agrega lo que estorbe</em>.</li>
+        <li>Llega a esta lista. <em>Es una decisión, no una verdad del idioma.</em></li>
+      </ol>
+    </div>
+    <div>
+      <svg class="fig" viewBox="0 0 560 400">
+        <g font-size="19">
+          <g class="mono" fill="#e6edf3" text-anchor="end">
+            <text x="120" y="30">nombre</text><text x="120" y="68">caballero</text><text x="120" y="106">don</text><text x="120" y="144">razón</text><text x="120" y="182">vino</text><text x="120" y="220">rocín</text><text x="120" y="258">vuestra</text><text x="120" y="296">amadís</text><text x="120" y="334">dio</text><text x="120" y="372">celada</text>
+          </g>
+          <g fill="rgba(244,143,177,.3)" stroke="#f48fb1" stroke-width="2">
+            <rect x="135" y="12" width="360" height="26"/><rect x="135" y="50" width="360" height="26"/>
+            <rect x="135" y="88" width="166" height="26"/><rect x="135" y="126" width="166" height="26"/><rect x="135" y="164" width="166" height="26"/>
+            <rect x="135" y="202" width="138" height="26"/><rect x="135" y="240" width="138" height="26"/><rect x="135" y="278" width="138" height="26"/><rect x="135" y="316" width="138" height="26"/><rect x="135" y="354" width="138" height="26"/>
+          </g>
+          <g fill="#8b949e">
+            <text x="505" y="31">13</text><text x="505" y="69">13</text><text x="311" y="107">6</text><text x="311" y="145">6</text><text x="311" y="183">6</text><text x="283" y="221">5</text><text x="283" y="259">5</text><text x="283" y="297">5</text><text x="283" y="335">5</text><text x="283" y="373">5</text>
+          </g>
+        </g>
+      </svg>
+      <p class="note">Un hidalgo se busca un <b>nombre</b> de <b>caballero</b>, y lo mismo hace con su <b>rocín</b> y su dama. Su modelo es <b>Amadís</b> de Gaula.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ 4. costo -->
+<section class="slide a5 ctr">
+  <div class="lbl">Parte 4</div>
+  <h1 class="hero">Por qué buscar una clave <em>no cuesta nada</em></h1>
+  <p class="sub"><code>VACIAS</code> funcionaría con corchetes. ¿Por qué un conjunto?</p>
+</section>
+
+<section class="slide a5">
+  <span class="live"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M1 20h22"/></svg>En vivo · archivo busqueda.py</span>
+  <h1>Buscar el <code>-1</code>, <em>que no está</em></h1>
+  <div class="c2">
+    <div>
+      <pre class="code xs" data-hl>import time
+
+
+def segundos_por_busqueda(coleccion, x, veces):
+    """El tiempo medio que tarda `x in coleccion`."""
+    inicio = time.perf_counter()
+    for vuelta in range(veces):
+        encontrado = x in coleccion
+    return (time.perf_counter() - inicio) / veces
+
+
+for n in [1_000, 10_000, 100_000, 1_000_000]:
+    lista = list(range(n))
+    conjunto = set(lista)
+    en_lista = segundos_por_busqueda(lista, -1, 50)
+    en_conjunto = segundos_por_busqueda(conjunto, -1, 100_000)
+    print(f"{n:>9} elementos: lista {en_lista * 1e3:7.3f} ms,"
+          f" conjunto {en_conjunto * 1e9:4.0f} ns")</pre>
+      <pre class="out sm hidden">     1000 elementos: lista   0.015 ms, conjunto   40 ns
+    10000 elementos: lista   0.252 ms, conjunto   95 ns
+   100000 elementos: lista   2.402 ms, conjunto   79 ns
+  1000000 elementos: lista  31.582 ms, conjunto  123 ns</pre>
+    </div>
+    <div>
+      <ol class="steps">
+        <li><code>1_000_000</code> es un millón: <em>el guion bajo solo ayuda a leer.</em></li>
+        <li>Antes de correr: si la lista crece 10 veces, ¿cuánto crece el tiempo?</li>
+        <li>Corre. <em>La lista se multiplica por diez en cada fila. El conjunto no se mueve.</em></li>
+        <li>Si sobra tiempo, cambia <code>-1</code> por <code>0</code>. <em>La lista lo encuentra enseguida: depende de dónde esté.</em></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section class="slide a5">
+  <div class="lbl">Lo que acabamos de medir</div>
+  <h1>Diez veces más elementos, <em>diez veces más tiempo</em>. O nada.</h1>
+  <svg class="fig" viewBox="0 0 1200 425">
+    <g font-size="17" fill="#6e7681" text-anchor="end">
+      <text x="140" y="45">100 ms</text><text x="140" y="95">10 ms</text><text x="140" y="145">1 ms</text><text x="140" y="195">100 µs</text><text x="140" y="245">10 µs</text><text x="140" y="295">1 µs</text><text x="140" y="345">100 ns</text>
+    </g>
+    <g stroke="#30363d"><path d="M155 390H1000"/></g>
+    <g stroke="#21262d"><path d="M155 40H1000M155 90H1000M155 140H1000M155 190H1000M155 240H1000M155 290H1000M155 340H1000"/></g>
+    <!-- y(t) = 340 - 50*log10(t/100ns) -->
+    <g fill="rgba(239,83,80,.3)" stroke="#ef5350" stroke-width="2">
+      <rect x="200" y="231" width="70" height="159"/>
+      <rect x="400" y="170" width="70" height="220"/>
+      <rect x="600" y="121" width="70" height="269"/>
+      <rect x="800" y="65" width="70" height="325"/>
+    </g>
+    <g fill="rgba(206,147,216,.3)" stroke="#ce93d8" stroke-width="2">
+      <rect x="280" y="360" width="70" height="30"/>
+      <rect x="480" y="341" width="70" height="49"/>
+      <rect x="680" y="345" width="70" height="45"/>
+      <rect x="880" y="335" width="70" height="55"/>
+    </g>
+    <g font-size="17" fill="#8b949e" text-anchor="middle" class="mono">
+      <text x="275" y="415" fill="#e6edf3">1 000</text><text x="475" y="415" fill="#e6edf3">10 000</text><text x="675" y="415" fill="#e6edf3">100 000</text><text x="875" y="415" fill="#e6edf3">1 000 000</text>
+    </g>
+    <g font-size="19" font-weight="700"><text x="1020" y="60" fill="#ef5350">en una lista</text><text x="1020" y="330" fill="#ce93d8">en un conjunto</text></g>
+  </svg>
+  <p class="note">Escala logarítmica: cada raya vale <b>diez veces</b> la de abajo. Las barras salen de la tabla anterior; en tu máquina cambian los números, no la forma.</p>
+</section>
+
+<section class="slide a5">
+  <div class="lbl">La intuición, sin la implementación</div>
+  <h1>El valor dice <em>en qué casillero</em> está</h1>
+  <div class="c2">
+    <svg class="fig" viewBox="0 0 560 360">
+      <defs><marker id="ah5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ce93d8"/></marker></defs>
+      <text x="20" y="28" fill="#ef5350" font-size="16" letter-spacing="2" font-weight="700">LISTA: MIRAR DE UNO EN UNO</text>
+      <g fill="#161b22" stroke="#30363d" stroke-width="2"><rect x="20" y="45" width="60" height="50"/><rect x="80" y="45" width="60" height="50"/><rect x="140" y="45" width="60" height="50"/><rect x="200" y="45" width="60" height="50"/><rect x="260" y="45" width="60" height="50"/><rect x="320" y="45" width="60" height="50"/><rect x="380" y="45" width="60" height="50"/><rect x="440" y="45" width="60" height="50"/></g>
+      <path d="M30 112 H495" stroke="#ef5350" stroke-width="3" marker-end="url(#ah5)"/>
+      <text x="20" y="190" fill="#ce93d8" font-size="16" letter-spacing="2" font-weight="700">CONJUNTO: CALCULAR Y IR</text>
+      <g class="mono" font-size="20" text-anchor="middle">
+        <rect x="20" y="215" width="140" height="50" rx="8" fill="#161b22" stroke="#ce93d8"/><text x="90" y="247" fill="#a5d6ff">"rocín"</text>
+        <path d="M165 240 C230 240 240 300 300 300" stroke="#ce93d8" stroke-width="3" fill="none" marker-end="url(#ah5)"/>
+        <text x="220" y="225" fill="#8b949e" font-size="15" font-family="system-ui">una cuenta</text>
+      </g>
+      <g fill="#161b22" stroke="#30363d" stroke-width="2"><rect x="305" y="275" width="50" height="50"/><rect x="355" y="275" width="50" height="50" fill="rgba(206,147,216,.25)" stroke="#ce93d8"/><rect x="405" y="275" width="50" height="50"/><rect x="455" y="275" width="50" height="50"/></g>
+      <text x="380" y="350" fill="#8b949e" font-size="15" text-anchor="middle">mira solo ese casillero</text>
+    </svg>
+    <div>
+      <ul class="pts sm">
+        <li>Una lista guarda en fila. Para decir <em>no está</em> tiene que mirar <strong>todos</strong>.</li>
+        <li>Un conjunto o un diccionario calcula <strong>a partir del propio valor</strong> un número que dice en qué casillero guardarlo. Al buscar hace la misma cuenta y va directo.</li>
+        <li>Como los casilleros con el nombre de cada estudiante: tu nombre te dice cuál es el tuyo.</li>
+        <li>Ese número se llama <strong>hash</strong>. Si una clave cambiara, cambiaría su casillero y se perdería. Por eso una lista es <code>unhashable</code>.</li>
+      </ul>
+      <p class="note">Cómo se calcula y qué pasa cuando dos valores caen en el mismo casillero es materia del segundo semestre.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ 5. proyecto -->
+<section class="slide a5">
+  <span class="live"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M1 20h22"/></svg>En vivo · frecuencias.py, el proyecto entero</span>
+  <h1>El programa completo, <em>y cómo romperlo</em></h1>
+  <div class="c2">
+    <div>
+      <pre class="code xs" data-hl>def reporte(ruta, k=10):
+    """Las k palabras más frecuentes del archivo."""
+    palabras = palabras_de(ruta)
+    conteo = frecuencias_sin_vacias(palabras)
+    print(f"{len(palabras)} palabras, {len(set(palabras))} distintas")
+    for palabra, veces in mas_comunes(conteo, k):
+        print(f"  {palabra:&lt;10} {veces:3}")
+
+
+ruta = input("Archivo: ")
+
+try:
+    reporte(ruta)
+except FileNotFoundError:
+    print(f"No encontré el archivo {ruta}")</pre>
+      <pre class="out sm hidden">1895 palabras, 719 distintas
+  nombre      13
+  caballero   13
+  don          6
+  …</pre>
+    </div>
+    <div>
+      <ol class="steps">
+        <li>Junta las piezas en <code>reporte</code>. <em><code>:&lt;10</code> alinea a la izquierda en diez espacios.</em></li>
+        <li>Córrelo con <code>quijote-cap1.txt</code> y con <code>quijote.txt</code>.</li>
+        <li>Escribe mal el nombre del archivo. <em>Atiende el FileNotFoundError, de la clase pasada.</em></li>
+        <li>Pide <code>reporte("quijote.txt", 200)</code>. <em>Falla el <code>del</code> con KeyError: '' cuando se acaban las palabras. Queda como ejercicio.</em></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section class="slide a5">
+  <div class="lbl">Lo que queda para la clase que viene</div>
+  <h1>¿Y si quiero <em>todas</em> ordenadas?</h1>
+  <div class="c2 wl">
+    <div>
+      <p class="sub"><code>mas_comunes</code> busca el mayor, lo aparta y vuelve a buscar. Para diez palabras está bien. Para las 719 recorre el diccionario 719 veces.</p>
+      <p class="kick">La conferencia 7 escribe esto y otros dos métodos de ordenar, <b>les cuenta las operaciones</b> y los pone a correr sobre listas que crecen.</p>
+    </div>
+    <div class="card ac">
+      <div class="ct">Una pista</div>
+      <p class="cb">Hoy medimos una búsqueda que crece como <em>n</em> y otra que no crece. Ordenar así crece como <em>n × n</em>: pregunta al aula qué pasaría con la novela entera, que tiene más de veintitrés mil palabras distintas.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ cierre -->
+<section class="slide a1">
+  <div class="lbl">Resumen</div>
+  <h1>Lo que te llevas <em>de hoy</em></h1>
+  <ul class="pts sm">
+    <li><code>d[clave]</code> lee, <code>d[clave] = valor</code> agrega o reemplaza, <code>del d[clave]</code> quita. Una clave que no está da <code>KeyError</code>.</li>
+    <li><code>in</code> pregunta por las claves, nunca por los valores.</li>
+    <li>El patrón de conteo: <code>conteo[x] = conteo.get(x, 0) + 1</code>.</li>
+    <li><code>for clave, valor in d.items()</code> recorre las parejas en el orden en que se agregaron.</li>
+    <li>Las claves son <strong>inmutables</strong>: números, cadenas, tuplas. Un diccionario sí se modifica; <code>dict(d)</code> lo copia.</li>
+    <li>Un conjunto no tiene repetidos ni orden. <code>set()</code> es el vacío, porque <code>{}</code> es el diccionario vacío. <code>|</code>, <code>&amp;</code>, <code>-</code>.</li>
+    <li>Buscar en un conjunto o diccionario cuesta lo mismo con diez elementos que con un millón. En una lista, en proporción a su tamaño.</li>
+  </ul>
+</section>
+
+<section class="slide a2">
+  <div class="lbl">Ejercicios · están completos en las notas</div>
+  <h1>Para la clase práctica</h1>
+  <div class="c2">
+    <ul class="pts sm">
+      <li><code>frecuencia_de_letras(ruta)</code>: la vocal y la consonante más frecuentes del capítulo.</li>
+      <li>Arreglar <code>mas_comunes</code> cuando <code>k</code> pasa del número de palabras distintas.</li>
+      <li><code>agrupar_por_longitud(palabras)</code>: la clave 11 debe incluir <code>entresemana</code>.</li>
+      <li>Anagramas: <code>son_anagramas(a, b)</code> con conteos de letras, y los grupos del capítulo.</li>
+    </ul>
+    <ul class="pts sm">
+      <li><code>invertir(conteo)</code>: de cada conteo a sus palabras. ¿Cuántas aparecen una sola vez?</li>
+      <li>Aprobados en uno, en los dos y en ninguno de dos exámenes, con operaciones de conjuntos.</li>
+      <li><code>traducir(frase, diccionario)</code> con <code>get</code> y sin ningún <code>if</code>.</li>
+      <li>Sin ejecutar: qué imprimen tres programas cortos.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="slide a0">
+  <div class="lbl" style="color:#ef5350">Para el profesor · guion de demos</div>
+  <h1>Los momentos <em style="color:#ef5350">en la laptop</em></h1>
+  <table class="br" id="guion"></table>
+  <p class="note">Todo corre en la carpeta de la conferencia, junto a <code>quijote.txt</code> y <code>quijote-cap1.txt</code>. Pulsa el número de la diapositiva y Enter para saltar a ella.</p>
+</section>
+
+<div id="bar"></div>
+<div id="foot">Programación · Conferencia 6</div>
+<div id="num"></div>
+<div id="help"><div class="box">
+  <kbd>→</kbd> <kbd>Espacio</kbd> <kbd>RePág</kbd> siguiente · <kbd>←</kbd> anterior<br>
+  <kbd>R</kbd> revela las salidas ocultas · <kbd>V</kbd> salta a la próxima demo en vivo<br>
+  número + <kbd>Enter</kbd> va a esa diapositiva · <kbd>Inicio</kbd> <kbd>Fin</kbd><br>
+  <kbd>F</kbd> pantalla completa · <kbd>?</kbd> esta ayuda
+</div></div>
+</div>
+
+<script>
+// resaltado mínimo de Python
+const KW = /\b(def|return|for|in|if|elif|else|try|except|with|as|while|break|continue|not|and|or|None|True|False|import|from|del)\b/;
+const BI = /\b(print|len|open|int|float|str|input|repr|enumerate|range|sorted|list|dict|set|sum|max|type)\b/;
+function hl(src) {
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const re = /(#[^\n]*)|([fb]?"""[\s\S]*?"""|[fb]?"(?:[^"\\\n]|\\.)*"|[fb]?'(?:[^'\\\n]|\\.)*')|(\b[A-Za-z_]\w*\b)|(\b\d+(?:\.\d+)?\b)|(\$ [^\n]*)/g;
+  let out = '', last = 0, m;
+  while ((m = re.exec(src))) {
+    out += esc(src.slice(last, m.index));
+    const t = esc(m[0]);
+    if (m[1] || m[5]) out += `<span class="cm">${t}</span>`;
+    else if (m[2]) out += `<span class="st">${t}</span>`;
+    else if (m[3]) {
+      if (KW.test(m[3]) && m[3].match(KW)[0] === m[3]) out += `<span class="kw">${t}</span>`;
+      else if (BI.test(m[3]) && m[3].match(BI)[0] === m[3]) out += `<span class="bi">${t}</span>`;
+      else if (/^\s*\(/.test(src.slice(re.lastIndex)) && src.slice(Math.max(0, m.index - 4), m.index) === 'def ') out += `<span class="fn">${t}</span>`;
+      else out += t;
+    }
+    else if (m[4]) out += `<span class="nu">${t}</span>`;
+    last = re.lastIndex;
+  }
+  return out + esc(src.slice(last));
+}
+document.querySelectorAll('pre[data-hl]').forEach(p => { p.innerHTML = hl(p.textContent); });
+
+const slides = [...document.querySelectorAll('.slide')];
+const bar = document.getElementById('bar'), num = document.getElementById('num'), help = document.getElementById('help');
+let cur = 0, typed = '';
+
+// guion de demos, construido a partir de las diapositivas marcadas
+const guion = document.getElementById('guion');
+guion.innerHTML = '<tr><th>Diap.</th><th>Dónde</th><th>Qué se muestra</th></tr>' +
+  slides.map((s, i) => [s, i]).filter(([s]) => s.querySelector('.live')).map(([s, i]) => {
+    const where = s.querySelector('.live').textContent.replace(/^En vivo · /, '');
+    return `<tr><td><a href="#${i + 1}" style="color:#ef5350;font-weight:700;text-decoration:none">${i + 1}</a></td><td>${where}</td><td>${s.querySelector('h1').innerHTML}</td></tr>`;
+  }).join('');
+
+function go(n) {
+  n = Math.max(0, Math.min(slides.length - 1, n));
+  slides.forEach((s, i) => { s.classList.toggle('active', i === n); s.classList.toggle('prev', i < n); });
+  cur = n;
+  bar.style.width = ((n + 1) / slides.length * 100) + '%';
+  bar.style.background = getComputedStyle(slides[n]).getPropertyValue('--ac');
+  num.textContent = `${n + 1} / ${slides.length}`;
+  if (location.hash !== '#' + (n + 1)) history.replaceState(null, '', '#' + (n + 1));
+}
+function reveal() {
+  const hidden = slides[cur].querySelector('pre.out.hidden');
+  if (hidden) { hidden.classList.remove('hidden'); return true; }
+  return false;
+}
+document.querySelectorAll('pre.out.hidden').forEach(p => p.addEventListener('click', e => { e.stopPropagation(); p.classList.remove('hidden'); }));
+
+document.addEventListener('keydown', e => {
+  if (e.key >= '0' && e.key <= '9') { typed += e.key; return; }
+  if (e.key === 'Enter' && typed) { go(parseInt(typed, 10) - 1); typed = ''; return; }
+  typed = '';
+  if (['ArrowRight', ' ', 'PageDown', 'ArrowDown'].includes(e.key)) { e.preventDefault(); go(cur + 1); }
+  else if (['ArrowLeft', 'PageUp', 'ArrowUp', 'Backspace'].includes(e.key)) { e.preventDefault(); go(cur - 1); }
+  else if (e.key === 'Home') go(0);
+  else if (e.key === 'End') go(slides.length - 1);
+  else if (e.key === 'r' || e.key === 'R') reveal();
+  else if (e.key === 'v' || e.key === 'V') {
+    const next = slides.findIndex((s, i) => i > cur && s.querySelector('.live'));
+    if (next >= 0) go(next);
+  }
+  else if (e.key === 'f' || e.key === 'F') { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); }
+  else if (e.key === '?') help.classList.toggle('on');
+  else if (e.key === 'Escape') help.classList.remove('on');
+});
+document.getElementById('deck').addEventListener('click', e => {
+  if (e.target.closest('a')) return;
+  const r = e.currentTarget.getBoundingClientRect();
+  go(e.clientX - r.left > r.width / 3 ? cur + 1 : cur - 1);
+});
+window.addEventListener('hashchange', () => go(parseInt(location.hash.slice(1), 10) - 1 || 0));
+go(parseInt(location.hash.slice(1), 10) - 1 || 0);
+</script>
+</body>
+</html>
