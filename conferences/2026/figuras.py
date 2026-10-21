@@ -453,3 +453,137 @@ def split_visual(texto, piezas, ident="split", pie=""):
         _txt("una lista, y los espacios ya no están", (x - hueco) / 2, 88,
              APAGADO, PIE)
     return _figura(canvas, ident, pie)
+
+
+# --------------------------------------------------------------------------
+# conferencia 6: diccionarios y conjuntos
+# --------------------------------------------------------------------------
+
+def diccionario_visual(d, nombre="", ident="diccionario", pie=""):
+    """Cada clave con una flecha a su valor, en el orden en que `d` las guarda."""
+    alto, paso = 22.0, 30.0
+    ancho_c = max(len(repr(k)) for k in d) * 6.0 + 20
+    ancho_v = max(len(repr(v)) for v in d.values()) * 6.0 + 20
+    xv = ancho_c + 46
+    with Canvas() as canvas:
+        _txt("claves", ancho_c / 2, -12, APAGADO, PIE)
+        _txt("valores", xv + ancho_v / 2, -12, APAGADO, PIE)
+        if nombre:
+            _codigo(nombre, -12, (len(d) * paso - (paso - alto)) / 2, TINTA,
+                    ancla="right")
+        for i, (k, v) in enumerate(d.items()):
+            y = i * paso
+            _caja(0, y, ancho_c, alto, OSCURO)
+            _codigo(repr(k), ancho_c / 2, y + alto / 2, TINTA, PIE)
+            _flecha(ancho_c + 4, y + alto / 2, xv - 4, y + alto / 2)
+            Rect(ancho_v, alto, fill=REGLA.transparent(0.35),
+                 stroke=REGLA.darker(0.25), width=0.9).move_to(
+                     Point(xv, y), anchor="topleft")
+            _codigo(repr(v), xv + ancho_v / 2, y + alto / 2, TINTA, PIE)
+    return _figura(canvas, ident, pie)
+
+
+def conteo_paso_a_paso(pasos, ident="conteo", pie=""):
+    """`pasos` es [(palabra, {palabra: conteo})], el diccionario tal como quedó
+    después de procesar esa palabra. La casilla que cambió va resaltada."""
+    alto, paso_fila, celda = 20.0, 28.0, 64.0
+    with Canvas() as canvas:
+        _txt("palabra leída", 30, -12, APAGADO, PIE)
+        _txt("conteo después de leerla", 96 + 2 * celda, -12, APAGADO, PIE)
+        anterior = {}
+        for fila, (palabra, estado) in enumerate(pasos):
+            y = fila * paso_fila
+            _codigo(repr(palabra), 30, y + alto / 2, CALIDO, PIE)
+            _flecha(62, y + alto / 2, 84, y + alto / 2, REGLA.darker(0.3), 0.9)
+            for j, (k, v) in enumerate(estado.items()):
+                x = 92 + j * (celda + 4)
+                nueva = k not in anterior
+                cambio = anterior.get(k) != v
+                color = ACENTO if cambio else REGLA.darker(0.25)
+                Rect(celda, alto, fill=ACENTO.transparent(0.16) if cambio
+                     else REGLA.transparent(0.35), stroke=color,
+                     width=1.4 if cambio else 0.9).move_to(Point(x, y),
+                                                           anchor="topleft")
+                _codigo(f"{k}: {v}", x + celda / 2, y + alto / 2, TINTA, PIE)
+                if cambio:
+                    _txt("nueva" if nueva else "+1", x + celda / 2,
+                         y + alto + 4.5, ACENTO, 5.5)
+            anterior = estado
+    return _figura(canvas, ident, pie)
+
+
+def venn(a, b, nombre_a, nombre_b, ident="venn", pie=""):
+    """`a` y `b` son los conjuntos que calculó el código. Se escriben las
+    palabras comunes y se cuentan las que son de uno solo."""
+    r, sep = 78.0, 92.0
+    comunes = sorted(a & b)
+    with Canvas() as canvas:
+        Circle(r, fill=ACENTO.transparent(0.10), stroke=ACENTO,
+               width=1.2).move_to(Point(0, 0))
+        Circle(r, fill=CALIDO.transparent(0.10), stroke=CALIDO,
+               width=1.2).move_to(Point(sep, 0))
+        _txt(nombre_a, -20, -r - 10, ACENTO, CUERPO)
+        _txt(nombre_b, sep + 20, -r - 10, CALIDO, CUERPO)
+        _txt(f"{len(a - b)}", -36, -6, ACENTO, 13)
+        _txt("solo aquí", -36, 9, APAGADO, PIE)
+        _txt(f"{len(b - a)}", sep + 36, -6, CALIDO, 13)
+        _txt("solo aquí", sep + 36, 9, APAGADO, PIE)
+        alto = (len(comunes) - 1) * 10.5
+        for i, palabra in enumerate(comunes):
+            _codigo(palabra, sep / 2, -alto / 2 + i * 10.5, TINTA, PIE)
+        _txt(f"{len(comunes)} en los dos", sep / 2, r + 12, APAGADO, PIE)
+    return _figura(canvas, ident, pie)
+
+
+def barras_de_frecuencia(pares, ident="frecuencias", pie=""):
+    """`pares` es la lista de (palabra, conteo) que devolvió el código."""
+    largo, alto, paso = 220.0, 13.0, 17.0
+    tope = max(c for _, c in pares)
+    with Canvas() as canvas:
+        for i, (palabra, conteo) in enumerate(pares):
+            y = i * paso
+            _codigo(palabra, -8, y + alto / 2, TINTA, PIE, ancla="right")
+            w = conteo / tope * largo
+            Rect(w, alto, fill=ACENTO.transparent(0.25), stroke=ACENTO,
+                 width=1.0).move_to(Point(0, y), anchor="topleft")
+            _txt(str(conteo), w + 6, y + alto / 2, APAGADO, PIE, ancla="left")
+    return _figura(canvas, ident, pie)
+
+
+def _duracion(segundos):
+    for unidad, factor in (("s", 1), ("ms", 1e-3), ("µs", 1e-6), ("ns", 1e-9)):
+        if segundos >= factor:
+            return f"{segundos / factor:.3g} {unidad}"
+    return f"{segundos * 1e9:.2g} ns"
+
+
+def lista_contra_conjunto(medidas, ident="lista-conjunto", pie=""):
+    """`medidas` es [(n, segundos_en_lista, segundos_en_conjunto)] por búsqueda,
+    medidos por el documento. El eje es logarítmico: cada raya horizontal vale
+    diez veces la de abajo."""
+    import math
+    alto, barra, hueco, paso_g = 130.0, 22.0, 6.0, 74.0
+    valores = [t for _, a, b in medidas for t in (a, b)]
+    lo = math.floor(math.log10(min(valores)))
+    hi = math.ceil(math.log10(max(valores)))
+    esc = lambda t: (math.log10(t) - lo) / (hi - lo) * alto
+    ancho = len(medidas) * paso_g
+    with Canvas() as canvas:
+        for e in range(lo, hi + 1):
+            y = alto - esc(10.0 ** e)
+            Line(Point(-4, y), Point(ancho, y), stroke=REGLA, width=0.7)
+            _txt(_duracion(10.0 ** e), -8, y, APAGADO, PIE, ancla="right")
+        for g, (n, t_lista, t_conj) in enumerate(medidas):
+            base = g * paso_g + (paso_g - 2 * barra - hueco) / 2
+            for k, t, color in ((0, t_lista, ALARMA), (1, t_conj, ACENTO)):
+                h = max(esc(t), 1.0)
+                x = base + k * (barra + hueco)
+                Rect(barra, h, fill=color.transparent(0.25), stroke=color,
+                     width=1.1).move_to(Point(x, alto - h), anchor="topleft")
+            _codigo(f"{n:_}".replace("_", " "), g * paso_g + paso_g / 2,
+                    alto + 11, APAGADO, PIE)
+        Line(Point(0, alto), Point(ancho, alto), stroke=APAGADO, width=1.0)
+        _txt("elementos", ancho / 2, alto + 24, APAGADO, PIE)
+        _txt("en una lista", ancho + 10, -6, ALARMA, PIE, ancla="left")
+        _txt("en un conjunto", ancho + 10, 8, ACENTO, PIE, ancla="left")
+    return _figura(canvas, ident, pie)
