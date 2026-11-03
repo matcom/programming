@@ -177,9 +177,9 @@ una lista ordenada, ahora escritas y no solo intuidas. Ordenación por selecció
 inserción y por intercambio, las tres implementadas y comparadas. Contar operaciones
 en lugar de medir segundos, que ya se hizo una vez con la criba, y la diferencia entre
 $n$ y $n^2$ vista sobre listas que crecen, midiendo también el reloj para que el orden
-de crecimiento deje de ser una abstracción. La conferencia termina con una lista de
-cien mil palabras que ninguno de los tres métodos ordena en un tiempo razonable, y esa
-lista es la que abre la conferencia 10. Es una introducción informal a la complejidad,
+de crecimiento deje de ser una abstracción. La conferencia termina extrapolando a un
+millón de números, que los tres métodos tardarían horas en ordenar, y ese millón es el
+que abre la conferencia 10. Es una introducción informal a la complejidad,
 que se retoma con rigor en Estructuras de Datos. Cierra el primer tema.
 
 ## Tema 2. Estrategias de solución y recursividad
@@ -206,7 +206,7 @@ la herramienta con la que la conferencia siguiente explica el costo.
 
 ### Conferencia 10. Divide y vencerás, cuando la división es evidente
 
-Proyecto: la lista de cien mil palabras que la conferencia 8 no pudo ordenar.
+Proyecto: el millón de números que la conferencia 8 no pudo ordenar.
 Ordenación por mezcla, cronometrada contra los tres métodos de la conferencia 8 sobre
 las mismas listas. El esquema de partir, resolver las partes y combinar, sobre
 problemas donde las tres cosas se ven a simple vista: partir una lista por la mitad,
