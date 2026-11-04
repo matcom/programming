@@ -595,3 +595,35 @@ def arbol(raiz, columna=50.0, ident="arbol", pie="", por_nivel=True,
                 _txt(f"{cuantos}", derecha, nivel * fila, APAGADO, PIE, ancla="left")
             _txt("llamadas", derecha, -18, APAGADO, PIE, ancla="left")
     return _figura(canvas, ident, pie)
+
+
+# --------------------------------------------------------------------------
+# conferencia 11: divide y vencerás, cuando no es evidente
+# --------------------------------------------------------------------------
+
+def tres_rachas(valores, medio, rachas, ident="rachas", pie=""):
+    """Una fila de valores partida en `medio`, con una cota debajo por cada
+    racha. `rachas` es [(etiqueta, i, j, suma)] con rebanadas medio abiertas,
+    tal como las devolvió el código de la conferencia."""
+    lado = 28.0
+    colores = [OSCURO, VERDE, CALIDO]
+    with Canvas() as canvas:
+        for i, v in enumerate(valores):
+            x = i * lado
+            color = ALARMA if v < 0 else REGLA.darker(0.25)
+            Rect(lado, lado, fill=REGLA.transparent(0.35), stroke=REGLA.darker(0.25),
+                 width=0.9).move_to(Point(x, 0), anchor="topleft")
+            _codigo(str(v), x + lado / 2, lado / 2, ALARMA if v < 0 else TINTA)
+            _codigo(str(i), x + lado / 2, -10, APAGADO, PIE)
+        xm = medio * lado
+        Line(Point(xm, -18), Point(xm, lado + 8 + 22 * len(rachas)), stroke=TINTA,
+             width=1.4)
+        _txt("medio", xm, -26, TINTA, PIE)
+        for k, (etiqueta, i, j, suma) in enumerate(rachas):
+            y = lado + 14 + 22 * k
+            color = colores[k % len(colores)]
+            Line(Point(i * lado + 2, y), Point(j * lado - 2, y), stroke=color,
+                 width=1.6, marker_start="arrow", marker_end="arrow")
+            _txt(f"{etiqueta}: suma {suma}", j * lado + 8, y, color, PIE,
+                 ancla="left")
+    return _figura(canvas, ident, pie)
