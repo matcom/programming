@@ -5,6 +5,9 @@
 theme: book
 lang: es
 css: libro.css
+# Las referencias a figuras del sitio dicen "figura N" y no citan el pie entero.
+html-refs:
+  fig: "figura {figure}"
 base-url: https://matcom.github.io/programming/
 execute:
   timeout: 600
@@ -40,7 +43,6 @@ outputs:
     format: docs
     dir: sitio
     repo-url: https://github.com/matcom/programming
-    js: [sitio.js]
   libro:
     format: pdf
     file: programacion.pdf
