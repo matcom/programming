@@ -5,22 +5,35 @@ la Computación y de Ciencia de Datos. El programa de la asignatura reparte 192 
 entre dos semestres y tres temas: 48 horas para recursos básicos y programación
 estructurada, 48 para estrategias de solución y recursividad, y 96 para orientación a
 objetos, programación funcional y estructuras de datos. Los dos primeros temas suman
-96 horas, que es exactamente un semestre, así que **el primer semestre llega hasta
-programación dinámica y el segundo es el tema tercero completo.** La corrida de 2024
-se partió en ese mismo punto: once conferencias hasta programación dinámica y de la
-duodécima en adelante, herencia.
-
-| Tema | Conferencias |
-|---|---|
-| 1. Recursos básicos. Programación estructurada | 7 |
-| 2. Estrategias de solución y recursividad | 5 |
+96 horas, que es exactamente un semestre, así que en el papel **el primer semestre
+cubre los dos primeros temas y el segundo es el tema tercero completo.** La corrida de
+2024 se partió en ese mismo punto: once conferencias hasta programación dinámica y de
+la duodécima en adelante, herencia.
 
 Se imparte una conferencia semanal, los miércoles, más hasta dos clases prácticas en
-aula o laboratorio. El semestre tiene dieciséis semanas nominales; descontando la
-primera, la última y las que siempre se pierden, quedan doce de contenido. Este plan
-tiene doce conferencias y ninguna de reserva: si se pierde una semana, la conferencia
-que se funde con su vecina es la quinta dentro de la cuarta, y si se pierden dos,
-también la undécima dentro de la décima.
+aula o laboratorio. Las conferencias se numeran por la semana en que se dan. El
+semestre tiene dieciséis semanas nominales, pero en la práctica quedan doce de
+contenido, y la semana 7 se dedicó a un examen sobre el primer tema. Eso deja las
+semanas 8 a 12 para terminar el primer tema y llegar hasta divide y vencerás, que se
+evalúa en la semana 12.
+
+| Semana | Conferencia | Tema |
+|---|---|---|
+| 1–6 | Python básico, condicionales y ciclos, funciones, listas, cadenas y archivos, diccionarios y conjuntos | 1 |
+| 7 | Examen | 1 |
+| 8 | Búsqueda, ordenación y costo | 1 |
+| 9 | Recursión | 2 |
+| 10 | Divide y vencerás, cuando la división es evidente | 2 |
+| 11 | Divide y vencerás, cuando no lo es | 2 |
+| 12 | Evaluación de divide y vencerás | 2 |
+| 13–16 | Backtrack y combinatoria | 2 |
+
+Las conferencias 13 a 16 completan el segundo tema tal como lo pide el programa y se
+planifican aquí como si cupieran en este semestre, pero en la práctica se dan al
+inicio del segundo. Programación dinámica, que en la versión anterior de este plan
+cerraba el semestre, pasa también al segundo semestre. Este calendario no tiene
+semanas de reserva: si se pierde una, la conferencia 11 se funde con la 10 y la
+evaluación de la semana 12 trata solo los problemas de división evidente.
 
 El curso se imparte en **Python**. El cambio de lenguaje empezó el curso pasado por el
 proyecto, cuyo verificador automático ya corre código Python, y estas conferencias son
@@ -127,7 +140,7 @@ Eratóstenes, que es la deuda de la conferencia tres y no necesita más que
 `[False] * (n + 1)`, y con las dos cuentas de operaciones una al lado de la otra: al
 triplicar el tope, la criba triplica sus tachones y el método de uno en uno multiplica sus
 divisiones por casi cinco. Eso deja abierto el orden de crecimiento para la conferencia
-siete y el recordar en lugar de recalcular para la doce. En esta semana cae la orientación
+ocho y el recordar en lugar de recalcular para programación dinámica. En esta semana cae la orientación
 del Proyecto I, que se trata aparte y no forma parte del contenido de la conferencia.
 
 ### Conferencia 5. Cadenas y archivos
@@ -152,66 +165,103 @@ de la asignatura sitúa los diccionarios en el tercer tema; este plan los adelan
 porque en Python son un tipo básico del lenguaje y porque la carrera de Ciencia de
 Datos los necesita desde el principio.
 
-### Conferencia 7. Búsqueda, ordenación y costo
+### Semana 7. Examen
+
+Examen escrito sobre el primer tema. No hay conferencia.
+
+### Conferencia 8. Búsqueda, ordenación y costo
 
 Proyecto: ordenar las palabras por frecuencia a mano, sin usar la función de la
 biblioteca, y después buscar en el resultado. Búsqueda lineal y búsqueda binaria sobre
 una lista ordenada, ahora escritas y no solo intuidas. Ordenación por selección, por
 inserción y por intercambio, las tres implementadas y comparadas. Contar operaciones
 en lugar de medir segundos, que ya se hizo una vez con la criba, y la diferencia entre
-$n$, $n \log n$ y $n^2$ vista sobre listas que crecen, midiendo también el reloj para que el orden de crecimiento deje de
-ser una abstracción. Es una introducción informal a la complejidad, que se retoma con
-rigor en Estructuras de Datos. Cierra el primer tema.
+$n$ y $n^2$ vista sobre listas que crecen, midiendo también el reloj para que el orden
+de crecimiento deje de ser una abstracción. La conferencia termina extrapolando a un
+millón de números, que los tres métodos tardarían horas en ordenar, y ese millón es el
+que abre la conferencia 10. Es una introducción informal a la complejidad,
+que se retoma con rigor en Estructuras de Datos. Cierra el primer tema.
 
 ## Tema 2. Estrategias de solución y recursividad
 
-### Conferencia 8. Recursión
+### Conferencia 9. Recursión
 
 Proyecto: las Torres de Hanói, que se resuelven en cinco líneas recursivas y no se
-resuelven fácil de ninguna otra manera. Caso base y caso recursivo. La pila de
-llamadas, trazada a mano para una entrada pequeña, y el `RecursionError` provocado a
-propósito. Factorial y Fibonacci escritos recursivamente, con el reloj puesto: el
-término treinta sale en una décima de segundo, el cuarenta tarda dieciséis segundos y
-el cincuenta pasaría de la media hora. La observación queda abierta y se cobra en la
-conferencia doce. Recursión sobre listas
-y sobre cadenas, para que la recursión no quede asociada solo a los números.
+resuelven fácil de ninguna otra manera. La conferencia junta lo que en otros cursos
+son dos, y por eso va de lo simple a lo que justifica la recursión. Primero la
+recursión de cola, con una sola llamada que es lo último que hace la función: la suma
+de una lista, el factorial con acumulador, el `mcd` de Euclides y la búsqueda binaria
+de la conferencia 8 reescrita recursivamente, que cierra el arco abierto al final de la
+conferencia dos. Caso base y caso recursivo. La pila de llamadas, trazada a mano para
+una entrada pequeña, y el `RecursionError` provocado a propósito cerca de las mil
+llamadas, porque Python no elimina la llamada de cola. La conclusión de esa primera
+mitad es que una recursión de cola es un ciclo escrito de otra forma, y deja abierta la
+pregunta de para qué sirve la recursión. La segunda mitad la contesta con funciones que
+se llaman más de una vez: Hanói, aplanar una lista de listas anidadas a cualquier
+profundidad, que con ciclos es difícil, y Fibonacci con el reloj puesto. El término
+treinta sale en una décima de segundo, el cuarenta tarda dieciséis segundos y el
+cincuenta pasaría de la media hora; la observación queda abierta para programación
+dinámica. El árbol de llamadas dibujado y sus nodos contados nivel por nivel, que es
+la herramienta con la que la conferencia siguiente explica el costo.
 
-### Conferencia 9. Divide y vencerás
+### Conferencia 10. Divide y vencerás, cuando la división es evidente
 
-Proyecto: ordenación por mezcla, cronometrada contra los tres métodos de la conferencia
-siete sobre las mismas listas. El esquema de partir, resolver las partes y combinar.
-La búsqueda binaria reescrita recursivamente, que cierra el arco abierto al final de
-la conferencia dos. Ordenación rápida y su elección del pivote. Por qué estos
-algoritmos cuestan $n \log n$, argumentado contando los niveles del árbol de llamadas y
-el trabajo de cada nivel, sin recurrencias formales.
+Proyecto: el millón de números que la conferencia 8 no pudo ordenar.
+Ordenación por mezcla, cronometrada contra los tres métodos de la conferencia 8 sobre
+las mismas listas. El esquema de partir, resolver las partes y combinar, sobre
+problemas donde las tres cosas se ven a simple vista: partir una lista por la mitad,
+resolver cada mitad con la misma función, y en la mezcla, combinar dos listas ya
+ordenadas. Ordenación rápida, donde el trabajo se pasa de combinar a partir, y la
+elección del pivote, con el caso de la lista ya ordenada que la vuelve cuadrática. Por
+qué estos algoritmos cuestan $n \log n$, argumentado con el árbol de llamadas de la
+conferencia 9: cuántos niveles tiene y cuánto trabajo hay en cada nivel, sin
+recurrencias formales.
 
-### Conferencia 10. Backtrack
+### Conferencia 11. Divide y vencerás, cuando no lo es
 
-Proyecto: las ocho reinas. El salto conceptual del semestre, y conviene decirlo en
-clase: hasta aquí los estudiantes han buscado en espacios que alguien les entregó,
-una lista, un rango de números. Ahora buscan en un espacio combinatorio que solo está
-definido de forma implícita por las reglas del problema. Construir una solución por
-decisiones parciales, verificar la validez de cada decisión, y deshacerla cuando el
-camino no lleva a ninguna parte. La poda como la diferencia entre un programa que
-termina y uno que no. Se orientan el sudoku y el recorrido del caballo.
+Proyecto: la mejor racha de una serie de ganancias y pérdidas diarias, es decir, el
+subarreglo de suma máxima. Partir por la mitad sigue siendo fácil, pero la respuesta
+puede cruzar el punto de corte, y combinar exige pensar ese caso aparte. La solución
+por fuerza bruta se escribe primero y se cronometra contra la de divide y vencerás.
+Después dos problemas donde lo que no es evidente es la división: la potencia rápida,
+que parte el exponente y no una lista, y contar las inversiones de una lista, que se
+resuelve modificando la mezcla de la conferencia anterior para que cuente mientras
+ordena. La pregunta que guía la conferencia es qué hay que saber de cada mitad para
+poder combinar, y a veces la respuesta es devolver más de lo que el problema pide.
 
-### Conferencia 11. Combinatoria
+### Semana 12. Evaluación de divide y vencerás
 
-Proyecto: generar todas las permutaciones, combinaciones y subconjuntos de un
-conjunto, y usarlos para resolver el problema de la mochila por fuerza bruta. Contar
-cuántos objetos hay antes de generarlos, que es lo que dice de antemano si el programa
-va a terminar. El árbol de decisiones como la forma común de esta conferencia y la
-anterior. Se muestra `itertools` al final, después de que los estudiantes hayan
-escrito sus propios generadores y no antes.
+Los estudiantes resuelven un ejercicio de divide y vencerás que no han visto en clase.
+El ejercicio se escoge para que partir sea fácil y combinar requiera pensar, como en la
+conferencia 11. Cierra lo que el semestre alcanza a dar del segundo tema.
 
-### Conferencia 12. Programación dinámica
+### Conferencias 13 a 16. Backtrack y combinatoria
 
-Proyecto: arreglar el Fibonacci de la conferencia ocho. Se mide, se memoriza en un
-diccionario y se vuelve a medir, y la mejora es de un factor imposible de ignorar. De
-ahí salen los dos conceptos: subproblemas que se repiten y la tabla que guarda las
-respuestas. El problema de la mochila resuelto ahora en tiempo razonable, y la
-subsecuencia común más larga. Memoización de arriba hacia abajo y tabla de abajo hacia
-arriba, con la conversión de una en otra. Cierra el segundo tema.
+Estas cuatro conferencias completan el segundo tema según el programa y se planifican
+como parte de este semestre, pero en la práctica se dan al inicio del segundo.
+
+**Conferencia 13. Backtrack.** Proyecto: las ocho reinas. El salto conceptual del
+tema, y conviene decirlo en clase: hasta aquí los estudiantes han buscado en espacios
+que alguien les entregó, una lista, un rango de números. Ahora buscan en un espacio
+combinatorio que solo está definido de forma implícita por las reglas del problema.
+Construir una solución por decisiones parciales, verificar la validez de cada decisión,
+y deshacerla cuando el camino no lleva a ninguna parte.
+
+**Conferencia 14. Backtrack con poda.** Proyecto: el sudoku, y se orienta el recorrido
+del caballo. La poda como la diferencia entre un programa que termina y uno que no,
+medida contando los nodos que se visitan con poda y sin ella. El orden en que se
+prueban las decisiones, que en el sudoku es empezar por la casilla con menos opciones.
+
+**Conferencia 15. Combinatoria: generar.** Proyecto: generar todas las permutaciones,
+combinaciones y subconjuntos de un conjunto. El árbol de decisiones como la forma común
+de esta conferencia y las dos anteriores: un generador combinatorio es un backtrack que
+nunca descarta nada.
+
+**Conferencia 16. Combinatoria: contar.** Proyecto: el problema de la mochila por
+fuerza bruta, con los subconjuntos de la conferencia anterior. Contar cuántos objetos
+hay antes de generarlos, que es lo que dice de antemano si el programa va a terminar.
+Se muestra `itertools` al final, después de que los estudiantes hayan escrito sus
+propios generadores y no antes. La mochila queda abierta para programación dinámica.
 
 ## Evaluación
 
@@ -223,18 +273,21 @@ el primer momento en que un estudiante tiene con qué escribir un programa que m
 el nombre. Se revisa a partir de la segunda semana del segundo semestre. Aprobarlo es
 requisito para tener derecho a los exámenes finales.
 
-El **primer examen parcial**, sobre algoritmia básica, va después de la semana 10, que
-en este plan cae entre backtrack y combinatoria. Los otros dos parciales son del
-segundo semestre. Conviene notar que el esquema de 2024 pone un solo parcial en todo el
-primer semestre y lo sitúa cuando el tema de recursión ya empezó, así que el primer
-tema completo no tiene evaluación escrita propia; si el colectivo quiere una, el lugar
-natural es al cerrar la conferencia 7.
+El esquema de 2024 pone un solo parcial en el primer semestre, después de la semana
+10. En este calendario hay dos evaluaciones escritas: el examen de la semana 7, que
+cubre el primer tema completo, y el ejercicio de divide y vencerás de la semana 12.
+Backtrack y combinatoria se evalúan en el segundo semestre, cuando se den. Los otros
+dos parciales son del segundo semestre.
 
 Las clases prácticas llevan evaluación presencial que no penaliza la nota final pero sí
 puede bonificarla, y los ejercicios semanales resueltos se suben a GitHub y cuentan
 para toda valoración subjetiva del desempeño.
 
 ## Lo que queda para el segundo semestre
+
+Antes del tercer tema, el segundo semestre empieza con lo que este no alcanzó: las
+conferencias 13 a 16 de backtrack y combinatoria, y programación dinámica, que arranca
+del Fibonacci de la conferencia 9 y de la mochila de la conferencia 16.
 
 El tercer tema, con sus 96 horas, cubre clases y objetos, herencia y polimorfismo,
 tipos abstractos e interfaces, iteradores, programación funcional, estructuras
