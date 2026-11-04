@@ -230,7 +230,7 @@ svg .mono{font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace}
 .ctl button.on{border-color:var(--ac);color:var(--ac)}
 .ctl button.go{background:var(--ac);border-color:var(--ac);color:#0d1117;font-weight:700}
 .ctl .sp{flex:1}
-.race{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1cqw;margin-top:.6cqw}
+.race{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1cqw;margin-top:.6cqw}
 .race .viz{padding:.7cqw .8cqw}
 
 /* el pedazo que se parte */
@@ -1127,7 +1127,7 @@ function* gBurbuja(a, c) {
         yield F({ line: 7, ptr: { j }, cls: { done, swap: [j, j + 1] }, msg: 'hubo_cambio = True' });
       }
     }
-    if (!cambio) { yield F({ line: 10, cls: { done: range(0, n) }, msg: `la pasada ${k} no cambió nada: break, con ${c.comparaciones} comparaciones`, end: true }); return; }
+    if (!cambio) { yield F({ line: 10, cls: { done: range(0, n) }, msg: `pasada ${k} sin cambios: break`, end: true }); return; }
     yield F({ line: 9, cls: { done: range(n - k - 1, n) }, msg: `el ${a[n - k - 1].v} llegó a su lugar` });
   }
   yield F({ cls: { done: range(0, n) }, msg: `ordenada, con ${c.comparaciones} comparaciones`, end: true });
