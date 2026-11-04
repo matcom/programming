@@ -1,34 +1,18 @@
----
-theme: note
-css: notas.css
-vars:
-  figure-label: "Figura"
-  figure-ref-label: "figura"
-execute:
-  interpreters:
-    python: ["uv", "run", "--quiet", "--python", "3.14", "--with", "tesserax", "python", "-"]
-title: "Conferencia 3: funciones"
----
-
-# Conferencia 3: funciones
-
-::: meta
-Programación · Ciencia de la Computación y Ciencia de Datos · MatCom · 2026-09-30
-:::
+# Funciones {#chap-funciones}
 
 Un número entero mayor que 1 es **primo** si no se puede dividir exactamente entre
 ningún otro salvo 1 y él mismo. Decidirlo para un número dado está al alcance de lo que
 ya sabes: un ciclo, un `if` y el operador `%`. Lo que no está al alcance todavía es
-usar ese programa dentro de otro, y por eso hoy aprendemos a ponerle nombre a un pedazo
+usar ese programa dentro de otro, y por eso en este capítulo aprendemos a ponerle nombre a un pedazo
 de programa.
 
-Al final de la clase vamos a tener un programa que imprime todos los primos hasta un
+Al final del capítulo vamos a tener un programa que imprime todos los primos hasta un
 número dado y otro que los cuenta, los dos construidos sobre la misma pieza. Y vamos a
 dejar planteado, sin poder escribirlo todavía, un método mucho mejor.
 
 ## 1. Un programa sin nombre
 
-Empecemos por el problema de un solo número. ¿Es 91 primo? Con lo de la clase pasada se
+Empecemos por el problema de un solo número. ¿Es 91 primo? Con lo del capítulo anterior se
 escribe así:
 
 ```{python}
@@ -97,7 +81,7 @@ def es_primo(n):
 print(es_primo)
 ```
 
-Eso que imprime es la función como valor. Hoy no lo vamos a usar, pero recuérdalo:
+Eso que imprime es la función como valor. Aquí no lo vamos a usar, pero recuérdalo:
 significa que una función es un dato más, como un número o un texto, y sobre esa idea
 está construida media biblioteca estándar.
 
@@ -175,7 +159,7 @@ if es_divisible(100, 4) and es_divisible(100, 25):
     print("100 se divide entre 4 y entre 25")
 ```
 
-Recupera la distinción de la primera clase: **una función con `return` es una
+Recupera la distinción del capítulo 1: **una función con `return` es una
 expresión**, y por eso se puede meter dentro de un `and`, de una suma o de otra llamada.
 
 ### Imprimir no es devolver
@@ -328,7 +312,7 @@ segunda hizo una.
 
 ## 4. Componer funciones
 
-Con `es_primo` en el vocabulario, el programa que la clase pasada era imposible se
+Con `es_primo` en el vocabulario, el programa que en el capítulo anterior era imposible se
 escribe en cuatro líneas:
 
 ```{python}
@@ -366,7 +350,7 @@ El método se llama **descomponer**, y la pregunta que lo guía es siempre la mi
 pedazo es una función y esa frase es su nombre. «Dice si un número es primo» y «imprime
 los primos hasta n» son dos frases, así que son dos funciones.
 
-Una tercera frase, que vamos a usar todo el resto de la clase: «cuenta cuántos primos
+Una tercera frase, que vamos a usar todo el resto del capítulo: «cuenta cuántos primos
 hay hasta n».
 
 ```{python continue}
@@ -518,7 +502,7 @@ print(F.un_solo_lugar(
         "la mejora se hace una vez y les llega a los tres."))
 ```
 
-Ese es el argumento entero de la clase de hoy, y es mucho más fuerte que «no repitas
+Ese es el argumento entero de este capítulo, y es mucho más fuerte que «no repitas
 código». Una función es un contrato: dice qué recibe y qué devuelve, y no dice cómo. Todo
 lo que está dentro del contrato se puede cambiar sin avisarle a nadie. Un programa sin
 funciones no tiene contratos, y entonces cualquier mejora hay que aplicarla en todos los
@@ -624,8 +608,8 @@ print(divisiones_para(999983), "divisiones para 999983")
 ```
 
 Un número par se descarta con una sola división. Un primo de seis cifras cuesta casi mil.
-Contar operaciones en lugar de medir segundos es una idea a la que le vamos a dedicar una
-conferencia entera.
+Contar operaciones en lugar de medir segundos es una idea a la que le vamos a dedicar un
+capítulo entero, el 7.
 
 ## 7. Valores por defecto y argumentos con nombre
 
@@ -682,8 +666,8 @@ mirar la definición, cosa que `contar_primos(100, 90)` no.
 
 ## 8. Los docstrings
 
-Ese texto entre comillas triples en la primera línea del cuerpo, que llevamos usando toda
-la clase, se llama **docstring**, y es la forma normal de decir qué hace una función. No
+Ese texto entre comillas triples en la primera línea del cuerpo, que llevamos usando todo
+el capítulo, se llama **docstring**, y es la forma normal de decir qué hace una función. No
 es un comentario: Python lo guarda y lo puede mostrar.
 
 ```{python}
@@ -739,7 +723,7 @@ print(F.criba_visual(25, _primos, ident="criba-3",
 ```
 
 Cada primo que aparece se gasta inmediatamente en descartar de golpe a muchos otros, que
-es justamente lo que el método de hoy no hace. Y hoy no lo podemos escribir.
+es justamente lo que el método de este capítulo no hace. Y todavía no lo podemos escribir.
 
 Piensa qué haría falta. Para tachar hay que acordarse de los tachones: por cada número
 entre 2 y `n`, un sí o un no. Con variables eso son `n` variables, y el problema no es que
@@ -748,8 +732,8 @@ que escribirlas antes, cuando el programa se escribe.** No se puede teclear una 
 de nombres que todavía no se sabe cuál es.
 
 Ahí se acaba lo que da de sí una variable por valor, y esa es exactamente la pregunta con
-la que abre la clase que viene. La respuesta tiene nombre, y la criba la escribimos allí,
-al final, con la cuenta de operaciones puesta al lado del método de hoy.
+la que abre el capítulo siguiente. La respuesta tiene nombre, y la criba la escribimos allí,
+al final, con la cuenta de operaciones puesta al lado del método de este capítulo.
 
 ## 10. Resumen
 
@@ -783,13 +767,13 @@ al final, con la cuenta de operaciones puesta al lado del método de hoy.
 3. Escribe `suma_de_divisores(n)`, que devuelve la suma de los divisores propios de `n`
    (los que son menores que `n`). Con ella escribe `es_perfecto(n)` en una línea, y con
    esa imprime todos los números perfectos menores que 10000. Compara este programa con
-   el que escribiste la clase pasada para lo mismo.
+   el que escribiste en el capítulo anterior para lo mismo.
 4. Escribe `longitud_collatz(n)`, que devuelve cuántos pasos tarda la secuencia de
-   Collatz de la clase pasada en llegar a 1. Úsala para encontrar el número menor que 1000
+   Collatz del capítulo anterior en llegar a 1. Úsala para encontrar el número menor que 1000
    con la secuencia más larga.
 5. Los **primos gemelos** son parejas de primos que difieren en 2, como 11 y 13, o 41 y
    43. Escribe `contar_gemelos(n)` que cuente cuántas parejas hay hasta `n`. Guarda la
-   respuesta, que la clase que viene vas a escribir otra versión y a compararlas.
+   respuesta, que en el capítulo siguiente vas a escribir otra versión y a compararlas.
 6. Escribe `dibujar_triangulo(altura, caracter="*")` que imprima un triángulo. Con
    `dibujar_triangulo(4)` debe salir:
 

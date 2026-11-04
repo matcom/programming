@@ -1,20 +1,4 @@
----
-theme: note
-css: notas.css
-vars:
-  figure-label: "Figura"
-  figure-ref-label: "figura"
-execute:
-  interpreters:
-    python: ["uv", "run", "--quiet", "--python", "3.14", "--with", "tesserax", "python", "-"]
-title: "Conferencia 11: divide y vencerás, cuando no es evidente"
----
-
-# Conferencia 11: divide y vencerás, cuando no es evidente
-
-::: meta
-Programación · Ciencia de la Computación y Ciencia de Datos · MatCom · 2026-11-25
-:::
+# Divide y vencerás, cuando no es evidente {#chap-divide-y-venceras-ii}
 
 ```{python echo=false}
 import math
@@ -27,11 +11,11 @@ sys.path.insert(0, os.path.abspath(".."))   # conferences/2026, donde vive figur
 import figuras as F
 ```
 
-En la conferencia pasada las tres partes de divide y vencerás se veían a simple vista.
+En el capítulo anterior las tres partes de divide y vencerás se veían a simple vista.
 Para ordenar, partir es cortar la lista por la mitad, cada mitad es el mismo problema, y
 combinar es mezclar, o pegar. Nadie tuvo que preguntarse qué hacer con cada pedazo.
 
-Hoy vemos tres problemas donde eso deja de ser obvio. En el primero partir sigue siendo
+Este capítulo trata tres problemas donde eso deja de ser obvio. En el primero partir sigue siendo
 fácil, pero combinar exige pensar un caso que no está en ninguna de las dos mitades, y
 para combinar barato hay que pedirle a cada mitad más de lo que el problema pide. En el
 segundo lo que no es obvio es qué partir. En el tercero hay que pedirle a cada mitad que,
@@ -78,7 +62,7 @@ print(mejor_racha_bruta(dias))
 ```
 
 Hay un ciclo dentro de otro, y el de dentro da `n - i` vueltas: en total
-$\frac{n(n+1)}{2}$, el mismo orden $n^2$ que la selección de la conferencia 8. Funciona, y
+$\frac{n(n+1)}{2}$, el mismo orden $n^2$ que la selección del capítulo 7. Funciona, y
 es el oráculo contra el que vamos a probar todo lo demás.
 
 ## 2. Partir por la mitad
@@ -134,7 +118,7 @@ print(mejor_racha(dias))
 ```
 
 En lugar de rebanadas usamos los índices `izq` y `der`, como en la búsqueda binaria
-recursiva de la conferencia 9, con `der` fuera del pedazo, igual que en `range` y en las
+recursiva del capítulo 8, con `der` fuera del pedazo, igual que en `range` y en las
 rebanadas. Así ninguna llamada copia la lista. El `range(medio - 1, izq - 1, -1)` cuenta
 hacia atrás: de `medio - 1` hasta `izq`, porque el final de un `range` no se incluye.
 
@@ -204,7 +188,7 @@ hace el papel de `mezclar`.
 
 ## 3. Devolver más de lo que se pide
 
-Se puede hacer mejor, y la manera de hacerlo es la idea más importante de la clase.
+Se puede hacer mejor, y la manera de hacerlo es la idea más importante del capítulo.
 
 `mejor_cruce` recorre el pedazo entero porque necesita dos cosas que las llamadas
 recursivas no le dieron: la mejor suma que **termina** en el borde derecho de la mitad
@@ -402,7 +386,7 @@ Da el resultado correcto y hace **más** multiplicaciones que la potencia lenta.
 cada llamada hace dos llamadas, y el árbol tiene unos $\log_2 n$ niveles, cada uno con
 el doble de llamadas que el anterior: $1 + 2 + 4 + \cdots$ hasta pasar de $n$. La tabla
 dice que salen unas tres multiplicaciones por cada unidad del exponente. Es el árbol de Fibonacci de la
-conferencia 9, que calculaba lo mismo varias veces. La potencia rápida es rápida porque
+capítulo 8, que calculaba lo mismo varias veces. La potencia rápida es rápida porque
 resuelve **un** subproblema y lo usa dos veces, como la búsqueda binaria, que también tenía
 un solo subproblema. Dividir no ayuda si después resuelves los pedazos repetidos.
 
@@ -477,7 +461,7 @@ izquierda es mayor que qué elemento de la derecha. Así que podemos pedirle a c
 recursiva que, además de contar, **devuelva su mitad ordenada**. Y con dos mitades
 ordenadas, las inversiones que cruzan se cuentan mientras se mezclan.
 
-Mira la mezcla de la conferencia 10. Cuando el elemento que se toma viene de la derecha,
+Mira la mezcla del capítulo 9. Cuando el elemento que se toma viene de la derecha,
 `b[j]`, es porque es menor que `a[i]`, y como `a` está ordenada, también es menor que todos
 los que quedan en `a` después de `a[i]`. Cada uno de esos forma una inversión con `b[j]`.
 Son `len(a) - i`, y se suman de una vez:
@@ -539,7 +523,7 @@ problema, pero sin la lista ordenada no había manera barata de contar lo que cr
 
 ## 6. La pregunta
 
-Los cinco problemas de las dos últimas clases, puestos juntos:
+Los cinco problemas de los dos últimos capítulos, puestos juntos:
 
 | Problema | Dividir | Qué devuelve cada mitad | Combinar |
 |---|---|---|---|

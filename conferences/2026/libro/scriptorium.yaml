@@ -1,0 +1,46 @@
+# Programación, el libro del primer semestre. Cada conferencia es un capítulo, y
+# todos los bloques de código corren al construir el libro, desde este
+# directorio: por eso los archivos de datos viven aquí y `..` es conferences/2026,
+# donde está figuras.py.
+theme: book
+lang: es
+css: libro.css
+base-url: https://matcom.github.io/programming/
+execute:
+  timeout: 600
+  interpreters:
+    python: ["uv", "run", "--quiet", "--python", "3.14", "--with", "tesserax", "python", "-"]
+
+vars:
+  title: "Programación"
+  subtitle: "Del primer programa a divide y vencerás"
+  author: "Facultad de Matemática y Computación, Universidad de La Habana"
+  figure-label: "Figura"
+  figure-ref-label: "figura"
+
+files:
+  - 00-titulo.md
+  - 00-indice.md
+  - prefacio.md
+  - parte-1.md
+  - ../01-python-basico/notas.md
+  - ../02-condicionales-y-ciclos/notas.md
+  - ../03-funciones/notas.md
+  - ../04-listas/notas.md
+  - ../05-cadenas-y-archivos/notas.md
+  - ../06-diccionarios-y-conjuntos/notas.md
+  - ../08-busqueda-y-ordenacion/notas.md
+  - parte-2.md
+  - ../09-recursion/notas.md
+  - ../10-divide-y-venceras/notas.md
+  - ../11-divide-y-venceras-ii/notas.md
+
+outputs:
+  sitio:
+    format: docs
+    dir: sitio
+    repo-url: https://github.com/matcom/programming
+    js: [sitio.js]
+  libro:
+    format: pdf
+    file: programacion.pdf

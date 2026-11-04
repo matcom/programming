@@ -626,8 +626,10 @@ def tres_rachas(valores, medio, rachas, ident="rachas", pie=""):
                  width=1.6, marker_start="arrow", marker_end="arrow")
             _txt(f"{etiqueta}: suma {suma}", j * lado + 8, y, color, PIE,
                  ancla="left")
+    return _figura(canvas, ident, pie)
 
 
+# --------------------------------------------------------------------------
 # conferencia 6: diccionarios y conjuntos
 # --------------------------------------------------------------------------
 

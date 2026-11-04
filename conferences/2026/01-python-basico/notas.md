@@ -1,22 +1,6 @@
----
-theme: note
-css: notas.css
-vars:
-  figure-label: "Figura"
-  figure-ref-label: "figura"
-execute:
-  interpreters:
-    python: ["uv", "run", "--quiet", "--python", "3.14", "--with", "tesserax", "python", "-"]
-title: "Conferencia 1: lo básico de Python"
----
+# Lo básico de Python {#chap-python-basico}
 
-# Conferencia 1: lo básico de Python
-
-::: meta
-Programación · Ciencia de la Computación y Ciencia de Datos · MatCom · 2026-09-16
-:::
-
-Hoy escribimos nuestros primeros programas en Python. Al terminar la clase vas a
+En este capítulo escribimos nuestros primeros programas en Python. Al terminarlo vas a
 saber escribir un programa que le pide datos al usuario, hace cuentas con ellos y
 muestra el resultado. Ese programa va a ser una calculadora de las raíces de una
 ecuación de segundo grado, y la vamos a construir pieza a pieza durante la hora.
@@ -449,7 +433,7 @@ ValueError: expected a nonnegative input, got -4.0
 En versiones de Python anteriores a la 3.14 el mensaje es `ValueError: math domain
 error`. Para que el programa responda "no tiene raíces reales" en vez de fallar,
 necesita decidir qué hacer según el valor del discriminante. Eso es lo que vemos en
-la próxima clase: los condicionales. Si pruebas `a = 0`, vas a encontrar otro error
+el capítulo siguiente: los condicionales. Si pruebas `a = 0`, vas a encontrar otro error
 que también se arregla con un condicional.
 
 ## 7. Resumen

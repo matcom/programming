@@ -1,29 +1,13 @@
----
-theme: note
-css: notas.css
-vars:
-  figure-label: "Figura"
-  figure-ref-label: "figura"
-execute:
-  interpreters:
-    python: ["uv", "run", "--quiet", "--python", "3.14", "--with", "tesserax", "python", "-"]
-title: "Conferencia 5: cadenas y archivos"
----
+# Cadenas y archivos {#chap-cadenas-y-archivos}
 
-# Conferencia 5: cadenas y archivos
-
-::: meta
-Programación · Ciencia de la Computación y Ciencia de Datos · MatCom · 2026-10-14
-:::
-
-Llevas cuatro clases usando cadenas de texto, pero solo para imprimirlas y para
-leerlas de la consola. Hoy las vamos a abrir por dentro y vas a ver que una cadena es
+Llevas cuatro capítulos usando cadenas de texto, pero solo para imprimirlas y para
+leerlas de la consola. Aquí las vamos a abrir por dentro y vas a ver que una cadena es
 una secuencia, igual que una lista, con las mismas reglas de índices y rebanadas que
-aprendiste la semana pasada. Y como el texto de verdad no se escribe a mano sino que
-vive en archivos, hoy también aprendemos a leerlos. El proyecto de la clase es un
+aprendiste en el capítulo anterior. Y como el texto de verdad no se escribe a mano sino que
+vive en archivos, también aprendemos a leerlos. El proyecto del capítulo es un
 programa que abre un archivo y cuenta sus palabras.
 
-Trabajamos sobre el archivo `quijote.txt`, que tienes junto a estas notas y contiene
+Trabajamos sobre el archivo `quijote.txt`, que puedes descargar de la carpeta [`conferences/2026/libro`](https://github.com/matcom/programming/tree/main/conferences/2026/libro) del repositorio del curso y contiene
 los tres primeros párrafos del Quijote.
 
 ## 1. Una cadena es una secuencia
@@ -53,7 +37,7 @@ _palabra = "computación"
 
 print(F.fila_de_casillas(
     list(_palabra), nombre="palabra", ident="cadena",
-    pie="La misma fila de casillas de la clase pasada, con un carácter en cada "
+    pie="La misma fila de casillas del capítulo anterior, con un carácter en cada "
         "una. Lo único que cambia es que estas no se pueden modificar."))
 ```
 
@@ -117,7 +101,7 @@ print(palabra)
 ```
 
 Y como no se pueden modificar, tampoco tienen el problema de los nombres compartidos
-que vimos la clase pasada. Dos nombres para la misma cadena nunca se sorprenden el uno
+que vimos en el capítulo anterior. Dos nombres para la misma cadena nunca se sorprenden el uno
 al otro, porque ninguno puede cambiarla.
 
 ## 2. Métodos de cadena
@@ -153,8 +137,8 @@ espacios. Úsalo cuando algo no cuadre.
 
 ### `split` y `join`
 
-De todos, el importante para hoy es `split`, porque convierte un texto en una lista de
-palabras y te devuelve al terreno de la clase pasada:
+De todos, el importante para nosotros es `split`, porque convierte un texto en una lista de
+palabras y te devuelve al terreno del capítulo anterior:
 
 ```{python}
 linea = "En un lugar de la Mancha"
@@ -178,7 +162,7 @@ print(F.split_visual(
     _linea, _linea.split(), ident="split",
     pie="<code>split</code> parte por los espacios y los descarta. Lo que "
         "devuelve es una "
-        "lista, así que todo lo de la clase pasada vuelve a servir."))
+        "lista, así que todo lo del capítulo anterior vuelve a servir."))
 ```
 
 `join` hace el camino inverso: recibe una lista y la pega en una sola cadena. Se escribe
@@ -269,7 +253,7 @@ with open("no-existe.txt", encoding="utf-8") as archivo:
     print(archivo.read())
 ```
 
-Hasta hoy, cada error que hemos visto ha terminado el programa. Un programa serio no
+Hasta ahora, cada error que hemos visto ha terminado el programa. Un programa serio no
 puede darse ese lujo: si el usuario escribe mal el nombre del archivo, lo correcto es
 decírselo y seguir, no volcarle un traceback en la pantalla.
 
@@ -391,7 +375,7 @@ print(f"la más larga es '{mas_larga(palabras)}'")
 print(f"promedio de {promedio_de_letras(palabras):.2f} letras")
 ```
 
-`mas_larga` es el mismo acumulador de la clase pasada, con `len(palabra)` en lugar del
+`mas_larga` es el mismo acumulador del capítulo anterior, con `len(palabra)` en lugar del
 valor. Ese patrón, guardar el mejor visto hasta ahora, lo vas a escribir cien veces.
 
 Y el programa principal, con la ruta pedida al usuario y el error atendido:
@@ -412,10 +396,10 @@ El `else` de un `try` se ejecuta solo si no hubo error, y sirve para dejar dentr
 `try` únicamente la línea que puede fallar. Cuanto más pequeño el `try`, más claro qué
 error estás atendiendo.
 
-Queda una pregunta natural que hoy no podemos responder: **cuántas veces aparece cada
+Queda una pregunta natural que todavía no podemos responder: **cuántas veces aparece cada
 palabra**. Podrías intentarlo con dos listas en paralelo, una de palabras y otra de
 conteos, y funcionaría, pero sería lento y incómodo. La estructura que resuelve eso es
-el diccionario, y es la clase que viene.
+el diccionario, y es el capítulo siguiente.
 
 ## 6. Resumen
 

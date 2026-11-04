@@ -1,27 +1,11 @@
----
-theme: note
-css: notas.css
-vars:
-  figure-label: "Figura"
-  figure-ref-label: "figura"
-execute:
-  interpreters:
-    python: ["uv", "run", "--quiet", "--python", "3.14", "--with", "tesserax", "python", "-"]
-title: "Conferencia 2: condicionales y ciclos"
----
+# Condicionales y ciclos {#chap-condicionales-y-ciclos}
 
-# Conferencia 2: condicionales y ciclos
-
-::: meta
-Programación · Ciencia de la Computación y Ciencia de Datos · MatCom · 2026-09-23
-:::
-
-La clase pasada terminamos con una calculadora de raíces que funcionaba solo si le
+El capítulo anterior terminó con una calculadora de raíces que funcionaba solo si le
 dabas los coeficientes correctos. Con `a = 1`, `b = 0`, `c = 1` se rompía, y con
-`a = 0` también. Hoy la arreglamos. Para eso hace falta que el programa **decida** qué
+`a = 0` también. Aquí la arreglamos. Para eso hace falta que el programa **decida** qué
 hacer según lo que valen sus datos, y eso son los condicionales. Después veremos cómo
 hacer que un programa **repita** una parte de su trabajo, que son los ciclos. Con esas
-dos herramientas, al final de la clase vamos a construir un juego de adivinar números.
+dos herramientas, al final del capítulo vamos a construir un juego de adivinar números.
 
 ## 1. Decidir
 
@@ -55,9 +39,9 @@ Los operadores que producen valores de verdad son las comparaciones:
 | `>` | ¿mayor? | `2 > 3` | `False` |
 | `>=` | ¿mayor o igual? | `2 >= 3` | `False` |
 
-Fíjate en `==`, con dos signos. Un solo `=` es la asignación que vimos la clase
+Fíjate en `==`, con dos signos. Un solo `=` es la asignación que vimos en el capítulo
 pasada, que guarda un valor en una variable. Dos `==` preguntan si dos valores son
-iguales. Son cosas distintas y confundirlas es el error más común de la semana.
+iguales. Son cosas distintas y confundirlas es el error más común de los primeros días.
 
 ### La instrucción `if`
 
@@ -74,7 +58,7 @@ Hay dos cosas nuevas en la sintaxis. El **dos puntos** al final de la línea del
 abre un bloque. La **indentación** de la línea siguiente, cuatro espacios por
 convención, dice qué instrucciones pertenecen a ese bloque.
 
-Esto es propio de Python y conviene entenderlo bien desde hoy: en la mayoría de los
+Esto es propio de Python y conviene entenderlo bien desde ahora: en la mayoría de los
 lenguajes la indentación es cosmética y los bloques se delimitan con llaves. En Python
 la indentación *es* la sintaxis. Cambiarla cambia el significado del programa, y
 olvidarla es un error:
@@ -162,7 +146,7 @@ El mensaje es de los buenos: te dice exactamente qué quisiste escribir.
 
 ### El otro error: cuando `a` vale cero
 
-Queda el segundo problema de la clase pasada. Si `a` vale 0 la ecuación no es de
+Queda el segundo problema del capítulo anterior. Si `a` vale 0 la ecuación no es de
 segundo grado, y la fórmula divide por `2 * a`, que es cero:
 
 ```{python}
@@ -196,7 +180,7 @@ else:
 
 ### La calculadora completa
 
-Juntando todo, la calculadora de la clase pasada queda así, y ya no se rompe con
+Juntando todo, la calculadora del capítulo anterior queda así, y ya no se rompe con
 ninguna entrada:
 
 ```python
@@ -279,7 +263,7 @@ print(0 <= x and x <= 10)
 
 ### Comparar números reales
 
-Aquí pagamos una deuda de la clase pasada. Dijimos que los `float` son aproximados y
+Aquí pagamos una deuda del capítulo anterior. Dijimos que los `float` son aproximados y
 que nunca se comparan con `==`. Ahora que tenemos comparaciones, veamos por qué:
 
 ```{python}
@@ -347,7 +331,7 @@ print(F.partes_del_while(
         "ciclo no termina."))
 ```
 
-Sigamos la memoria como hicimos la clase pasada. Cada fila es una evaluación de la
+Sigamos la memoria como hicimos en el capítulo anterior. Cada fila es una evaluación de la
 condición:
 
 | Vuelta | `n` al entrar | `n > 0` | Imprime | `n` al salir |
@@ -362,7 +346,7 @@ condición:
 En la sexta evaluación la condición es falsa, el bloque no se ejecuta y el programa
 continúa en la línea de después, que imprime `¡Despegue!`.
 
-La línea `n = n - 1` es la misma idea de `contador = contador + 1` de la clase pasada:
+La línea `n = n - 1` es la misma idea de `contador = contador + 1` del capítulo anterior:
 lee el valor actual, calcula el nuevo, lo guarda en la misma variable. Como se escribe
 todo el tiempo, Python trae una abreviatura para cada operador aritmético:
 

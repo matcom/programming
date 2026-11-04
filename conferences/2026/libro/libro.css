@@ -1,0 +1,24 @@
+/* Las etiquetas del tema `book` vienen en inglés; este libro va en español. */
+h1.part::before { content: "Parte " counter(part, upper-roman); }
+a.ref-chap::after {
+  content: "capítulo " target-counter(attr(href url), chapter)
+           " (p. " target-counter(attr(href url), page) ")";
+}
+
+/* El número y el `@fig-…` los pone el tema `base`; aquí solo el centrado. */
+figure[id^="fig-"] { margin: 5mm 0; text-align: center; }
+
+/* Un nombre de código en la cabecera de una tabla no va en versalitas. */
+thead th code { text-transform: none; letter-spacing: 0; font-size: 8.5pt; }
+
+/* El tema `book` cita el pie entero de la figura ("“Ordenación por…” (p. 107)").
+   Dentro de una frase basta "figura 22", como en el tema `base`. */
+a.ref-fig::after {
+  content: var(--figure-ref-label, var(--figure-label)) " "
+           target-counter(attr(href url), figure);
+}
+
+/* scriptorium 0.12 escribe 0 como número de página de cada entrada del índice,
+   también en su propio ejemplo. Mientras se arregla, el índice va sin números;
+   las entradas siguen siendo enlaces dentro del PDF. */
+.toc-entry::after { content: none; }

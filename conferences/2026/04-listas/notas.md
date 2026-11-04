@@ -1,20 +1,4 @@
----
-theme: note
-css: notas.css
-vars:
-  figure-label: "Figura"
-  figure-ref-label: "figura"
-execute:
-  interpreters:
-    python: ["uv", "run", "--quiet", "--python", "3.14", "--with", "tesserax", "python", "-"]
-title: "Conferencia 4: listas"
----
-
-# Conferencia 4: listas
-
-::: meta
-Programación · Ciencia de la Computación y Ciencia de Datos · MatCom · 2026-10-07
-:::
+# Listas {#chap-listas}
 
 Hay que procesar las notas de un grupo. Con tres estudiantes se resuelve con lo que ya
 sabes:
@@ -31,15 +15,15 @@ tantas variables como estudiantes tenga el grupo, y las variables hay que escrib
 antes, cuando el programa se escribe, mucho antes de que nadie diga cuántos estudiantes
 hay. **No se puede teclear una cantidad de nombres que todavía no se sabe cuál es.**
 
-Ese es el límite con el que cerró la clase pasada, y no se arregla con más variables ni
+Ese es el límite con el que cerró el capítulo anterior, y no se arregla con más variables ni
 con nombres más listos. Hace falta otra cosa: un solo nombre que guarde muchos valores,
 tantos como haga falta y decididos mientras el programa corre. Se llama **lista**, y es
-todo el contenido de hoy.
+todo el contenido de este capítulo.
 
 Mira además lo que se abre con eso. Hasta ahora un acumulador te daba el promedio de las
 notas, pero no la mediana, ni las notas ordenadas, ni cuántas están por encima del
 promedio, porque en cuanto leías la nota siguiente la anterior se perdía. Guardarlas todas
-es lo que permite mirarlas dos veces. Y al final de la clase, con eso solo, cae la criba
+es lo que permite mirarlas dos veces. Y al final del capítulo, con eso solo, cae la criba
 de Eratóstenes.
 
 ## 1. La lista
@@ -112,7 +96,7 @@ print(notas[-2])
 
 ## 2. Recorrer una lista
 
-Aquí es donde el `for` de la clase dos enseña por fin su verdadera cara. Hasta ahora lo
+Aquí es donde el `for` del capítulo 2 enseña por fin su verdadera cara. Hasta ahora lo
 usábamos siempre sobre `range`, para contar. Pero `for` no sirve para contar: sirve para
 **recorrer una secuencia**, y `range` era solo una secuencia de números.
 
@@ -183,7 +167,7 @@ print(notas.index(3))
 
 ## 3. Modificar una lista
 
-Todo lo que hemos visto hasta hoy era **inmutable**: no se puede cambiar un número ni
+Todo lo que hemos visto hasta aquí era **inmutable**: no se puede cambiar un número ni
 una parte de un texto. Cuando escribías `x = x + 1` no modificabas el 5, creabas un 6 y
 le ponías el mismo nombre.
 
@@ -244,7 +228,7 @@ a = 6
 print(a, b)
 ```
 
-`b` sigue valiendo 5, como trazamos en la primera clase. Ahora lo mismo con listas:
+`b` sigue valiendo 5, como trazamos en el capítulo 1. Ahora lo mismo con listas:
 
 ```{python}
 a = [1, 2, 3]
@@ -296,7 +280,7 @@ agregar_cero(notas)
 print(notas)
 ```
 
-Compara con lo que viste la clase pasada, donde una función no podía cambiar el valor
+Compara con lo que viste en el capítulo anterior, donde una función no podía cambiar el valor
 de un número de afuera. No es una contradicción: en los dos casos la función recibe el
 valor del argumento, pero el valor de una lista es la lista misma, no una copia de ella.
 A veces esto es exactamente lo que quieres. Cuando no lo es, la función debe trabajar
@@ -346,7 +330,7 @@ print(copia)
 ## 5. El proyecto: las notas del grupo
 
 Con esto ya podemos escribir el programa completo. Son tres piezas, cada una una
-función, como aprendimos la clase pasada.
+función, como aprendimos en el capítulo anterior.
 
 Leer las notas hasta que el usuario escriba una línea en blanco:
 
@@ -365,7 +349,7 @@ def leer_notas():
 ```
 
 Calcular el promedio y el máximo. El máximo lo escribimos a mano, que es el patrón
-acumulador de la clase dos aplicado a una lista:
+acumulador del capítulo 2 aplicado a una lista:
 
 ```{python}
 def promedio(notas):
@@ -405,7 +389,7 @@ print(sum(notas), max(notas), min(notas), len(notas))
 
 ### Lo que antes no se podía
 
-Con las notas guardadas, aparecen las preguntas que la clase dos no podía responder.
+Con las notas guardadas, aparecen las preguntas que el capítulo 2 no podía responder.
 Cuántas están por encima del promedio, que exige recorrer la lista dos veces:
 
 ```{python}
@@ -439,8 +423,8 @@ print(mediana([4, 5, 3]))
 ```
 
 `sorted` devuelve una lista nueva ordenada, y no toca la original; `lista.sort()` ordena
-en el lugar y no devuelve nada. Hoy los usamos como cajas negras. Dentro de tres
-semanas vamos a escribir nosotros el algoritmo que hay dentro.
+en el lugar y no devuelve nada. Aquí los usamos como cajas negras. En el capítulo 7
+vamos a escribir nosotros el algoritmo que hay dentro.
 
 ## 6. Tuplas
 
@@ -604,7 +588,7 @@ for fila in tabla:
 El `print()` sin argumentos al final del ciclo exterior es lo que salta de línea al
 terminar cada fila. Quítalo y verás las nueve notas en una sola línea.
 
-Combinando lo de hoy, el promedio de cada estudiante sale en cuatro líneas:
+Combinando lo de este capítulo, el promedio de cada estudiante sale en cuatro líneas:
 
 ```{python}
 tabla = [
@@ -648,7 +632,7 @@ Lo que no se puede repetir con `*` es una lista que después vas a modificar.
 
 ## 8. La criba de Eratóstenes
 
-La clase pasada quedó planteado un problema y no se pudo resolver. Recuérdalo: para
+En el capítulo anterior quedó planteado un problema y no se pudo resolver. Recuérdalo: para
 imprimir los primos hasta `n`, `es_primo` los interroga de uno en uno, y para decidir si
 1009 es primo no usa nada de lo que averiguó sobre los mil anteriores. Eratóstenes hace lo
 contrario. En lugar de preguntar número por número, **tacha.** El 2 es primo, y de un
@@ -662,7 +646,7 @@ import sys
 sys.path.insert(0, os.path.abspath(".."))   # conferences/2026, donde vive figuras.py
 import figuras as F
 
-# los primos hasta 25 salen del método de la conferencia pasada, dividiendo
+# los primos hasta 25 salen del método de la conferencia anterior, dividiendo
 _primos = [k for k in range(2, 26)
            if k > 1 and all(k % d != 0 for d in range(2, k))]
 
@@ -835,7 +819,7 @@ for tope in topes:
           f"   contra {tachones[-1]:>8} tachones")
 ```
 
-Las dos cuentas se van guardando en sendas listas, que es justo lo de hoy: no sabemos
+Las dos cuentas se van guardando en sendas listas, que es justo lo de este capítulo: no sabemos
 de antemano cuántos topes vamos a probar.
 
 Mira esa tabla por columnas y no por filas. Cada línea multiplica el tope por tres. Los
@@ -866,15 +850,16 @@ Ahí está la diferencia, y no es que un programa sea diez veces más lento que 
 que **la distancia entre los dos se ensancha cada vez que crece `n`.** Un factor de diez se
 paga comprando una computadora mejor. Esto no.
 
-Eso se llama **orden de crecimiento**, es el tema de la conferencia ocho, y esta tabla se
+Eso se llama **orden de crecimiento**, es el tema del capítulo 7, y esta tabla se
 va a volver a hacer allí con nombres y con fórmulas. Por ahora quédate con la razón
 intuitiva de por qué la criba gana. El método de uno en uno empieza de cero con cada
 número y tira a la basura todo lo que averiguó. La criba hace lo contrario: cada primo que
 encuentra lo gasta inmediatamente en descartar de golpe a muchos otros, así que cada
 respuesta que consigue le abarata las siguientes.
 
-Dejar de recalcular y empezar a recordar es la idea de la última conferencia del semestre,
-y para recordar hace falta dónde guardar, que es lo de hoy.
+Dejar de recalcular y empezar a recordar es la idea de la programación dinámica, que
+queda para el segundo semestre, y para recordar hace falta dónde guardar, que es lo de
+este capítulo.
 
 ## 9. Resumen
 
@@ -920,7 +905,7 @@ y para recordar hace falta dónde guardar, que es lo de hoy.
 6. Con una tabla de números como la de la sección 7, escribe `transpuesta(tabla)` que
    devuelva una tabla nueva donde las filas son las columnas de la original. Comprueba
    que la transpuesta de la transpuesta es la tabla de partida.
-7. Vuelve a escribir `contar_gemelos(n)` del ejercicio 5 de la clase pasada, ahora sobre
+7. Vuelve a escribir `contar_gemelos(n)` del ejercicio 5 del capítulo anterior, ahora sobre
    la lista que devuelve `criba`. Cronometra las dos versiones con `n` de un millón y
    compara el resultado, que tiene que ser el mismo número.
 8. Cuenta los primos menores que un millón con la criba, y después prueba con diez

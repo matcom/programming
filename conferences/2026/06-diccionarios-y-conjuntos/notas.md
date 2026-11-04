@@ -1,29 +1,13 @@
----
-theme: note
-css: notas.css
-vars:
-  figure-label: "Figura"
-  figure-ref-label: "figura"
-execute:
-  interpreters:
-    python: ["uv", "run", "--quiet", "--python", "3.14", "--with", "tesserax", "python", "-"]
-title: "Conferencia 6: diccionarios y conjuntos"
----
+# Diccionarios y conjuntos {#chap-diccionarios-y-conjuntos}
 
-# Conferencia 6: diccionarios y conjuntos
-
-::: meta
-Programación · Ciencia de la Computación y Ciencia de Datos · MatCom · 2026-10-21
-:::
-
-La clase pasada terminó con una pregunta que no pudimos responder: cuántas veces aparece
-cada palabra de un texto. Hoy la respondemos con el **diccionario**, la colección que
+El capítulo anterior terminó con una pregunta que no pudimos responder: cuántas veces aparece
+cada palabra de un texto. Aquí la respondemos con el **diccionario**, la colección que
 asocia cada clave con un valor, y con su pariente cercano, el **conjunto**, que guarda
-elementos sin repetir. El proyecto de la clase es un programa que lee un archivo y
+elementos sin repetir. El proyecto del capítulo es un programa que lee un archivo y
 reporta las diez palabras más frecuentes.
 
-Trabajamos sobre dos archivos que tienes junto a estas notas: `quijote.txt`, los tres
-párrafos de la clase pasada, y `quijote-cap1.txt`, el primer capítulo completo del
+Trabajamos sobre dos archivos que están en la carpeta [`conferences/2026/libro`](https://github.com/matcom/programming/tree/main/conferences/2026/libro) del repositorio del curso: `quijote.txt`, los tres
+párrafos del capítulo anterior, y `quijote-cap1.txt`, el primer capítulo completo del
 Quijote, tomado de la edición del Proyecto Gutenberg. El primero es pequeño para poder
 seguirlo a mano; el segundo es lo bastante grande para que las diferencias de velocidad
 se vean.
@@ -32,8 +16,8 @@ se vean.
 
 Empecemos por lo que sí sabemos hacer. Con dos listas en paralelo, una de palabras
 vistas y otra de conteos, la palabra de la posición `i` en la primera tiene su conteo en
-la posición `i` de la segunda. Las funciones `limpiar` y `palabras_de` son las de la
-clase pasada:
+la posición `i` de la segunda. Las funciones `limpiar` y `palabras_de` son las del
+capítulo anterior:
 
 ```{python}
 SIGNOS = ".,;:¿?¡!()«»\"'—-"
@@ -181,7 +165,7 @@ print(tablero[(3, 4)])
 print((5, 5) in tablero)
 ```
 
-Ahí tienes un uso de la tupla que no vimos en la conferencia cuatro: una pareja de
+Ahí tienes un uso de la tupla que no vimos en el capítulo 4: una pareja de
 coordenadas como clave. El porqué de la regla, y de la palabra *unhashable* en el error,
 lo vemos en la sección 7.
 
@@ -287,7 +271,7 @@ que vas a ver escrita en todas partes, y conviene reconocerla.
 ### Contra las listas paralelas
 
 Pongamos las dos soluciones a correr sobre el capítulo entero, con el reloj de la
-conferencia tres:
+capítulo 3:
 
 ```{python continue}
 import time
@@ -311,12 +295,12 @@ print(f"el diccionario es {con_listas / con_diccionario:.0f} veces más rápido"
 El resultado es el mismo y el diccionario es decenas de veces más rápido sobre un solo
 capítulo. La diferencia crece con el texto, porque con las listas cada palabra recorre
 una lista de vistas que no para de crecer, y con el diccionario no recorre nada. Por qué
-no recorre nada es la pregunta de la sección 6.
+no recorre nada es la pregunta de la sección 7.
 
 ## 5. Las diez más comunes
 
 Tener el conteo no es tener la respuesta. Falta encontrar las palabras con más
-apariciones, y eso es el acumulador de la clase pasada, el que guardaba la palabra más
+apariciones, y eso es el acumulador del capítulo anterior, el que guardaba la palabra más
 larga vista hasta ahora, cambiando la longitud por el conteo:
 
 ```{python continue}
@@ -358,10 +342,10 @@ for palabra, veces in mas_comunes(frecuencias(palabras_de("quijote-cap1.txt")), 
 Mira la primera línea de la función. `dict(conteo)` hace una **copia** del diccionario, y
 es imprescindible: el diccionario se modifica igual que una lista, y si borráramos
 directamente de `conteo` vaciaríamos el diccionario del que nos llamó. Es la sorpresa de
-los dos nombres para una misma lista de la conferencia cuatro, ahora con diccionarios.
+los dos nombres para una misma lista del capítulo 4, ahora con diccionarios.
 
 Este método de buscar el mayor, apartarlo y volver a buscar es una forma de ordenar,
-y la próxima clase le ponemos nombre y le contamos las operaciones.
+y el capítulo siguiente le pone nombre y le contamos las operaciones.
 
 El resultado, de todos modos, decepciona: `de`, `y`, `que`, `a`, `el`. Las palabras más
 frecuentes de cualquier texto en español son las que no dicen nada. Para encontrar las
@@ -553,7 +537,7 @@ import figuras as F
 
 print(F.lista_contra_conjunto(
     medidas, ident="lista-conjunto",
-    pie="Tiempo de una búsqueda, medido al construir estas notas. La escala es "
+    pie="Tiempo de una búsqueda, medido al construir el libro. La escala es "
         "logarítmica: cada raya vale diez veces la de abajo. La lista sube una "
         "raya cada vez que el tamaño se multiplica por diez; el conjunto se "
         "queda donde estaba."))
