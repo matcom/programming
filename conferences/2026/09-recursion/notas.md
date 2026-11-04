@@ -1,20 +1,4 @@
----
-theme: note
-css: notas.css
-vars:
-  figure-label: "Figura"
-  figure-ref-label: "figura"
-execute:
-  interpreters:
-    python: ["uv", "run", "--quiet", "--python", "3.14", "--with", "tesserax", "python", "-"]
-title: "Conferencia 9: recursión"
----
-
-# Conferencia 9: recursión
-
-::: meta
-Programación · Ciencia de la Computación y Ciencia de Datos · MatCom · 2026-11-11
-:::
+# Recursión {#chap-recursion}
 
 ```{python echo=false}
 import os
@@ -36,15 +20,15 @@ tercera, el pequeño encima. Con tres discos ya hay que pensar un rato, y con oc
 nadie lo hace a mano sin equivocarse. Intenta escribir un programa con `while` y `for`
 que imprima los movimientos para `n` discos, y verás que no es nada obvio qué repetir.
 
-Al final de la clase lo resolvemos en cinco líneas. Para llegar ahí hace falta una sola
-idea nueva: **una función que se llama a sí misma**. La clase tiene dos mitades. En la
+Al final del capítulo lo resolvemos en cinco líneas. Para llegar ahí hace falta una sola
+idea nueva: **una función que se llama a sí misma**. El capítulo tiene dos mitades. En la
 primera vemos funciones que se llaman a sí mismas una vez, y descubrimos que esas son
 ciclos escritos de otra manera. En la segunda vemos funciones que se llaman a sí mismas
 más de una vez, que es donde la recursión resuelve lo que los ciclos no resuelven fácil.
 
 ## 1. Una función que se llama a sí misma
 
-En los ejercicios de la conferencia 3 escribiste el máximo común divisor. El algoritmo de
+En los ejercicios del capítulo 3 escribiste el máximo común divisor. El algoritmo de
 Euclides dice que el `mcd` de `a` y `b` es el mismo que el de `b` y el resto de dividir
 `a` entre `b`, y que el `mcd` de cualquier número con 0 es el propio número. Se puede
 escribir tal cual:
@@ -89,8 +73,8 @@ sin tocarlo, y de la anterior, y así hasta la primera.
 
 ## 2. La búsqueda binaria, otra vez
 
-En la conferencia 2 la computadora adivinaba un número partiendo el rango a la mitad, y
-en la conferencia 8 escribimos la búsqueda binaria con un `while` y dos índices. Se puede
+En el capítulo 2 la computadora adivinaba un número partiendo el rango a la mitad, y
+en el capítulo 7 escribimos la búsqueda binaria con un `while` y dos índices. Se puede
 pensar de otra forma: buscar `x` entre `izq` y `der` es mirar el medio y, si no es,
 **buscar `x` en una de las dos mitades**. Buscar en una mitad es el mismo problema, más
 pequeño.
@@ -114,12 +98,12 @@ print(buscar_binaria(primos, 13, 0, len(primos) - 1))
 print(buscar_binaria(primos, 12, 0, len(primos) - 1))
 ```
 
-Compárala con la de la conferencia 8. Lo que allá era `izq = medio + 1` aquí es una
+Compárala con la del capítulo 7. Lo que allá era `izq = medio + 1` aquí es una
 llamada con `medio + 1` en el lugar de `izq`. La condición del `while`, `izq <= der`,
 aquí es su contraria, `izq > der`, en el caso base. Es el mismo algoritmo.
 
 Tener que escribir `0, len(primos) - 1` en cada llamada es incómodo. Lo normal es
-darles a los dos índices un valor por defecto, como en la conferencia 3. Para `izq` es
+darles a los dos índices un valor por defecto, como en el capítulo 3. Para `izq` es
 fácil, `izq=0`. Para `der` no, porque el valor que queremos, `len(lista) - 1`, depende de
 otro parámetro, y un valor por defecto no puede depender de los otros parámetros. El truco
 es darle a `der` el valor `None` y calcular el de verdad dentro de la función:
@@ -144,7 +128,7 @@ print(buscar_binaria(primos, 29))
 ```
 
 `None` es un valor de Python que significa "no hay valor". Es lo que devuelve una función
-que no tiene `return`, como viste en la conferencia 3. Para preguntar si una variable vale
+que no tiene `return`, como viste en el capítulo 3. Para preguntar si una variable vale
 `None` se escribe `der is None`, no `der == None`; las dos funcionan aquí, pero `is` es la
 forma que vas a ver en todo el código de Python. Solo la primera llamada recibe
 `der = None`. Las recursivas ya le pasan un número.
@@ -204,7 +188,7 @@ print(F.escalera([tuple(p) for p in _pasos], ident="pila-factorial",
 
 Lo importante de la @fig-pila-factorial es que **cada llamada tiene sus propias
 variables**. La `n` de `factorial(4)` vale 4 y la de `factorial(2)` vale 2, a la vez, y no
-se pisan. Es lo mismo que viste en la conferencia 3 sobre las variables locales: cada vez
+se pisan. Es lo mismo que viste en el capítulo 3 sobre las variables locales: cada vez
 que se llama una función, sus variables se crean de nuevo. Que la función que llama sea la
 misma no cambia nada.
 
@@ -225,7 +209,7 @@ print(factorial_cola(4))
 print(factorial_cola(20))
 ```
 
-El parámetro `acumulado` es el acumulador de la conferencia 2, el que llevaba la suma
+El parámetro `acumulado` es el acumulador del capítulo 2, el que llevaba la suma
 o el producto parcial en un ciclo. Ahora la llamada recursiva es otra vez lo último que
 hace la función, como en `mcd`, y el valor que devuelve el caso base sube por la pila sin
 que nadie lo toque:
@@ -279,7 +263,7 @@ print(factorial_ciclo(20), mcd_ciclo(84, 36))
 Pon `factorial_cola` y `factorial_ciclo` una al lado de la otra. La línea
 `return factorial_cola(n - 1, acumulado * n)` es
 `n, acumulado = n - 1, acumulado * n` con otra ropa. La asignación simultánea de la
-conferencia 4 importa aquí: si escribieras primero `n = n - 1` y después
+capítulo 4 importa aquí: si escribieras primero `n = n - 1` y después
 `acumulado = acumulado * n`, multiplicarías por el `n` nuevo, que es otro número.
 
 Esa es la conclusión de la primera mitad: **una recursión de cola es un ciclo escrito de
@@ -299,7 +283,7 @@ except RecursionError as error:
     print(type(error).__name__, error)
 ```
 
-El `try` y el `except` son los de la conferencia 5, con una cosa nueva: `as error` le
+El `try` y el `except` son los del capítulo 5, con una cosa nueva: `as error` le
 pone nombre al error que se atrapó, para poder mirarlo. `type(error).__name__` es el nombre
 de su tipo, y al imprimir `error` sale el mensaje que lo acompaña. Así vemos el error sin
 que el programa se muera.
@@ -426,7 +410,7 @@ La @fig-arbol-hanoi da otra manera de contar los movimientos. Cada llamada hace 
 movimiento propio, así que hay tantos movimientos como llamadas. En el primer nivel hay 1
 llamada, en el segundo 2, en el tercero 4, en el cuarto 8: cada nivel duplica al anterior,
 y en total son $1 + 2 + 4 + 8 = 15 = 2^4 - 1$. Contar las llamadas nivel por nivel es la
-herramienta con la que la conferencia 10 va a explicar por qué la ordenación por mezcla es
+herramienta con la que el capítulo 9 va a explicar por qué la ordenación por mezcla es
 tan rápida.
 
 ## 7. Recursión sobre listas y cadenas
@@ -447,7 +431,7 @@ print(suma([4, 2, 5, 3]))
 
 La rebanada `lista[1:]` es la lista sin su primer elemento, y es el problema más pequeño.
 Esta suma tiene el mismo defecto que el factorial: no es de cola, y con más de mil
-elementos se rompe. Y además cada rebanada copia la lista, como viste en la conferencia
+elementos se rompe. Y además cada rebanada copia la lista, como viste en el capítulo
 4. Para sumar una lista, el ciclo es mejor.
 
 Lo mismo vale para cadenas. Una palabra es un palíndromo si la primera letra es igual a la
@@ -480,7 +464,7 @@ anidada = [1, [2, 3], [4, [5, 6, [7]], 8], [[[9]]]]
 Queremos una lista **plana** con los números en el mismo orden: `[1, 2, ..., 9]`. Con un
 ciclo recorres el primer nivel; con dos ciclos anidados, dos niveles. Pero no sabes
 cuántos niveles hay hasta que el programa corre, y no puedes escribir una cantidad de
-ciclos anidados que todavía no conoces. Es el mismo callejón de la conferencia 3, donde no
+ciclos anidados que todavía no conoces. Es el mismo callejón del capítulo 3, donde no
 se podía escribir una cantidad de variables que todavía no se conocía.
 
 Con recursión es directo. Recorremos la lista, y cada elemento que sea a su vez una lista

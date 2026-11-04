@@ -48,8 +48,9 @@ resuelve, se rompe a propósito para ver qué error da, y se arregla. Al final s
 orientan ejercicios sobre ese mismo proyecto, y la clase práctica siguiente trata
 problemas que el estudiante no ha visto.
 
-Las notas de cada conferencia se escriben en Markdown y se renderizan a PDF con
-scriptorium, que ejecuta los bloques de código al construir el documento. Un ejemplo
+Las notas de cada conferencia se escriben en Markdown y son un capítulo del libro del
+curso, que scriptorium construye como un PDF y como un sitio en línea
+(`conferences/2026/libro/`), ejecutando los bloques de código al construirlo. Un ejemplo
 que no corre no llega al PDF, y los mensajes de error que aparecen en las notas son
 los que Python imprime de verdad en la versión que se usa en clase.
 

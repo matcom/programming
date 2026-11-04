@@ -1,20 +1,4 @@
----
-theme: note
-css: notas.css
-vars:
-  figure-label: "Figura"
-  figure-ref-label: "figura"
-execute:
-  interpreters:
-    python: ["uv", "run", "--quiet", "--python", "3.14", "--with", "tesserax", "python", "-"]
-title: "Conferencia 8: búsqueda, ordenación y costo"
----
-
-# Conferencia 8: búsqueda, ordenación y costo
-
-::: meta
-Programación · Ciencia de la Computación y Ciencia de Datos · MatCom · 2026-11-04
-:::
+# Búsqueda, ordenación y costo {#chap-busqueda-y-ordenacion}
 
 ```{python echo=false}
 import os
@@ -47,20 +31,20 @@ def frecuencias(palabras):
     return conteo
 ```
 
-La conferencia 6 terminó con una función que encontraba las diez palabras más
+El capítulo 6 terminó con una función que encontraba las diez palabras más
 frecuentes de un capítulo del Quijote. Lo hacía así: buscar la más frecuente, apartarla,
 buscar la más frecuente de las que quedan, apartarla, y así diez veces. Al final dijimos
-que eso era una forma de **ordenar**, y que hoy le pondríamos nombre.
+que eso era una forma de **ordenar**, y que aquí le pondríamos nombre.
 
-Hoy hacemos tres cosas. Primero, **buscar**: decir si un valor está en una lista y dónde.
+Este capítulo hace tres cosas. Primero, **buscar**: decir si un valor está en una lista y dónde.
 Segundo, **ordenar**: poner los elementos de una lista de menor a mayor, escrito por
 nosotros, sin `sort` ni `sorted`. Tercero, **contar**: cuánto trabajo hace cada uno de
 esos programas, y qué le pasa a ese trabajo cuando la lista crece. Esa tercera parte es
 la importante. Las dos primeras son la excusa.
 
 Python ya trae `in`, `index`, `sort` y `sorted`, y en un programa de verdad se usan esos.
-Los escribimos a mano por la misma razón por la que en la conferencia 4 escribimos
-`sum` y `max`: para saber qué hacen por dentro, y porque los algoritmos de hoy son los
+Los escribimos a mano por la misma razón por la que en el capítulo 4 escribimos
+`sum` y `max`: para saber qué hacen por dentro, y porque los algoritmos de este capítulo son los
 primeros sobre los que se puede razonar cuánto cuestan.
 
 ## 1. Búsqueda lineal
@@ -83,7 +67,7 @@ print(buscar(edades, 18))
 print(buscar(edades, 30))
 ```
 
-El `return` dentro del ciclo es el de la conferencia 3: en cuanto aparece el valor, la
+El `return` dentro del ciclo es el del capítulo 3: en cuanto aparece el valor, la
 función termina, y el ciclo con ella. Solo si el ciclo se acaba sin encontrarlo se llega
 al `return -1`.
 
@@ -112,7 +96,7 @@ Cuando el valor no está, hay que mirar **todos** los elementos para estar segur
 el que no miraste podía ser el que buscabas. Con una lista de un millón son un millón de
 comparaciones, y con una de dos millones serían dos millones. El trabajo crece en
 proporción al tamaño de la lista, y por eso se llama búsqueda **lineal**. Es lo que hace
-`x in lista` por dentro, y es la razón de que en la conferencia 6 preguntar si una palabra
+`x in lista` por dentro, y es la razón de que en el capítulo 6 preguntar si una palabra
 estaba en una lista fuera tan lento comparado con un conjunto.
 
 No se puede hacer mejor sin saber algo más de la lista. Si los elementos están en
@@ -120,7 +104,7 @@ cualquier orden, cualquier elemento que no mires podría ser el que buscas.
 
 ## 2. Búsqueda binaria
 
-Pero a veces sí sabemos algo más: que la lista está **ordenada**. En la conferencia 2
+Pero a veces sí sabemos algo más: que la lista está **ordenada**. En el capítulo 2
 la computadora adivinaba un número entre 1 y 100 en siete preguntas, partiendo siempre el
 rango a la mitad. Es la misma idea. Si miro el elemento del medio de una lista ordenada y
 es menor que lo que busco, todo lo que está a su izquierda también es menor, y puedo
@@ -313,11 +297,11 @@ que caen en medio, tanto valores que están como valores que no están.
 ## 3. Ordenación por selección
 
 Si buscar en una lista ordenada es tanto más barato, vale la pena saber ordenar. El
-primer método es el de la conferencia 6: buscar el menor, ponerlo primero, buscar el menor
+primer método es el del capítulo 6: buscar el menor, ponerlo primero, buscar el menor
 de los que quedan, ponerlo segundo, y así. Se llama **ordenación por selección**, porque
 en cada paso se selecciona el menor de lo que falta.
 
-La diferencia con la conferencia 6 es que ahora no apartamos los elementos en otra lista
+La diferencia con el capítulo 6 es que ahora no apartamos los elementos en otra lista
 y no borramos nada: los movemos dentro de la misma lista. Después de la pasada `i`, las
 posiciones `0` a `i` tienen los `i + 1` elementos más pequeños, ya en orden, y el resto
 está sin ordenar. La pasada `i` busca el menor del resto y lo intercambia con el que está
@@ -341,7 +325,7 @@ print(notas)
 ```
 
 El intercambio `lista[i], lista[menor] = lista[menor], lista[i]` es el
-desempaquetado de tuplas de la conferencia 4. La función no devuelve nada: modifica la
+desempaquetado de tuplas del capítulo 4. La función no devuelve nada: modifica la
 lista que recibió, igual que `sort`, y el cambio se ve desde fuera porque las dos variables
 nombran la misma lista.
 
@@ -502,7 +486,7 @@ para nada, que es una convención para decir justo eso. Si se usa, puede aparece
 expresión: `[k * k for k in range(5)]` es `[0, 1, 4, 9, 16]`. El módulo `random`
 trae `randint(a, b)`, que devuelve un entero al azar entre `a` y `b`, ambos incluidos, y
 `random.seed(8)` fija la semilla para que la lista "al azar" sea la misma cada vez que
-corre el programa, y los números de estas notas se puedan repetir.
+corre el programa, y los números de este libro se puedan repetir.
 
 Con una lista al azar, la inserción hace alrededor de la mitad del peor caso. Tiene
 sentido: en promedio, cada elemento nuevo tiene la mitad de los anteriores a su derecha.
@@ -566,7 +550,7 @@ que se rompe con facilidad.
 
 Fíjate en `for metodo in [seleccion, insercion, burbuja]`. Es una lista de **funciones**, no
 de resultados: no hay paréntesis después de los nombres, así que no se llama a ninguna.
-En la conferencia 3 dijimos que una función es un dato más, que se puede guardar en una
+En el capítulo 3 dijimos que una función es un dato más, que se puede guardar en una
 variable o pasar como argumento, y aquí lo usamos por primera vez: en cada vuelta `metodo`
 es una de las tres funciones, y `metodo(copia)` la llama. `metodo.__name__` es el nombre
 con que se definió la función, para que el mensaje de error diga cuál falló.
@@ -579,9 +563,9 @@ El reloj depende de la máquina, de lo que esté haciendo la máquina en ese mom
 la versión de Python. La cantidad de comparaciones depende solo del algoritmo y de la
 lista.
 
-Ya lo hicimos una vez. En la conferencia 4, al triplicar el tope, la criba de Eratóstenes
+Ya lo hicimos una vez. En el capítulo 4, al triplicar el tope, la criba de Eratóstenes
 triplicaba sus tachones y el método de dividir uno por uno multiplicaba sus divisiones
-por casi cinco. Hoy hacemos lo mismo duplicando el tamaño de la lista:
+por casi cinco. Aquí hacemos lo mismo duplicando el tamaño de la lista:
 
 ```{python continue}
 def seleccion_contando(lista):
@@ -735,11 +719,11 @@ print(f"sorted: {time.perf_counter() - inicio:.2f} s")
 
 Menos de un segundo. `sorted` no es un $n^2$ escrito en un lenguaje más rápido; es otro
 algoritmo, con otro orden de crecimiento. Cómo se ordena un millón de números en
-segundos es el tema de la conferencia 10.
+segundos es el tema del capítulo 9.
 
 ## 8. El proyecto: las palabras por frecuencia
 
-Volvemos al Quijote. En la conferencia 6 contamos las palabras del primer capítulo con un
+Volvemos al Quijote. En el capítulo 6 contamos las palabras del primer capítulo con un
 diccionario. Ahora queremos **todas** las palabras ordenadas de la más frecuente a la
 menos frecuente, escritas con un método nuestro.
 
@@ -773,15 +757,15 @@ de la sección 4 línea por línea. Un algoritmo de ordenación no sabe qué est
 solo necesita saber cuándo un elemento va antes que otro.
 
 Hay un detalle que vale la pena notar. Las palabras con el mismo conteo quedan en el mismo
-orden en que estaban en el diccionario, que como vimos en la conferencia 6 es el orden en
+orden en que estaban en el diccionario, que como vimos en el capítulo 6 es el orden en
 que aparecieron por primera vez en el texto, porque la inserción nunca pasa un elemento por
 encima de otro igual: el `while` se detiene ante uno que no es estrictamente menor. Un
 método con esa propiedad se llama **estable**, y la tiene también `sorted`. La selección
 no la tiene; el ejercicio 4 te pide encontrar una lista que lo demuestre.
 
 La segunda parte del proyecto es buscar. Queremos un programa al que le das una palabra y
-te dice cuántas veces aparece. Con el diccionario de la conferencia 6 eso ya sale directo,
-pero vamos a hacerlo con lo de hoy para ver la búsqueda binaria trabajando: ordenamos
+te dice cuántas veces aparece. Con el diccionario del capítulo 6 eso ya sale directo,
+pero vamos a hacerlo con lo de este capítulo para ver la búsqueda binaria trabajando: ordenamos
 las palabras distintas alfabéticamente, y buscamos en esa lista.
 
 ```{python continue}
@@ -854,7 +838,7 @@ la lista y la búsqueda usan la misma comparación.
    comparaciones, y otra con la que la burbuja haga exactamente 999. Después construye
    una lista de 1000 elementos casi ordenada, en la que solo el último elemento esté fuera
    de su lugar: es el menor de todos. ¿Cuántas pasadas hace la burbuja? ¿Y la inserción?
-8. Sin usar `sorted`, `sort` ni ningún método de los de hoy, escribe `esta_ordenada(lista)`
+8. Sin usar `sorted`, `sort` ni ningún método de este capítulo, escribe `esta_ordenada(lista)`
    que diga si una lista está ordenada de menor a mayor. ¿Cuál es su orden de
    crecimiento? Úsala para que `buscar_binaria` dé un error claro cuando la lista no
    está ordenada. ¿Qué pasa con el costo de la búsqueda binaria si hace esa comprobación

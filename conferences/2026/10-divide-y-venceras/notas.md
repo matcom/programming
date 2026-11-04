@@ -1,20 +1,4 @@
----
-theme: note
-css: notas.css
-vars:
-  figure-label: "Figura"
-  figure-ref-label: "figura"
-execute:
-  interpreters:
-    python: ["uv", "run", "--quiet", "--python", "3.14", "--with", "tesserax", "python", "-"]
-title: "Conferencia 10: divide y vencerás"
----
-
-# Conferencia 10: divide y vencerás
-
-::: meta
-Programación · Ciencia de la Computación y Ciencia de Datos · MatCom · 2026-11-18
-:::
+# Divide y vencerás {#chap-divide-y-venceras}
 
 ```{python echo=false}
 import math
@@ -27,7 +11,7 @@ sys.path.insert(0, os.path.abspath(".."))   # conferences/2026, donde vive figur
 import figuras as F
 
 
-# los tres métodos de la conferencia 8, tal cual
+# los tres métodos del capítulo 7, tal cual
 def seleccion(lista):
     n = len(lista)
     for i in range(n - 1):
@@ -52,20 +36,20 @@ def _texto(lista):
     return "[" + ", ".join(str(x) for x in lista) + "]"
 ```
 
-La conferencia 8 terminó con una cuenta. La selección, la inserción y la burbuja
+El capítulo 7 terminó con una cuenta. La selección, la inserción y la burbuja
 multiplican su trabajo por cuatro cada vez que la lista se duplica, y con un millón de
 números tardarían horas. Y sin embargo `sorted` ordenaba ese mismo millón en menos de un
 segundo. Dijimos que `sorted` no era un $n^2$ escrito en un lenguaje más rápido, sino otro
 algoritmo.
 
-Hoy escribimos dos algoritmos de esa otra clase, la **ordenación por mezcla** y la
+En este capítulo escribimos dos algoritmos de esa otra clase, la **ordenación por mezcla** y la
 **ordenación rápida**, y los ponemos a ordenar el millón. Los dos usan la herramienta de
-la conferencia pasada, la función que se llama a sí misma más de una vez, y los dos siguen
+el capítulo anterior, la función que se llama a sí misma más de una vez, y los dos siguen
 el mismo esquema, que tiene nombre: **divide y vencerás**. Partir el problema en pedazos,
 resolver cada pedazo con la misma función, y combinar las soluciones.
 
-En los dos de hoy la división es evidente, porque una lista se parte en dos mitades. La
-semana próxima vemos problemas donde partir o combinar requiere pensar más.
+En los dos de este capítulo la división es evidente, porque una lista se parte en dos
+mitades. El capítulo siguiente trata problemas donde partir o combinar requiere pensar más.
 
 ## 1. Mezclar dos listas ordenadas
 
@@ -106,8 +90,8 @@ un ciclo dentro de otro, como en la selección: cada elemento se mira una vez, s
 no se vuelve a tocar.
 
 Fíjate en el `<=` de la comparación. Con elementos iguales, se toma primero el de `a`.
-Eso hace que la mezcla conserve el orden de los iguales, la propiedad que en la conferencia
-8 llamamos estabilidad.
+Eso hace que la mezcla conserve el orden de los iguales, la propiedad que en el capítulo
+7 llamamos estabilidad.
 
 ## 2. Ordenación por mezcla
 
@@ -134,11 +118,11 @@ def ordenar_mezcla(lista):
 print(ordenar_mezcla([38, 27, 43, 3, 9, 82, 10, 5]))
 ```
 
-A diferencia de los métodos de la conferencia 8, esta función no modifica la lista que
+A diferencia de los métodos del capítulo 7, esta función no modifica la lista que
 recibe: construye y devuelve una nueva, como `sorted`. Por eso el caso base devuelve
 `list(lista)`, una copia, y no `lista`: si devolviera la misma lista que recibió, con cero
 o un elemento el resultado y la original serían la misma lista con dos nombres, la sorpresa
-de la conferencia 4.
+del capítulo 4.
 
 Lo primero, como siempre, es probarla contra algo que sabemos que está bien:
 
@@ -153,7 +137,7 @@ for prueba in range(500):
 print("pruebas terminadas")
 ```
 
-Para ver qué pasa por dentro, miramos el árbol de llamadas de la conferencia 9. Las
+Para ver qué pasa por dentro, miramos el árbol de llamadas del capítulo 8. Las
 llamadas parten la lista hacia abajo hasta llegar a listas de un elemento:
 
 ```{python echo=false output=asis continue}
@@ -193,7 +177,7 @@ print(F.arbol(_arbol_mezclar(_ejemplo), columna=34, ident="mezclar",
 ## 3. Por qué es tan rápida
 
 Contemos el trabajo con el árbol, nivel por nivel, como contamos los movimientos de Hanói
-en la conferencia 9.
+en el capítulo 8.
 
 **En cada nivel se mezclan, en total, $n$ elementos.** En el nivel de arriba se mezclan
 dos listas de 4 en una de 8. En el siguiente, dos mezclas de dos listas de 2: otra vez 8
@@ -249,7 +233,7 @@ for n in [100, 200, 400, 800, 1600, 3200]:
 
 El `global comparaciones` le dice a Python que la función va a modificar la variable de
 afuera y no a crear una local con el mismo nombre. Es el error de alcance de la
-conferencia 3. Aquí lo usamos a propósito, porque el contador tiene que sobrevivir a todas
+capítulo 3. Aquí lo usamos a propósito, porque el contador tiene que sobrevivir a todas
 las llamadas recursivas, pero no es una costumbre recomendable fuera de un experimento
 como este.
 
@@ -276,7 +260,7 @@ las tiene:
 - **Combinar** las soluciones de los subproblemas en la solución del problema. Aquí,
   mezclar.
 
-La búsqueda binaria de la conferencia 9 también encaja, con una particularidad: divide
+La búsqueda binaria del capítulo 8 también encaja, con una particularidad: divide
 la lista en dos mitades pero solo necesita resolver **una**, la que puede contener el
 valor, y combinar no cuesta nada, porque la respuesta de la mitad es la respuesta. Por
 eso tiene $\log_2 n$ niveles con una sola llamada cada uno, en lugar de $\log_2 n$ niveles
@@ -327,7 +311,7 @@ El `+` entre listas las pega una detrás de otra, en una lista nueva. La lista `
 nunca está vacía, porque contiene al menos el pivote, y por eso las dos llamadas
 recursivas reciben listas más pequeñas que la original. Si pusiéramos el pivote junto con
 los menores, habría listas que se llamarían a sí mismas con la misma lista una y otra vez,
-hasta chocar con el tope de mil llamadas de la conferencia 9 y dar `RecursionError`; el
+hasta chocar con el tope de mil llamadas del capítulo 8 y dar `RecursionError`; el
 ejercicio 4 te pide encontrarlas.
 
 ```{python echo=false output=asis continue}
@@ -371,7 +355,7 @@ print(F.arbol(_arbol_rapida([1, 2, 3, 4, 5, 6]), columna=40, ident="rapida-orden
 El árbol de la @fig-rapida-ordenada tiene $n$ niveles en lugar de $\log_2 n$, y el nivel
 $k$ reparte $n - k$ elementos. En total, $n + (n-1) + \cdots + 1 = \frac{n(n+1)}{2}$,
 casi la misma suma que la de la selección y del mismo orden: otra vez cuadrática. Y peor aún, con $n$ niveles de recursión se llega al tope de la pila de la
-conferencia 9:
+capítulo 8:
 
 ```{python continue}
 ordenada = list(range(2000))
@@ -415,7 +399,7 @@ trabajo **esperado** es proporcional a $n \log n$ con cualquier lista de entrada
 
 ## 7. El reloj
 
-Ahora sí, medimos. Primero contra los métodos de la conferencia 8, con las mismas listas
+Ahora sí, medimos. Primero contra los métodos del capítulo 7, con las mismas listas
 y los mismos tamaños:
 
 ```{python continue}
@@ -447,16 +431,16 @@ print(F.lineas(tamanos,
                 ("inserción", tiempos["inserción"], "verde"),
                 ("mezcla", tiempos["mezcla"], "calido"),
                 ("rápida", tiempos["rápida"], "alarma")],
-               ident="tiempos",
-               pie="Los segundos de la tabla anterior. Las dos curvas de la conferencia 8 "
+               ident="tiempos-dyv",
+               pie="Los segundos de la tabla anterior. Las dos curvas del capítulo 7 "
                    "se doblan hacia arriba; la mezcla y la rápida se quedan pegadas al "
                    "fondo."))
 ```
 
-En la @fig-tiempos, la mezcla y la rápida apenas se separan del cero. Con 4000 elementos
+En la @fig-tiempos-dyv, la mezcla y la rápida apenas se separan del cero. Con 4000 elementos
 ya son más de diez veces más rápidas, y la ventaja crece con cada duplicación.
 
-Y ahora, el millón que en la conferencia 8 habría tardado horas:
+Y ahora, el millón que en el capítulo 7 habría tardado horas:
 
 ```{python continue}
 random.seed(8)
@@ -477,7 +461,7 @@ Lo que cambió no es la máquina ni el lenguaje: es el orden de crecimiento.
 escrita en C, no en Python, y eso le da una constante mucho menor. Y su algoritmo, que se
 llama Timsort, es una ordenación por mezcla con mejoras: aprovecha los pedazos que ya
 vienen ordenados en la entrada y usa la inserción para los pedazos pequeños, donde es más
-rápida que la recursión. Pero es de la misma familia que la que escribimos hoy, y su
+rápida que la recursión. Pero es de la misma familia que la que escribimos aquí, y su
 orden de crecimiento es el mismo.
 
 ## 8. Resumen
@@ -518,9 +502,9 @@ orden de crecimiento es el mismo.
    ¿Se parece a la suma $\frac{n(n+1)}{2}$ de la sección 6? ¿Por qué no hace falta que la lista esté ordenada de
    menor a mayor para el peor caso? Encuentra otra lista mala.
 6. Usa `ordenar_mezcla` para ordenar las parejas `(palabra, veces)` del Quijote de la
-   conferencia 8 de más a menos frecuente. Tienes que cambiar la comparación en
+   capítulo 7 de más a menos frecuente. Tienes que cambiar la comparación en
    `mezclar`. Comprueba que las palabras con el mismo conteo quedan en el mismo orden que
-   con la inserción de la conferencia 8.
+   con la inserción del capítulo 7.
 7. La **mediana** de una lista es el elemento que quedaría en el medio si se ordenara.
    Escribe `seleccionar(lista, k)` que devuelva el elemento que quedaría en la posición
    `k`, usando la idea de la rápida pero con **una sola** llamada recursiva: después de
@@ -529,6 +513,6 @@ orden de crecimiento es el mismo.
 8. Con un millón de elementos, la ordenación rápida con el primer elemento como pivote
    funciona bien si la lista está al azar. Calcula cuántos niveles tendría el árbol si la
    lista estuviera ordenada, y cuánto tiempo tardaría, usando lo que mediste en la
-   conferencia 8 para un algoritmo cuadrático. En Python, con el tope de mil llamadas, ¿qué
+   capítulo 7 para un algoritmo cuadrático. En Python, con el tope de mil llamadas, ¿qué
    pasa en realidad: termina, o da `RecursionError`? ¿Con qué tamaño de lista empieza a
    fallar?
