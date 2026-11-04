@@ -26,13 +26,12 @@ No hay PDF por conferencia.
 
 ## Construir
 
-Hace falta scriptorium 0.12.0 con el extra `pdf`:
+Hace falta scriptorium 0.13.0 con el extra `pdf`:
 
 ```bash
-uv tool install --force 'scriptorium[pdf] @ git+https://github.com/apiad/scriptorium@v0.12.0'
+uv tool install --force 'scriptorium[pdf] @ git+https://github.com/gia-uh/scriptorium@v0.13.0'
 cd conferences/2026/libro
 scriptorium render scriptorium.yaml          # programacion.pdf y sitio/
-python3 arreglar-sitio.py sitio              # dos arreglos al sitio, ver el script
 ```
 
 Después:
@@ -59,12 +58,8 @@ Los tiempos que miden los capítulos dependen de la carga de la máquina. Si un 
 se vuelve a medir, hay que comprobar que la prosa siga diciendo lo que imprimen sus
 bloques.
 
-## Lo que se arregla aquí y no en scriptorium
+## Lo que el libro ajusta del tema
 
-- `libro.css` pone en español las etiquetas del tema `book`, y oculta los números de
-  página del índice, que scriptorium 0.12 escribe siempre como 0.
-- `sitio.js` traduce las etiquetas del sitio, que scriptorium escribe en inglés.
-- `arreglar-sitio.py` devuelve a su página las referencias internas de las fórmulas y
-  escribe "figura N" en las referencias a figuras del sitio.
-
-Cuando scriptorium arregle cada una, se borra el arreglo correspondiente.
+`libro.css` pone en español las etiquetas del tema `book` y hace que una referencia a
+una figura diga "figura N" en el PDF; `html-refs:` en `scriptorium.yaml` hace lo mismo en
+el sitio. El sitio toma su idioma de `lang: es`.

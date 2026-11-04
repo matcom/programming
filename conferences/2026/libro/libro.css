@@ -18,7 +18,3 @@ a.ref-fig::after {
            target-counter(attr(href url), figure);
 }
 
-/* scriptorium 0.12 escribe 0 como número de página de cada entrada del índice,
-   también en su propio ejemplo. Mientras se arregla, el índice va sin números;
-   las entradas siguen siendo enlaces dentro del PDF. */
-.toc-entry::after { content: none; }
