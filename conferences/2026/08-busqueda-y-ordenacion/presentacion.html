@@ -1,0 +1,1536 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Conferencia 8: búsqueda, ordenación y costo</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+
+html,body{
+  width:100%;height:100%;
+  background:#0d1117;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+}
+
+#deck{
+  width:min(100vw,177.78vh);
+  aspect-ratio:16/9;
+  position:relative;
+  overflow:hidden;
+  background:#0d1117;
+  container-type:size;
+  color:#e6edf3;
+}
+
+.slide{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;
+  justify-content:center;
+  padding:3.4cqw 5cqw;
+  opacity:0;
+  transform:translateX(4%);
+  transition:opacity .35s ease,transform .35s ease;
+  pointer-events:none;
+  --ac:#4fc3f7;
+}
+.slide.active{opacity:1;transform:none;pointer-events:auto}
+.slide.prev{opacity:0;transform:translateX(-4%)}
+.slide.ctr{align-items:center;text-align:center}
+
+/* un color por sección */
+.a0{--ac:#e6edf3}
+.a1{--ac:#4fc3f7}
+.a2{--ac:#ffb74d}
+.a3{--ac:#81c784}
+.a4{--ac:#f48fb1}
+.a5{--ac:#ce93d8}
+
+.lbl{
+  font-size:.9cqw;font-weight:700;
+  letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ac);margin-bottom:1cqw;
+}
+h1{
+  font-size:3.4cqw;font-weight:800;
+  line-height:1.12;color:#e6edf3;
+  margin-bottom:1.3cqw;max-width:30ch;
+}
+h1 em{color:var(--ac);font-style:normal}
+h1.hero{font-size:5.6cqw;max-width:100%}
+h1 code,.sub code,li code,.cb code,td code,.kick code,.note code{
+  font-family:'JetBrains Mono','Fira Code',ui-monospace,Menlo,Consolas,monospace;
+  font-size:.92em;color:var(--ac);
+  background:rgba(255,255,255,.06);padding:.05em .3em;border-radius:.25em;
+}
+
+.sub{
+  font-size:1.6cqw;color:#8b949e;
+  line-height:1.5;max-width:60ch;
+  margin-bottom:1.1cqw;
+}
+.sub b{color:#e6edf3}
+
+ul.pts{list-style:none;margin-top:.3cqw}
+ul.pts li{
+  font-size:1.45cqw;line-height:1.45;
+  padding:.35cqw 0 .35cqw 1.9cqw;
+  position:relative;color:#e6edf3;
+}
+ul.pts li::before{content:'→';position:absolute;left:0;color:var(--ac)}
+ul.pts li strong{color:var(--ac)}
+ul.pts.sm li{font-size:1.2cqw}
+
+.c2{display:grid;grid-template-columns:1fr 1fr;gap:1.6cqw;width:100%;margin-top:1cqw;align-items:start}
+.c2.wl{grid-template-columns:1.25fr 1fr}
+.c2.wr{grid-template-columns:1fr 1.25fr}
+.c2>*,.c3>*{min-width:0}
+.c3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.25cqw;width:100%;margin-top:1.2cqw}
+
+.card{
+  background:#161b22;border-radius:.75cqw;
+  padding:1.3cqw 1.5cqw;border:1px solid rgba(255,255,255,.08);
+}
+.card.ac{border-color:color-mix(in srgb,var(--ac) 40%,transparent)}
+.card.bad{border-color:rgba(239,83,80,.55)}
+.ct{
+  font-size:.9cqw;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;
+  margin-bottom:.6cqw;color:var(--ac);
+}
+.card.bad .ct{color:#ef5350}
+.cb{font-size:1.18cqw;color:#8b949e;line-height:1.55}
+.cb em{color:#e6edf3;font-style:normal}
+
+.kick{font-size:1.5cqw;color:#e6edf3;line-height:1.5;max-width:70ch;margin-top:1.2cqw}
+.kick b{color:var(--ac)}
+.note{font-size:1.1cqw;color:#8b949e;line-height:1.55;margin-top:.8cqw;max-width:80ch}
+.note b{color:#e6edf3}
+
+/* código */
+pre.code,pre.out{
+  font-family:'JetBrains Mono','Fira Code',ui-monospace,Menlo,Consolas,monospace;
+  font-size:1.3cqw;line-height:1.5;
+  background:#161b22;border:1px solid rgba(255,255,255,.08);
+  border-radius:.6cqw;padding:1cqw 1.3cqw;
+  white-space:pre;overflow:hidden;color:#e6edf3;
+}
+pre.code.sm,pre.out.sm{font-size:1.08cqw}
+pre.code.xs,pre.out.xs{font-size:.98cqw}
+.kw{color:#ff7b72}.st{color:#a5d6ff}.cm{color:#6e7681;font-style:italic}
+.bi{color:#d2a8ff}.nu{color:#79c0ff}.fn{color:#ffa657}
+pre .ln{display:inline-block;min-width:100%;border-radius:.2cqw;transition:background .2s}
+pre .ln.on{background:color-mix(in srgb,var(--ac) 24%,transparent);box-shadow:-.5cqw 0 0 color-mix(in srgb,var(--ac) 24%,transparent)}
+
+pre.out{
+  position:relative;margin-top:.6cqw;
+  border-style:dashed;border-color:rgba(255,255,255,.18);
+  color:#c9d1d9;
+}
+pre.out::before{
+  content:'salida';position:absolute;top:.35cqw;right:.7cqw;
+  font-family:-apple-system,system-ui,sans-serif;font-size:.75cqw;
+  letter-spacing:.14em;text-transform:uppercase;color:#6e7681;
+}
+pre.out .err{color:#ff7b72}
+pre.out.hidden{color:transparent;cursor:pointer}
+pre.out.hidden .err{color:transparent}
+pre.out.hidden::after{
+  content:'¿qué imprime? (R o clic para ver)';
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:-apple-system,system-ui,sans-serif;font-size:1.1cqw;color:#8b949e;
+  letter-spacing:.04em;
+}
+
+/* demo en vivo */
+.live{
+  display:inline-flex;align-items:center;gap:.6cqw;
+  background:#ef5350;color:#fff;
+  font-size:.95cqw;font-weight:800;letter-spacing:.16em;text-transform:uppercase;
+  padding:.45cqw 1cqw;border-radius:2cqw;margin-bottom:1cqw;align-self:flex-start;
+}
+.live svg{width:1.4cqw;height:1.4cqw}
+.slide.ctr .live{align-self:center}
+.steps{list-style:none;counter-reset:s;margin-top:.4cqw}
+.steps li{
+  counter-increment:s;font-size:1.25cqw;line-height:1.45;color:#e6edf3;
+  padding:.35cqw 0 .35cqw 2.4cqw;position:relative;
+}
+.steps li::before{
+  content:counter(s);position:absolute;left:0;top:.35cqw;
+  width:1.7cqw;height:1.7cqw;border-radius:50%;
+  background:#ef5350;color:#fff;font-size:.95cqw;font-weight:800;
+  display:flex;align-items:center;justify-content:center;
+}
+.steps li code{
+  font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
+  font-size:.92em;color:#ffa657;background:rgba(255,255,255,.06);
+  padding:.05em .3em;border-radius:.25em;
+}
+.steps li em{color:#8b949e;font-style:normal}
+
+/* tablas */
+table.br{width:100%;border-collapse:collapse;margin-top:1cqw;font-size:1.15cqw}
+table.br th{text-align:left;font-size:.85cqw;letter-spacing:.12em;text-transform:uppercase;color:#8b949e;padding:.55cqw .9cqw;border-bottom:1px solid #30363d}
+table.br td{padding:.6cqw .9cqw;border-bottom:1px solid rgba(255,255,255,.05);color:#c9d1d9;vertical-align:top}
+table.br td:first-child{white-space:nowrap}
+table.br td code{font-size:1em}
+table.br td.big{font-size:1.5cqw;font-weight:800;color:var(--ac)}
+
+/* recorrido del curso */
+.road{display:grid;grid-template-columns:repeat(6,1fr);gap:.8cqw;width:100%;margin-top:1.6cqw}
+.road .stop{background:#161b22;border:1px solid rgba(255,255,255,.08);border-radius:.6cqw;padding:1cqw 1.1cqw;position:relative}
+.road .stop .n{font-size:2.2cqw;font-weight:900;color:#3d4450;line-height:1}
+.road .stop .t{font-size:1.1cqw;font-weight:700;color:#e6edf3;margin-top:.5cqw}
+.road .stop .d{font-size:.95cqw;color:#8b949e;margin-top:.35cqw;line-height:1.4}
+.road .stop.now{border-color:var(--ac);background:color-mix(in srgb,var(--ac) 10%,#161b22)}
+.road .stop.now .n{color:var(--ac)}
+.road .stop.next{border-style:dashed}
+.road .stop.off{opacity:.55}
+
+svg.fig{width:100%;height:auto;display:block;margin-top:.8cqw}
+svg text{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif}
+svg .mono{font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace}
+
+/* animaciones */
+.viz{background:#161b22;border:1px solid rgba(255,255,255,.08);border-radius:.75cqw;padding:.9cqw 1.1cqw;cursor:default}
+.vhead{display:flex;justify-content:space-between;align-items:baseline;gap:1cqw;margin-bottom:.3cqw}
+.vhead .vt{font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:1cqw;font-weight:700;color:var(--ac)}
+.vhead .cnt{font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:1.05cqw;color:#e6edf3;white-space:nowrap}
+.items{position:relative;height:13cqw}
+.cells .items{height:6.6cqw}
+.compact .items{height:9cqw}
+.ixs,.ptrs{position:relative}
+.ixs{height:1.4cqw}
+.compact .ixs{display:none}
+.it{position:absolute;top:2.6cqw;bottom:0;padding:0 .18cqw;display:flex;flex-direction:column;justify-content:flex-end;transition:left .32s ease,transform .32s ease,opacity .25s}
+.it .b{position:relative;border-radius:.3cqw .3cqw 0 0;background:#3d4450;transition:background .2s,border-color .2s,color .2s}
+.it .b i{position:absolute;left:0;right:0;top:-1.45cqw;text-align:center;font-style:normal;font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:.95cqw;color:#8b949e}
+.compact .it .b i{font-size:.8cqw;top:-1.2cqw}
+.cells .it .b{height:3.8cqw;border-radius:.45cqw;background:#0d1117;border:2px solid #30363d;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:1.45cqw;color:#e6edf3}
+.it.done .b{background:#4fc3f7}
+.it.cmp .b{background:#ffb74d}
+.it.swap .b{background:#f48fb1}
+.it.found .b{background:#81c784}
+.it.key .b{background:#ce93d8}
+.it.key{transform:translateY(-1.7cqw)}
+.it.cmp .b i{color:#ffb74d}.it.swap .b i{color:#f48fb1}.it.key .b i{color:#ce93d8}
+.cells .it.cmp .b{background:rgba(255,183,77,.14);border-color:#ffb74d}
+.cells .it.found .b{background:rgba(129,199,132,.18);border-color:#81c784}
+.it.dim{opacity:.2}
+.ixs span{position:absolute;top:.2cqw;transform:translateX(-50%);font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:.78cqw;color:#6e7681}
+.pt{position:absolute;transform:translateX(-50%);transition:left .32s ease,opacity .2s;font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:.92cqw;font-weight:700;white-space:nowrap;text-align:center;line-height:1.05}
+.pt::before{content:'▲';display:block;font-size:.7cqw}
+.msg{font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:1.02cqw;color:#c9d1d9;min-height:1.55cqw;margin-top:.25cqw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ctl{display:flex;flex-wrap:wrap;gap:.45cqw;margin-top:.6cqw;align-items:center}
+.ctl button{font:inherit;font-size:.88cqw;background:#0d1117;border:1px solid #30363d;color:#c9d1d9;border-radius:1cqw;padding:.28cqw .8cqw;cursor:pointer}
+.ctl button:hover{border-color:#6e7681}
+.ctl button.on{border-color:var(--ac);color:var(--ac)}
+.ctl button.go{background:var(--ac);border-color:var(--ac);color:#0d1117;font-weight:700}
+.ctl .sp{flex:1}
+.race{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1cqw;margin-top:.6cqw}
+.race .viz{padding:.7cqw .8cqw}
+
+/* el pedazo que se parte */
+.rtrack{position:relative;height:3.2cqw;background:#0d1117;border:1px solid #30363d;border-radius:.4cqw;margin-top:2cqw;overflow:hidden}
+.rpiece{position:absolute;top:0;bottom:0;background:rgba(129,199,132,.35);border-left:2px solid #81c784;border-right:2px solid #81c784;min-width:3px;transition:left .45s ease,width .45s ease}
+.rmid{position:absolute;top:-.2cqw;bottom:-.2cqw;width:2px;background:#ffb74d;transition:left .45s ease,opacity .2s}
+.rends{display:flex;justify-content:space-between;font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:.85cqw;color:#6e7681;margin-top:.3cqw}
+.rtrail{font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:1.05cqw;color:#c9d1d9;line-height:1.7;margin-top:1cqw;min-height:5.4cqw}
+.rtrail b{color:#81c784}
+
+/* crecimiento */
+.grow .gr{display:grid;grid-template-columns:8.5cqw 1fr 12cqw;gap:1cqw;align-items:center;margin-top:.75cqw}
+.grow .gn{font-size:1.15cqw;font-weight:700;text-align:right}
+.grow .gt{height:2.1cqw;background:#0d1117;border-radius:.3cqw;position:relative;overflow:hidden}
+.grow .gf{position:absolute;left:0;top:0;bottom:0;min-width:3px;border-radius:.3cqw;transition:width .6s ease}
+.grow .gv{font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:1.1cqw;color:#e6edf3;white-space:nowrap}
+.grow .gv small{color:#8b949e;font-size:.85em;margin-left:.6cqw}
+.grow .gnow{font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:2.4cqw;font-weight:800;color:var(--ac)}
+
+/* chrome */
+#bar{position:absolute;left:0;bottom:0;height:.3cqw;background:#4fc3f7;transition:width .3s ease;z-index:5}
+#num{position:absolute;right:1.6cqw;bottom:1cqw;font-size:.85cqw;color:#6e7681;z-index:5;letter-spacing:.08em}
+#foot{position:absolute;left:1.6cqw;bottom:1cqw;font-size:.85cqw;color:#484f58;z-index:5;letter-spacing:.08em}
+#help{
+  position:absolute;inset:0;background:rgba(13,17,23,.94);z-index:10;
+  display:none;align-items:center;justify-content:center;
+}
+#help.on{display:flex}
+#help .box{background:#161b22;border:1px solid #30363d;border-radius:1cqw;padding:2.4cqw 3cqw;font-size:1.3cqw;color:#c9d1d9;line-height:2}
+#help kbd{font-family:ui-monospace,Menlo,monospace;background:#0d1117;border:1px solid #30363d;border-radius:.3cqw;padding:.1cqw .5cqw;color:#e6edf3}
+</style>
+</head>
+<body>
+<div id="deck">
+
+<!-- ============================================================ portada -->
+<section class="slide a1 ctr">
+  <div class="lbl">Programación · MatCom · Conferencia 8 · 4 de noviembre de 2026</div>
+  <h1 class="hero">Búsqueda, ordenación <em>y costo</em></h1>
+  <p class="sub" style="max-width:58ch">Proyecto de hoy: todas las palabras del capítulo, de la más frecuente a la menos, ordenadas con un método escrito por nosotros. Y después, buscar en el resultado.</p>
+  <div class="viz compact" id="v-portada" style="width:56cqw;margin-top:1.4cqw;background:transparent;border:none"></div>
+</section>
+
+<!-- ============================================================ dónde estamos -->
+<section class="slide a1">
+  <div class="lbl">Dónde estamos</div>
+  <h1>La conferencia 6 <em>ordenó sin decirlo</em></h1>
+  <p class="sub"><code>mas_comunes</code> buscaba la palabra más frecuente, la apartaba y volvía a buscar. Dijimos que eso era una forma de <b>ordenar</b>. Hoy le ponemos nombre y le contamos el trabajo.</p>
+  <div class="road">
+    <div class="stop"><div class="n">4</div><div class="t">Listas</div><div class="d">notas del grupo, tuplas, la criba</div></div>
+    <div class="stop"><div class="n">5</div><div class="t">Cadenas y archivos</div><div class="d">contar las palabras de un archivo</div></div>
+    <div class="stop"><div class="n">6</div><div class="t">Diccionarios y conjuntos</div><div class="d">cuántas veces aparece cada palabra</div></div>
+    <div class="stop off"><div class="n">7</div><div class="t">Examen</div><div class="d">el primer tema</div></div>
+    <div class="stop now"><div class="n">8</div><div class="t">Búsqueda, ordenación y costo</div><div class="d">todas las palabras ordenadas, a mano</div></div>
+    <div class="stop next"><div class="n">9</div><div class="t">Recursión</div><div class="d">las Torres de Hanói</div></div>
+  </div>
+</section>
+
+<!-- ============================================================ el plan -->
+<section class="slide a1">
+  <div class="lbl">El plan de la hora</div>
+  <h1>Buscar, ordenar <em>y contar</em> lo que cuesta</h1>
+  <svg class="fig" viewBox="0 0 1200 330">
+    <defs><marker id="ah1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e7681"/></marker></defs>
+    <g text-anchor="middle">
+      <rect x="10" y="40" width="250" height="150" rx="12" fill="#161b22" stroke="#ffb74d" stroke-width="2"/>
+      <text x="135" y="85" fill="#ffb74d" font-size="17" font-weight="700" letter-spacing="2">1 · LINEAL</text>
+      <text x="135" y="125" fill="#e6edf3" font-size="22" class="mono">uno por uno</text>
+      <text x="135" y="160" fill="#8b949e" font-size="17">lo que hace x in lista</text>
+
+      <rect x="310" y="40" width="250" height="150" rx="12" fill="#161b22" stroke="#81c784" stroke-width="2"/>
+      <text x="435" y="85" fill="#81c784" font-size="17" font-weight="700" letter-spacing="2">2 · BINARIA</text>
+      <text x="435" y="125" fill="#e6edf3" font-size="22" class="mono">medio, y la mitad</text>
+      <text x="435" y="160" fill="#8b949e" font-size="17">si la lista está ordenada</text>
+
+      <rect x="610" y="40" width="250" height="150" rx="12" fill="#161b22" stroke="#f48fb1" stroke-width="2"/>
+      <text x="735" y="85" fill="#f48fb1" font-size="17" font-weight="700" letter-spacing="2">3 · ORDENAR</text>
+      <text x="735" y="125" fill="#e6edf3" font-size="22" class="mono">tres métodos</text>
+      <text x="735" y="160" fill="#8b949e" font-size="17">selección, inserción, burbuja</text>
+
+      <rect x="910" y="40" width="250" height="150" rx="12" fill="#161b22" stroke="#ce93d8" stroke-width="2"/>
+      <text x="1035" y="85" fill="#ce93d8" font-size="17" font-weight="700" letter-spacing="2">4 · CONTAR</text>
+      <text x="1035" y="125" fill="#e6edf3" font-size="22" class="mono">n → 2n</text>
+      <text x="1035" y="160" fill="#8b949e" font-size="17">¿por cuánto se multiplica?</text>
+
+      <path d="M135 195 C135 250 500 240 560 262" stroke="#ffb74d" stroke-width="2" fill="none" marker-end="url(#ah1)" opacity=".7"/>
+      <path d="M435 195 C435 235 560 240 585 260" stroke="#81c784" stroke-width="2" fill="none" marker-end="url(#ah1)" opacity=".7"/>
+      <path d="M735 195 C735 235 640 240 615 260" stroke="#f48fb1" stroke-width="2" fill="none" marker-end="url(#ah1)" opacity=".7"/>
+      <path d="M1035 195 C1035 250 700 240 640 262" stroke="#ce93d8" stroke-width="2" fill="none" marker-end="url(#ah1)" opacity=".7"/>
+      <rect x="380" y="265" width="440" height="56" rx="12" fill="#10202b" stroke="#4fc3f7" stroke-width="2"/>
+      <text x="600" y="301" fill="#4fc3f7" font-size="22" font-weight="700">5 · las palabras por frecuencia</text>
+    </g>
+  </svg>
+  <p class="note">Python ya trae <code>in</code>, <code>index</code>, <code>sort</code> y <code>sorted</code>, y en un programa de verdad se usan esos. Los escribimos a mano por la misma razón que <code>sum</code> y <code>max</code> en la conferencia 4: para saber qué hacen por dentro.</p>
+</section>
+
+<!-- ============================================================ 1. lineal -->
+<section class="slide a2 ctr">
+  <div class="lbl">Parte 1</div>
+  <h1 class="hero">Búsqueda <em>lineal</em></h1>
+  <p class="sub">Mirar los elementos de uno en uno, hasta encontrarlo o hasta que se acaben.</p>
+</section>
+
+<section class="slide a2">
+  <div class="lbl">Paso a paso</div>
+  <h1>El primer índice donde está, <em>o -1</em></h1>
+  <div class="c2">
+    <div>
+      <pre class="code sm" data-hl id="c-lineal">def buscar(lista, x):
+    """Devuelve el primer índice donde está x, o -1 si no está."""
+    for i in range(len(lista)):
+        if lista[i] == x:
+            return i
+    return -1</pre>
+      <pre class="code sm" data-hl style="margin-top:.6cqw">edades = [19, 18, 21, 18, 20, 22]
+print(buscar(edades, 21))
+print(buscar(edades, 18))
+print(buscar(edades, 30))</pre>
+      <pre class="out sm hidden">2
+1
+-1</pre>
+    </div>
+    <div>
+      <div class="viz cells" id="v-lineal"></div>
+      <p class="note">El <code>return</code> dentro del ciclo termina la función, y el ciclo con ella. Al <code>return -1</code> solo se llega si el ciclo se acaba sin encontrarlo. El 18 está dos veces: devuelve <b>el primero</b>.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide a2">
+  <span class="live"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M1 20h22"/></svg>En vivo · archivo busqueda.py</span>
+  <h1>Contar <em>las comparaciones</em></h1>
+  <div class="c2">
+    <div>
+      <pre class="code sm" data-hl>def buscar_contando(lista, x):
+    """Como buscar, pero devuelve también cuántas comparaciones hizo."""
+    comparaciones = 0
+    for i in range(len(lista)):
+        comparaciones += 1
+        if lista[i] == x:
+            return i, comparaciones
+    return -1, comparaciones
+
+
+numeros = list(range(1_000_000))
+print(buscar_contando(numeros, 0))
+print(buscar_contando(numeros, 500_000))
+print(buscar_contando(numeros, -5))</pre>
+      <pre class="out sm hidden">(0, 1)
+(500000, 500001)
+(-1, 1000000)</pre>
+    </div>
+    <div>
+      <ol class="steps">
+        <li>Escribe <code>buscar</code> y pruébala con <code>edades</code>.</li>
+        <li>Agrega el contador. Antes de correr: ¿cuántas comparaciones para el <code>-5</code>?</li>
+        <li>Corre. <em>Para decir que no está hay que mirarlos todos: el que no miraste podía ser el que buscabas.</em></li>
+      </ol>
+      <p class="kick">Lista el doble de larga, el doble de trabajo. El trabajo crece <b>en proporción a n</b>, y por eso se llama búsqueda <b>lineal</b>. Es lo que hace <code>x in lista</code> por dentro.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ 2. binaria -->
+<section class="slide a3 ctr">
+  <div class="lbl">Parte 2</div>
+  <h1 class="hero">Búsqueda <em>binaria</em></h1>
+  <p class="sub">El juego de la conferencia 2: adivinar un número del 1 al 100 en siete preguntas, partiendo siempre el rango a la mitad. Ahora sobre una <b>lista ordenada</b>.</p>
+</section>
+
+<section class="slide a3">
+  <div class="lbl">Paso a paso</div>
+  <h1>Mirar el medio y <em>descartar una mitad</em></h1>
+  <div class="c2 wr">
+    <div>
+      <pre class="code xs" data-hl id="c-binaria">def buscar_binaria(lista, x):
+    """Busca x en una lista ordenada. Devuelve su índice, o -1."""
+    izq = 0
+    der = len(lista) - 1
+
+    while izq &lt;= der:
+        medio = (izq + der) // 2
+        if lista[medio] == x:
+            return medio
+        elif lista[medio] &lt; x:
+            izq = medio + 1      # x, si está, está a la derecha de medio
+        else:
+            der = medio - 1      # x, si está, está a la izquierda de medio
+
+    return -1</pre>
+      <p class="note"><code>izq</code> y <code>der</code> marcan el pedazo donde el valor <b>todavía puede estar</b>. Si el medio es menor que <code>x</code>, todo lo que está a su izquierda también lo es.</p>
+    </div>
+    <div>
+      <div class="viz cells" id="v-binaria"></div>
+      <p class="note">Con el 12, que no está, los índices se cruzan: <code>izq</code> queda a la derecha de <code>der</code>, el pedazo queda vacío y el <code>while</code> se acaba.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide a3">
+  <div class="lbl">Cuánto cuesta</div>
+  <h1>Cada vuelta parte el pedazo <em>a la mitad</em></h1>
+  <div class="c2 wl">
+    <div>
+      <div class="viz" id="v-rango"></div>
+    </div>
+    <div>
+      <pre class="code xs" data-hl>for n in [1_000, 1_000_000, 1_000_000_000]:
+    vueltas = buscar_binaria_contando(range(n), -5)[1]
+    print(f"{n:>13}: {vueltas} vueltas")</pre>
+      <pre class="out xs hidden">         1000: 9 vueltas
+      1000000: 19 vueltas
+   1000000000: 29 vueltas</pre>
+      <ul class="pts sm">
+        <li>Las veces que hay que partir <em>n</em> a la mitad hasta llegar a 1 es <strong>log₂ n</strong>: log₂ 1024 = 10, log₂ 1 048 576 = 20.</li>
+        <li>Multiplicar la lista por mil le suma <strong>diez vueltas</strong>, porque 2¹⁰ = 1024.</li>
+        <li><code>range(n)</code> se indexa como una lista ordenada y no ocupa memoria.</li>
+      </ul>
+    </div>
+  </div>
+  <p class="note">¿Por qué 9 y no 10? Si quitas el medio de 1000 quedan 499 a la izquierda y 500 a la derecha, y buscando un valor menor que todos la búsqueda siempre se va al pedazo chico.</p>
+</section>
+
+<section class="slide a3">
+  <div class="lbl">El precio</div>
+  <h1>Con una lista desordenada <em>miente sin avisar</em></h1>
+  <div class="c2">
+    <div>
+      <div class="viz cells" id="v-desordenada"></div>
+      <pre class="code sm" data-hl style="margin-top:.8cqw">print(buscar_binaria([7, 2, 19, 5, 13], 5))</pre>
+      <pre class="out sm hidden">-1</pre>
+    </div>
+    <div>
+      <div class="card bad"><div class="ct">Sin ningún error</div><div class="cb">El 5 está en la posición 3. La función mira el 19 del medio, que es mayor, y <em>descarta toda la derecha</em>, donde estaba el 5.</div></div>
+      <p class="kick">Descartar una mitad solo es correcto si la lista está ordenada. Si no lo está, la función hace lo mismo, pero <b>el resultado ya no significa nada</b>.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide a3">
+  <div class="lbl">Un error plantado</div>
+  <h1><code>izq = medio</code> <em>parece inofensivo</em></h1>
+  <div class="c2 wr">
+    <div>
+      <pre class="code xs" data-hl id="c-mal">def buscar_binaria_mal(lista, x):
+    izq, der = 0, len(lista) - 1
+    while izq &lt;= der:
+        medio = (izq + der) // 2
+        if lista[medio] == x:
+            return medio
+        elif lista[medio] &lt; x:
+            izq = medio          # antes era medio + 1
+        else:
+            der = medio - 1
+    return -1</pre>
+      <p class="note">El medio ya se miró: ¿qué más da dejarlo dentro? Con <code>pares = [0, 2, …, 18]</code> y los 22 valores del −1 al 20:</p>
+      <pre class="out xs hidden">14 de 22 búsquedas colgadas: [1, 3, 5, 6, 7, 9, 10, 11, 13, 15, 17, 18, 19, 20]</pre>
+    </div>
+    <div>
+      <div class="viz cells" id="v-mal"></div>
+      <p class="note">Cuando el pedazo tiene uno o dos elementos, el medio es el propio <code>izq</code>, e <code>izq = medio</code> <b>no lo mueve</b>. Lo que garantiza que un <code>while</code> termina es que cada vuelta achique algo. Prueba siempre con listas de 0, 1 y 2 elementos, y con valores menores que todos, mayores que todos y en medio.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ 3. ordenar -->
+<section class="slide a4 ctr">
+  <div class="lbl">Parte 3</div>
+  <h1 class="hero">Tres maneras <em>de ordenar</em></h1>
+  <p class="sub">Si buscar en una lista ordenada es tanto más barato, vale la pena saber ordenar. Sin <code>sort</code> ni <code>sorted</code>, y <b>dentro de la misma lista</b>.</p>
+</section>
+
+<section class="slide a4">
+  <div class="lbl">Selección</div>
+  <h1>Buscar el menor <em>y ponerlo en su sitio</em></h1>
+  <div class="c2 wr">
+    <div>
+      <pre class="code sm" data-hl id="c-seleccion">def seleccion(lista):
+    """Ordena la lista de menor a mayor, modificándola."""
+    n = len(lista)
+    for i in range(n - 1):
+        menor = i
+        for j in range(i + 1, n):
+            if lista[j] &lt; lista[menor]:
+                menor = j
+        lista[i], lista[menor] = lista[menor], lista[i]</pre>
+      <p class="note">El intercambio es el desempaquetado de tuplas de la conferencia 4. La función <b>no devuelve nada</b>: modifica la lista que recibió, igual que <code>sort</code>.</p>
+    </div>
+    <div>
+      <div class="viz" id="v-seleccion"></div>
+      <p class="note"><b style="color:#4fc3f7">Azul</b>: definitivo, no se vuelve a mover. <b style="color:#ffb74d">Naranja</b>: la comparación. <b style="color:#f48fb1">Rosa</b>: el intercambio de la pasada.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide a4">
+  <div class="lbl">Contar la selección</div>
+  <h1>Siempre <em>n(n − 1)/2</em> comparaciones</h1>
+  <div class="c2">
+    <svg class="fig" viewBox="0 0 560 330" id="triangulo"></svg>
+    <div>
+      <ul class="pts">
+        <li>La primera pasada compara con los otros <strong>n − 1</strong>, la segunda con <strong>n − 2</strong>, la última con <strong>1</strong>.</li>
+        <li>(n − 1) + (n − 2) + … + 1 = <strong>n(n − 1)/2</strong>. Con 7 elementos, 21.</li>
+        <li><strong>No depende de cómo venga la lista.</strong> Aunque ya esté ordenada, para saber que el primero es el menor hay que compararlo con todos.</li>
+        <li>Con 1000 elementos, <strong>499 500</strong>: casi medio millón.</li>
+      </ul>
+      <p class="note">El ciclo de fuera llega hasta <code>n - 2</code>: cuando los <code>n - 1</code> menores están en su sitio, el último ya está en el suyo.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide a4">
+  <div class="lbl">Inserción</div>
+  <h1>Como se ordenan <em>las cartas en la mano</em></h1>
+  <div class="c2 wr">
+    <div>
+      <pre class="code sm" data-hl id="c-insercion">def insercion(lista):
+    """Ordena la lista de menor a mayor, modificándola."""
+    for i in range(1, len(lista)):
+        x = lista[i]
+        j = i - 1
+        while j &gt;= 0 and lista[j] &gt; x:
+            lista[j + 1] = lista[j]  # corre el mayor
+            j -= 1
+        lista[j + 1] = x             # x cae en el hueco</pre>
+      <p class="note">Cada carta nueva se mete en su lugar entre las que ya tienes. El azul está <b>ordenado entre sí</b>, pero no son todavía los menores: lo que llegue después puede meterse en medio.</p>
+    </div>
+    <div>
+      <div class="viz" id="v-insercion"></div>
+      <p class="note"><b style="color:#ce93d8">Violeta</b>: <code>x</code>, levantada mientras busca su hueco. <b style="color:#f48fb1">Rosa</b>: el mayor que se corrió a la derecha.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide a4">
+  <div class="lbl">Una regla de <code style="font-size:1em">and</code> que no habíamos necesitado</div>
+  <h1>Si la primera es falsa, <em>la segunda no se mira</em></h1>
+  <div class="c2">
+    <div class="card ac">
+      <div class="ct">Evaluación en cortocircuito</div>
+      <p class="cb"><code>A and B</code>: si <code>A</code> es falsa, el resultado es falso sea lo que sea <code>B</code>, y Python <em>no evalúa B</em>. <code>A or B</code> hace lo mismo cuando <code>A</code> es verdadera.</p>
+      <pre class="code sm" data-hl style="margin-top:.7cqw">lista, x = [4, 8, 15], 99
+i = 0
+while i &lt; len(lista) and lista[i] != x:
+    i += 1
+print(i)</pre>
+      <pre class="out sm">3</pre>
+    </div>
+    <div class="card bad">
+      <div class="ct">Las dos condiciones al revés</div>
+      <pre class="code sm" data-hl>while lista[i] != x and i &lt; len(lista):
+    i += 1</pre>
+      <pre class="out sm"><span class="err">IndexError: list index out of range</span></pre>
+      <p class="cb" style="margin-top:.6cqw">Con <code>i</code> igual a 3 se evalúa <code>lista[3]</code> antes de preguntar si existe. En la inserción, <code>j &gt;= 0</code> va primero por lo mismo: con <code>j</code> en −1 no hace falta mirar <code>lista[-1]</code>, que en Python <em>no da error</em>: es el último elemento.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide a4">
+  <span class="live"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M1 20h22"/></svg>En vivo · archivo ordenar.py</span>
+  <h1>La inserción <em>depende de la lista</em></h1>
+  <div class="c2">
+    <div>
+      <pre class="code xs" data-hl>def insercion_contando(lista):
+    """Ordena la lista y devuelve cuántas comparaciones hizo."""
+    comparaciones = 0
+    for i in range(1, len(lista)):
+        x = lista[i]
+        j = i - 1
+        while j &gt;= 0:
+            comparaciones += 1
+            if lista[j] &lt;= x:
+                break
+            lista[j + 1] = lista[j]
+            j -= 1
+        lista[j + 1] = x
+    return comparaciones
+
+
+n = 1000
+random.seed(8)
+al_azar = [random.randint(1, 10_000) for _ in range(n)]
+
+print("ordenada:   ", insercion_contando(list(range(n))))
+print("al revés:   ", insercion_contando(list(range(n, 0, -1))))
+print("al azar:    ", insercion_contando(list(al_azar)))
+print("n(n-1)/2:   ", n * (n - 1) // 2)</pre>
+      <pre class="out xs hidden">ordenada:    999
+al revés:    499500
+al azar:     248214
+n(n-1)/2:    499500</pre>
+    </div>
+    <div>
+      <div class="card ac"><div class="ct">Lista por comprensión</div>
+        <pre class="code sm" data-hl>al_azar = [random.randint(1, 10_000) for _ in range(n)]</pre>
+        <p class="cb" style="margin-top:.5cqw">Abrevia un <code>for</code> con <code>append</code>. La variable se llama <code>_</code> cuando no se usa; si se usa, va en la expresión: <code>[k * k for k in range(5)]</code> es <code>[0, 1, 4, 9, 16]</code>.</p></div>
+      <ol class="steps">
+        <li>Para contar, la comparación sale del <code>while</code> a un <code>if</code> con <code>break</code>. <em>Lo que hace la función es lo mismo.</em></li>
+        <li>Antes de correr: ¿ordenada, al revés o al azar, cuál cuesta más? <em><code>random.seed(8)</code> hace que "al azar" salga igual cada vez.</em></li>
+        <li>Corre. <em>Al azar, cerca de la mitad del peor caso.</em></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section class="slide a4">
+  <div class="lbl">Burbuja</div>
+  <h1>Intercambiar vecinos <em>que están al revés</em></h1>
+  <div class="c2 wr">
+    <div>
+      <pre class="code sm" data-hl id="c-burbuja">def burbuja(lista):
+    """Ordena la lista de menor a mayor, modificándola."""
+    n = len(lista)
+    for k in range(n - 1):
+        hubo_cambio = False
+        for j in range(n - 1 - k):
+            if lista[j] &gt; lista[j + 1]:
+                lista[j], lista[j + 1] = lista[j + 1], lista[j]
+                hubo_cambio = True
+        if not hubo_cambio:
+            break</pre>
+      <p class="note">Al final de cada pasada el mayor de lo que falta llegó al final, <b>como una burbuja</b>. Por eso el ciclo de dentro llega cada vez un lugar menos lejos. Si una pasada no cambia nada, la lista ya está ordenada.</p>
+    </div>
+    <div>
+      <div class="viz" id="v-burbuja"></div>
+      <p class="note">Prueba con la lista ordenada: <b>una sola pasada</b> de <code>n - 1</code> comparaciones, y <code>break</code>.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide a4">
+  <span class="live"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M1 20h22"/></svg>En vivo · ordenar.py, probar contra sorted</span>
+  <h1>Probar contra uno <em>que sabemos que está bien</em></h1>
+  <div class="c2">
+    <div>
+      <pre class="code sm" data-hl>random.seed(1)
+for prueba in range(500):
+    n = random.randint(0, 12)
+    original = [random.randint(1, 5) for _ in range(n)]
+    for metodo in [seleccion, insercion, burbuja]:
+        copia = list(original)
+        metodo(copia)
+        if copia != sorted(original):
+            print("FALLA", metodo.__name__, original, copia)
+
+print("pruebas terminadas")</pre>
+      <pre class="out sm hidden">pruebas terminadas</pre>
+    </div>
+    <div>
+      <ol class="steps">
+        <li>Corre las 500 pruebas. <em>Tamaños del 0 al 12, la vacía incluida; valores del 1 al 5 para que haya repetidos.</em></li>
+        <li>Planta un error en <code>seleccion</code>: <code>range(i + 1, n - 1)</code>. <em>La primera falla es <code>[5, 1]</code>, y fallan 284 de 500.</em></li>
+        <li>Restaura la función.</li>
+      </ol>
+      <div class="card ac" style="margin-top:1cqw"><div class="ct">Una lista de funciones</div><div class="cb"><code>[seleccion, insercion, burbuja]</code> no lleva paréntesis: no llama a ninguna. <code>metodo(copia)</code> la llama, y <code>metodo.__name__</code> es su nombre. La función es <em>un dato más</em>, como dijimos en la conferencia 3.</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide a4">
+  <div class="lbl">La carrera</div>
+  <h1>Los tres <em>con la misma lista</em></h1>
+  <div id="v-carrera"></div>
+  <p class="note">Cada paso de la animación es <b>una comparación</b>. Antes de animar cada lista, pregunta al aula cuál termina primero.</p>
+</section>
+
+<!-- ============================================================ 4. contar -->
+<section class="slide a5 ctr">
+  <div class="lbl">Parte 4</div>
+  <h1 class="hero">Contar <em>en lugar de cronometrar</em></h1>
+  <p class="sub">El reloj depende de la máquina, de lo que esté haciendo y de la versión de Python. Las comparaciones dependen <b>solo del algoritmo y de la lista</b>.</p>
+</section>
+
+<section class="slide a5">
+  <span class="live"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M1 20h22"/></svg>En vivo · ordenar.py, duplicando n</span>
+  <h1>Cada fila, <em>el doble de elementos</em></h1>
+  <pre class="code xs" data-hl>random.seed(8)
+for n in [100, 200, 400, 800, 1600]:
+    lista = [random.randint(1, 10_000) for _ in range(n)]
+    lineal = buscar_contando(lista, -5)[1]
+    binaria = buscar_binaria_contando(sorted(lista), -5)[1]
+    sel = seleccion_contando(list(lista))
+    ins = insercion_contando(list(lista))
+    bur = burbuja_contando(list(lista))
+    print(f"{n:>5} {lineal:>7} {binaria:>8} {sel:>10} {ins:>10} {bur:>10}")</pre>
+  <pre class="out sm hidden">    n  lineal  binaria  selección  inserción    burbuja
+  100     100        6       4950       2573       4947
+  200     200        7      19900      10180      19809
+  400     400        8      79800      39218      79547
+  800     800        9     319600     160691     318610
+ 1600    1600       10    1279200     639673    1278672</pre>
+  <p class="note">Lee la tabla <b>por columnas</b>, de arriba abajo. <code>list(lista)</code> da a cada método su propia copia de la misma lista.</p>
+</section>
+
+<section class="slide a5">
+  <div class="lbl">La misma tabla, dibujada</div>
+  <h1>Si n se duplica: <em>+1, ×2 o ×4</em></h1>
+  <div class="grow" id="v-crecer"></div>
+</section>
+
+<section class="slide a5">
+  <div class="lbl">Orden de crecimiento</div>
+  <h1>Una pregunta: <em>¿por cuánto se multiplica?</em></h1>
+  <table class="br">
+    <tr><th>Algoritmo</th><th>Si n se duplica</th><th>Trabajo proporcional a</th><th>Se escribe</th></tr>
+    <tr><td>Búsqueda binaria</td><td class="big">+1</td><td>log₂ n</td><td><code>O(log n)</code></td></tr>
+    <tr><td>Búsqueda lineal</td><td class="big">×2</td><td>n</td><td><code>O(n)</code></td></tr>
+    <tr><td>Selección, inserción, burbuja</td><td class="big">×4</td><td>n²</td><td><code>O(n²)</code></td></tr>
+  </table>
+  <div class="c2" style="margin-top:1.6cqw">
+    <div class="card ac"><div class="ct">Las constantes</div><div class="cb">El ½ de n(n − 1)/2, o que la inserción haga la mitad que la selección, deciden <em>cuál de dos métodos del mismo orden</em> es más rápido.</div></div>
+    <div class="card ac"><div class="ct">El orden</div><div class="cb">Decide algo más importante: <em>hasta qué tamaño de entrada</em> el programa sirve. La definición precisa es de Estructuras de Datos.</div></div>
+  </div>
+</section>
+
+<section class="slide a5">
+  <span class="live"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M1 20h22"/></svg>En vivo · ordenar.py, con el reloj</span>
+  <h1>Ahora sí, <em>el reloj</em></h1>
+  <div class="c2">
+    <div>
+      <pre class="code xs" data-hl>def cronometrar(metodo, lista):
+    """Segundos que tarda metodo en ordenar una copia de la lista."""
+    copia = list(lista)
+    inicio = time.perf_counter()
+    metodo(copia)
+    return time.perf_counter() - inicio
+
+
+random.seed(8)
+tamanos = [500, 1000, 2000, 4000]
+tiempos = {"selección": [], "inserción": [], "burbuja": []}
+
+for n in tamanos:
+    lista = [random.randint(1, 1_000_000) for _ in range(n)]
+    tiempos["selección"].append(cronometrar(seleccion, lista))
+    tiempos["inserción"].append(cronometrar(insercion, lista))
+    tiempos["burbuja"].append(cronometrar(burbuja, lista))
+
+for metodo, ts in tiempos.items():
+    razones = [ts[k + 1] / ts[k] for k in range(len(ts) - 1)]
+    print(f"{metodo:>10}: " + "  ".join(f"×{r:.1f}" for r in razones))</pre>
+      <pre class="out xs hidden"> selección: ×3.7  ×3.8  ×4.3
+ inserción: ×4.5  ×4.3  ×4.3
+   burbuja: ×4.7  ×4.6  ×4.2</pre>
+    </div>
+    <div>
+      <ol class="steps">
+        <li>Corre la tabla de segundos. <em>Con 4000: selección 0.56 s, inserción 0.77 s, burbuja 1.18 s. En tu máquina, otros números.</em></li>
+        <li>Imprime las razones. <em>No salen 4 exactos, porque el reloj mide también otras cosas, pero rondan el 4.</em></li>
+        <li>¿Por qué la burbuja es la más lenta si hace casi las mismas comparaciones que la selección? <em>Hace muchos más intercambios. Las constantes, otra vez.</em></li>
+      </ol>
+      <p class="note">Dentro de una llamada, la lista por comprensión puede ir <b>sin corchetes</b>: <code>join</code> recibe los elementos uno a uno.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide a5">
+  <div class="lbl">La predicción</div>
+  <h1>Un millón de números: <em>horas</em></h1>
+  <div class="c2 wl">
+    <div>
+      <table class="br">
+        <tr><th>Método</th><th>4000 elementos</th><th>Un millón, estimado</th></tr>
+        <tr><td>Selección</td><td>0.56 s</td><td class="big">5.0 horas</td></tr>
+        <tr><td>Inserción</td><td>0.77 s</td><td class="big">5.3 horas</td></tr>
+        <tr><td>Burbuja</td><td>1.18 s</td><td class="big">12.6 horas</td></tr>
+        <tr><td><code>sorted</code></td><td></td><td class="big" style="color:#81c784">0.37 segundos</td></tr>
+      </table>
+    </div>
+    <div>
+      <ul class="pts sm">
+        <li>Un millón son 250 veces 4000, así que unas <strong>250² = 62 500</strong> veces más tiempo.</li>
+        <li>La Habana tiene más de un millón de habitantes. No es una cantidad rara.</li>
+        <li>Una computadora diez veces más rápida pasa de horas a decenas de minutos. Con diez millones, el problema vuelve <strong>multiplicado por cien</strong>.</li>
+      </ul>
+      <p class="kick"><code>sorted</code> no es un n² escrito en un lenguaje más rápido. Es <b>otro algoritmo</b>, con otro orden de crecimiento: la conferencia 10.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ 5. proyecto -->
+<section class="slide a1">
+  <span class="live"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M1 20h22"/></svg>En vivo · frecuencias.py, el proyecto</span>
+  <h1>Todas las palabras, <em>por frecuencia</em></h1>
+  <div class="c2 wl">
+    <div>
+      <pre class="code xs" data-hl>def ordenar_por_frecuencia(parejas):
+    """Ordena parejas (palabra, veces) de más a menos frecuente."""
+    for i in range(1, len(parejas)):
+        x = parejas[i]
+        j = i - 1
+        while j &gt;= 0 and parejas[j][1] &lt; x[1]:
+            parejas[j + 1] = parejas[j]
+            j -= 1
+        parejas[j + 1] = x
+
+
+conteo = frecuencias(palabras_de("quijote-cap1.txt"))
+parejas = list(conteo.items())
+ordenar_por_frecuencia(parejas)
+
+print(len(parejas), "palabras distintas")
+for palabra, veces in parejas[:8]:
+    print(f"  {palabra:&lt;8} {veces:3}")</pre>
+      <pre class="out xs hidden">719 palabras distintas
+  de       122
+  y        106
+  que       89
+  a         44
+  el        40
+  en        38
+  la        35
+  su        35</pre>
+    </div>
+    <div>
+      <ol class="steps">
+        <li>Copia <code>insercion</code> y cambia solo la condición: <code>parejas[j][1] &lt; x[1]</code>. <em>Compara los conteos, y el <code>&lt;</code> pone primero los mayores.</em></li>
+        <li>Córrelo sobre el capítulo entero.</li>
+      </ol>
+      <p class="kick">Un algoritmo de ordenación <b>no sabe qué está ordenando</b>. Solo necesita saber cuándo un elemento va antes que otro.</p>
+      <p class="note"><code>la</code> y <code>su</code> tienen 35 y quedan en el orden en que aparecieron en el texto: la inserción nunca pasa un elemento por encima de otro igual. Un método así se llama <b>estable</b>.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide a1">
+  <span class="live"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M1 20h22"/></svg>En vivo · frecuencias.py, buscar en el resultado</span>
+  <h1>Ordenar las palabras <em>y buscar con la binaria</em></h1>
+  <div class="c2">
+    <div>
+      <pre class="code sm" data-hl>alfabetico = list(conteo)
+insercion(alfabetico)
+print(alfabetico[:6])
+print(alfabetico[-4:])
+
+for palabra in ["hidalgo", "rocinante", "molino"]:
+    i = buscar_binaria(alfabetico, palabra)
+    if i == -1:
+        print(f"{palabra}: no aparece")
+    else:
+        print(f"{palabra}: posición {i}, aparece {conteo[palabra]}")</pre>
+      <pre class="out xs hidden">['a', 'acabar', 'acabándolos', 'acomodada', 'acomodársele', 'acontece']
+['él', 'ésta', 'ídolo', 'ínsula']
+hidalgo: posición 337, aparece 4
+rocinante: posición 585, aparece 1
+molino: no aparece</pre>
+    </div>
+    <div>
+      <ul class="pts sm">
+        <li>La inserción ordena cadenas <strong>sin cambiar una línea</strong>: <code>&lt;</code> entre cadenas compara letra por letra.</li>
+        <li>El orden es el de los códigos de los caracteres, y ahí las letras con tilde y la <code>ñ</code> van <strong>después de la z</strong>. Por eso <code>él</code> e <code>ínsula</code> salen al final.</li>
+        <li>La búsqueda las encuentra igual, porque la lista y la búsqueda usan <strong>la misma comparación</strong>.</li>
+        <li>Con el diccionario de la conferencia 6 esto ya salía directo. Aquí es para ver la binaria trabajando.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ cierre -->
+<section class="slide a1">
+  <div class="lbl">Resumen</div>
+  <h1>Lo que te llevas <em>de hoy</em></h1>
+  <ul class="pts sm">
+    <li>La <strong>búsqueda lineal</strong> mira uno por uno. En el peor caso, todos: trabajo proporcional a <em>n</em>.</li>
+    <li>La <strong>búsqueda binaria</strong> descarta la mitad en cada vuelta: diecinueve o veinte vueltas para un millón. Necesita la lista ordenada, y si no lo está miente sin avisar.</li>
+    <li><code>izq = medio + 1</code> y <code>der = medio - 1</code> achican el pedazo en cada vuelta. Con <code>izq = medio</code>, el ciclo no termina.</li>
+    <li><strong>Selección</strong>: el menor de lo que falta a su lugar, siempre n(n − 1)/2. <strong>Inserción</strong>: cada uno en su hueco, rápida con listas casi ordenadas, estable. <strong>Burbuja</strong>: vecinos al revés, hasta una pasada sin cambios.</li>
+    <li>Los tres son de orden <strong>n²</strong>: duplicar la lista multiplica el trabajo por cuatro. Un millón de elementos, horas.</li>
+    <li>Contar operaciones dice cómo crece el trabajo sin depender de la máquina. El reloj lo confirma.</li>
+    <li>Todo algoritmo nuevo se prueba contra uno que se sabe correcto, con muchas entradas pequeñas al azar.</li>
+  </ul>
+</section>
+
+<section class="slide a2">
+  <div class="lbl">Ejercicios · están completos en el libro</div>
+  <h1>Para la clase práctica</h1>
+  <div class="c2">
+    <ul class="pts sm">
+      <li><code>buscar_ultimo(lista, x)</code> desde el principio y desde el final. ¿Cuál compara menos?</li>
+      <li><code>buscar_binaria_primero(lista, x)</code>: el primer índice con repetidos, sin dejar de partir a la mitad.</li>
+      <li><code>insertar_ordenado(lista, x)</code> con la binaria. ¿Cuántas comparaciones, y cuántos elementos mueve?</li>
+      <li>Demostrar que la selección no es estable con parejas <code>(nombre, nota)</code>. ¿Se puede arreglar?</li>
+    </ul>
+    <ul class="pts sm">
+      <li>Selección que pone el menor y el mayor en cada pasada. ¿Cambia el orden de crecimiento?</li>
+      <li>Contar cuántas veces escribe en la lista cada método. Explica por qué la burbuja pierde en el reloj.</li>
+      <li>Listas de 1000 elementos que hagan trabajar poco a la inserción y a la burbuja.</li>
+      <li><code>esta_ordenada(lista)</code>, y qué le pasa a la binaria si la llama cada vez.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="slide a0">
+  <div class="lbl" style="color:#ef5350">Para el profesor · guion de demos</div>
+  <h1>Los momentos <em style="color:#ef5350">en la laptop</em></h1>
+  <table class="br" id="guion"></table>
+  <p class="note">Todo corre en la carpeta de la conferencia, junto a <code>quijote-cap1.txt</code>. Pulsa el número de la diapositiva y Enter para saltar a ella. En las animaciones: <b>A</b> anima o pausa, <b>S</b> da un paso, <b>X</b> reinicia.</p>
+</section>
+
+<div id="bar"></div>
+<div id="foot">Programación · Conferencia 8</div>
+<div id="num"></div>
+<div id="help"><div class="box">
+  <kbd>→</kbd> <kbd>Espacio</kbd> <kbd>RePág</kbd> siguiente · <kbd>←</kbd> anterior<br>
+  <kbd>R</kbd> revela las salidas ocultas · <kbd>V</kbd> salta a la próxima demo en vivo<br>
+  <kbd>A</kbd> anima o pausa · <kbd>S</kbd> un paso · <kbd>X</kbd> reinicia la animación<br>
+  número + <kbd>Enter</kbd> va a esa diapositiva · <kbd>Inicio</kbd> <kbd>Fin</kbd><br>
+  <kbd>F</kbd> pantalla completa · <kbd>?</kbd> esta ayuda
+</div></div>
+</div>
+
+<script>
+// resaltado mínimo de Python
+const KW = /\b(def|return|for|in|if|elif|else|try|except|with|as|while|break|continue|not|and|or|None|True|False|import|from|del)\b/;
+const BI = /\b(print|len|open|int|float|str|input|repr|enumerate|range|sorted|list|dict|set|sum|max|type)\b/;
+function hl(src) {
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const re = /(#[^\n]*)|([fb]?"""[\s\S]*?"""|[fb]?"(?:[^"\\\n]|\\.)*"|[fb]?'(?:[^'\\\n]|\\.)*')|(\b[A-Za-z_]\w*\b)|(\b\d+(?:\.\d+)?\b)|(\$ [^\n]*)/g;
+  let out = '', last = 0, m;
+  while ((m = re.exec(src))) {
+    out += esc(src.slice(last, m.index));
+    const t = esc(m[0]);
+    if (m[1] || m[5]) out += `<span class="cm">${t}</span>`;
+    else if (m[2]) out += `<span class="st">${t}</span>`;
+    else if (m[3]) {
+      if (KW.test(m[3]) && m[3].match(KW)[0] === m[3]) out += `<span class="kw">${t}</span>`;
+      else if (BI.test(m[3]) && m[3].match(BI)[0] === m[3]) out += `<span class="bi">${t}</span>`;
+      else if (/^\s*\(/.test(src.slice(re.lastIndex)) && src.slice(Math.max(0, m.index - 4), m.index) === 'def ') out += `<span class="fn">${t}</span>`;
+      else out += t;
+    }
+    else if (m[4]) out += `<span class="nu">${t}</span>`;
+    last = re.lastIndex;
+  }
+  return out + esc(src.slice(last));
+}
+// cada línea en su propio span, para que las animaciones marquen la que se ejecuta
+document.querySelectorAll('pre[data-hl]').forEach(p => {
+  p.innerHTML = hl(p.textContent).split('\n').map(l => `<span class="ln">${l}</span>`).join('\n');
+});
+
+const slides = [...document.querySelectorAll('.slide')];
+slides.forEach(s => { s._ctl = []; });
+const bar = document.getElementById('bar'), num = document.getElementById('num'), help = document.getElementById('help');
+let cur = 0, typed = '';
+
+// ---------------------------------------------------------------- animaciones
+const range = (a, b) => Array.from({ length: Math.max(0, b - a) }, (_, k) => a + k);
+const barajar = n => { const a = range(1, n + 1); for (let i = n - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const miles = n => n.toLocaleString('es').replace(/\./g, ' ');
+
+// Cada generador recorre el algoritmo igual que el código de la diapositiva y
+// entrega una foto por paso: la lista, las clases de cada posición, los índices,
+// los contadores, la línea que se ejecuta y un mensaje.
+function* gLineal(a, c, s) {
+  const x = s.x, n = a.length;
+  c.comparaciones = 0;
+  const F = o => ({ a, cnt: { ...c }, ...o });
+  yield F({ line: 0, msg: `buscar(edades, ${x})` });
+  for (let i = 0; i < n; i++) {
+    const dim = range(0, i);
+    yield F({ line: 2, ptr: { i }, cls: { dim }, msg: `i = ${i}` });
+    c.comparaciones++;
+    const eq = a[i].v === x;
+    yield F({ line: 3, ptr: { i }, cls: { dim, [eq ? 'found' : 'cmp']: [i] }, msg: `lista[${i}] es ${a[i].v}: ${eq ? '==' : '!='} ${x}` });
+    if (eq) { yield F({ line: 4, ptr: { i }, cls: { dim, found: [i] }, msg: `return ${i}`, end: true }); return; }
+  }
+  yield F({ line: 5, cls: { dim: range(0, n) }, msg: `return -1, después de mirar los ${n}`, end: true });
+}
+
+function* gBinaria(a, c, s) {
+  const x = s.x, n = a.length;
+  c.vueltas = 0;
+  const F = o => ({ a, cnt: { ...c }, ...o });
+  const fuera = (izq, der) => range(0, n).filter(k => k < izq || k > der);
+  yield F({ line: 0, msg: `buscar_binaria(lista, ${x})` });
+  let izq = 0;
+  yield F({ line: 2, ptr: { izq }, msg: 'izq = 0' });
+  let der = n - 1;
+  yield F({ line: 3, ptr: { izq, der }, msg: `der = ${der}` });
+  for (;;) {
+    const sigue = izq <= der;
+    yield F({ line: 5, ptr: { izq, der }, cls: { dim: fuera(izq, der) }, msg: sigue ? `izq = ${izq} <= der = ${der}: el pedazo no está vacío` : `izq = ${izq} > der = ${der}: el pedazo quedó vacío` });
+    if (!sigue) break;
+    c.vueltas++;
+    const medio = Math.floor((izq + der) / 2), v = a[medio].v, dim = fuera(izq, der);
+    yield F({ line: 6, ptr: { izq, der, medio }, cls: { dim }, msg: `medio = (${izq} + ${der}) // 2 = ${medio}` });
+    if (v === x) { yield F({ line: 8, ptr: { izq, der, medio }, cls: { dim: fuera(medio, medio), found: [medio] }, msg: `lista[${medio}] es ${x}: return ${medio}`, end: true }); return; }
+    yield F({ line: 7, ptr: { izq, der, medio }, cls: { dim, cmp: [medio] }, msg: `lista[${medio}] es ${v}, no es ${x}` });
+    if (v < x) {
+      yield F({ line: 9, ptr: { izq, der, medio }, cls: { dim, cmp: [medio] }, msg: `${v} < ${x}: todo lo que está a su izquierda también es menor` });
+      izq = medio + 1;
+      yield F({ line: 10, ptr: { izq, der }, cls: { dim: fuera(izq, der) }, msg: `izq = ${izq}` });
+    } else {
+      yield F({ line: 11, ptr: { izq, der, medio }, cls: { dim, cmp: [medio] }, msg: `${v} > ${x}: todo lo que está a su derecha también es mayor` });
+      der = medio - 1;
+      yield F({ line: 12, ptr: { izq, der }, cls: { dim: fuera(izq, der) }, msg: `der = ${der}` });
+    }
+  }
+  yield F({ line: 14, cls: { dim: range(0, n) }, msg: `return -1, tras ${c.vueltas} vueltas`, end: true });
+}
+
+function* gBinariaMal(a, c, s) {
+  const x = s.x, n = a.length;
+  c.vueltas = 0;
+  const F = o => ({ a, cnt: { ...c }, ...o });
+  const fuera = (izq, der) => range(0, n).filter(k => k < izq || k > der);
+  let izq = 0, der = n - 1;
+  yield F({ line: 1, ptr: { izq, der }, msg: `buscar_binaria_mal(lista, ${x})` });
+  while (izq <= der) {
+    if (c.vueltas === 100) { yield F({ line: 2, ptr: { izq, der }, cls: { dim: fuera(izq, der) }, msg: 'cien vueltas y todo igual: no va a terminar nunca', end: true }); return; }
+    c.vueltas++;
+    const medio = Math.floor((izq + der) / 2), v = a[medio].v, dim = fuera(izq, der);
+    yield F({ line: 3, ptr: { izq, der, medio }, cls: { dim }, msg: `medio = (${izq} + ${der}) // 2 = ${medio}` });
+    if (v === x) { yield F({ line: 5, ptr: { izq, der, medio }, cls: { dim, found: [medio] }, msg: `return ${medio}`, end: true }); return; }
+    if (v < x) {
+      const antes = izq;
+      izq = medio;
+      yield F({ line: 7, ptr: { izq, der, medio }, cls: { dim: fuera(izq, der), cmp: [medio] }, msg: `${v} < ${x}: izq = ${medio}` + (izq === antes ? '   ← no se movió' : '') });
+    } else {
+      der = medio - 1;
+      yield F({ line: 9, ptr: { izq, der, medio }, cls: { dim: fuera(izq, der), cmp: [medio] }, msg: `${v} > ${x}: der = ${der}` });
+    }
+  }
+  yield F({ line: 10, cls: { dim: range(0, n) }, msg: 'return -1', end: true });
+}
+
+function* gSeleccion(a, c) {
+  const n = a.length;
+  c.comparaciones = 0;
+  const F = o => ({ a: a.slice(), cnt: { ...c }, ...o });
+  yield F({ msg: 'la lista sin ordenar' });
+  for (let i = 0; i < n - 1; i++) {
+    const done = range(0, i);
+    let menor = i;
+    yield F({ line: 4, ptr: { i, menor }, cls: { done, cmp: [i] }, msg: `pasada ${i}: por ahora el menor es lista[${i}] = ${a[i].v}` });
+    for (let j = i + 1; j < n; j++) {
+      c.comparaciones++;
+      const lt = a[j].v < a[menor].v;
+      yield F({ line: 6, ptr: { i, menor, j }, cls: { done, cmp: [j, menor] }, msg: `¿${a[j].v} < ${a[menor].v}? ${lt ? 'sí' : 'no'}` });
+      if (lt) { menor = j; yield F({ line: 7, ptr: { i, menor, j }, cls: { done, cmp: [menor] }, msg: `menor = ${j}` }); }
+    }
+    yield F({ line: 8, ptr: { i, menor }, cls: { done, swap: [i, menor] }, msg: i === menor ? `lista[${i}] ya era el menor: el intercambio no mueve nada` : `intercambia lista[${i}] = ${a[i].v} y lista[${menor}] = ${a[menor].v}` });
+    [a[i], a[menor]] = [a[menor], a[i]];
+    yield F({ line: 8, ptr: { i, menor }, cls: { done, swap: [i, menor] }, msg: `las posiciones 0 a ${i} ya son definitivas` });
+  }
+  yield F({ cls: { done: range(0, n) }, msg: `ordenada, con ${c.comparaciones} comparaciones = ${n}·${n - 1}/2`, end: true });
+}
+
+function* gInsercion(a, c) {
+  const n = a.length;
+  c.comparaciones = 0;
+  const F = o => ({ a: a.slice(), cnt: { ...c }, ...o });
+  yield F({ cls: { done: [0] }, msg: 'un elemento solo ya está ordenado' });
+  for (let i = 1; i < n; i++) {
+    let h = i;                                   // dónde está x ahora
+    const azul = () => range(0, i + 1).filter(k => k !== h);
+    yield F({ line: 3, ptr: { i }, cls: { done: range(0, i), key: [h] }, msg: `x = lista[${i}] = ${a[i].v}` });
+    let j = i - 1;
+    yield F({ line: 4, ptr: { i, j }, cls: { done: range(0, i), key: [h] }, msg: `j = ${j}` });
+    for (;;) {
+      if (j < 0) { yield F({ line: 5, ptr: { i }, cls: { done: azul(), key: [h] }, msg: 'j = -1: j >= 0 es falso, y lista[j] ya no se mira' }); break; }
+      c.comparaciones++;
+      const gt = a[j].v > a[h].v;
+      yield F({ line: 5, ptr: { i, j }, cls: { done: azul(), key: [h], cmp: [j] }, msg: `¿${a[j].v} > ${a[h].v}? ${gt ? 'sí' : 'no: x va justo a su derecha'}` });
+      if (!gt) break;
+      [a[j], a[h]] = [a[h], a[j]];
+      h = j;
+      yield F({ line: 6, ptr: { i, j }, cls: { done: azul(), key: [h], swap: [j + 1] }, msg: `lista[${j + 1}] = lista[${j}]: el ${a[j + 1].v} se corre a la derecha` });
+      j--;
+      yield F({ line: 7, ptr: { i, j }, cls: { done: azul(), key: [h] }, msg: `j = ${j}` });
+    }
+    yield F({ line: 8, ptr: { i }, cls: { done: range(0, i + 1) }, msg: `lista[${h}] = ${a[h].v}: x cae en el hueco` });
+  }
+  yield F({ cls: { done: range(0, n) }, msg: `ordenada, con ${c.comparaciones} comparaciones`, end: true });
+}
+
+function* gBurbuja(a, c) {
+  const n = a.length;
+  c.comparaciones = 0;
+  const F = o => ({ a: a.slice(), cnt: { ...c }, ...o });
+  yield F({ msg: 'la lista sin ordenar' });
+  for (let k = 0; k < n - 1; k++) {
+    const done = range(n - k, n);
+    let cambio = false;
+    yield F({ line: 4, cls: { done }, msg: `pasada ${k}: hubo_cambio = False` });
+    for (let j = 0; j < n - 1 - k; j++) {
+      c.comparaciones++;
+      const gt = a[j].v > a[j + 1].v;
+      yield F({ line: 6, ptr: { j }, cls: { done, cmp: [j, j + 1] }, msg: `¿${a[j].v} > ${a[j + 1].v}? ${gt ? 'sí: se intercambian' : 'no'}` });
+      if (gt) {
+        [a[j], a[j + 1]] = [a[j + 1], a[j]];
+        cambio = true;
+        yield F({ line: 7, ptr: { j }, cls: { done, swap: [j, j + 1] }, msg: 'hubo_cambio = True' });
+      }
+    }
+    if (!cambio) { yield F({ line: 10, cls: { done: range(0, n) }, msg: `pasada ${k} sin cambios: break`, end: true }); return; }
+    yield F({ line: 9, cls: { done: range(n - k - 1, n) }, msg: `el ${a[n - k - 1].v} llegó a su lugar` });
+  }
+  yield F({ cls: { done: range(0, n) }, msg: `ordenada, con ${c.comparaciones} comparaciones`, end: true });
+}
+
+class Viz {
+  constructor(root, cfg) {
+    this.root = root; this.cfg = cfg; this.si = 0; this.timer = null;
+    this.speed = cfg.speed || 650;
+    root.classList.add(cfg.kind || 'bars');
+    root.innerHTML = `<div class="vhead"><span class="vt">${cfg.title || ''}</span><span class="cnt"></span></div>
+      <div class="stage"><div class="items"></div><div class="ixs"></div><div class="ptrs"></div></div>
+      <div class="msg"></div>` + (cfg.controls === false ? '' : '<div class="ctl"></div>');
+    this.items = root.querySelector('.items'); this.ixs = root.querySelector('.ixs');
+    this.ptrs = root.querySelector('.ptrs'); this.msg = root.querySelector('.msg'); this.cnt = root.querySelector('.cnt');
+    this.code = cfg.code ? document.getElementById(cfg.code) : null;
+    const rows = cfg.ptrs ? Math.max(...Object.values(cfg.ptrs).map(p => p[0])) + 1 : 0;
+    this.ptrs.style.height = (rows * 1.75) + 'cqw';
+    const ctl = root.querySelector('.ctl');
+    if (ctl) {
+      if (cfg.scen.length > 1) cfg.scen.forEach((s, k) => {
+        const b = document.createElement('button'); b.textContent = s.label;
+        b.onclick = () => { this.si = k; this.reset(); };
+        ctl.appendChild(b);
+      });
+      ctl.insertAdjacentHTML('beforeend', '<span class="sp"></span><button data-k="paso">Paso</button><button data-k="anim" class="go">Animar</button><button data-k="rap">×3</button><button data-k="rei">Reiniciar</button>');
+      ctl.querySelector('[data-k=paso]').onclick = () => this.step();
+      ctl.querySelector('[data-k=anim]').onclick = () => this.toggle();
+      ctl.querySelector('[data-k=rei]').onclick = () => this.reset();
+      const rap = ctl.querySelector('[data-k=rap]');
+      rap.onclick = () => { this.fast = !this.fast; rap.classList.toggle('on', this.fast); if (this.timer) { this.stop(); this.toggle(); } };
+      this.ctl = ctl;
+    }
+    if (cfg.controls !== false) root.closest('.slide')._ctl.push(this);
+    this.reset();
+  }
+  reset(data) {
+    this.stop();
+    const s = this.cfg.scen[this.si];
+    if (!data) data = typeof s.data === 'function' ? s.data() : s.data.slice();
+    this.a = data.map((v, id) => ({ v, id }));
+    this.c = {};
+    this.gen = this.cfg.gen(this.a, this.c, s);
+    this.done = false;
+    const n = data.length, max = Math.max(...data), cells = (this.cfg.kind === 'cells');
+    this.els = this.a.map(it => {
+      const el = document.createElement('div'); el.className = 'it';
+      el.style.width = (100 / n) + '%';
+      el.innerHTML = cells ? `<div class="b">${it.v}</div>` : `<div class="b" style="height:${Math.max(6, it.v / max * 100)}%"><i>${it.v}</i></div>`;
+      return el;
+    });
+    this.items.replaceChildren(...this.els);
+    this.ixs.innerHTML = range(0, n).map(k => `<span style="left:${(k + .5) * 100 / n}%">${k}</span>`).join('');
+    this.ptrEls = {};
+    this.ptrs.replaceChildren(...Object.entries(this.cfg.ptrs || {}).map(([name, [row, color]]) => {
+      const el = document.createElement('div'); el.className = 'pt';
+      el.textContent = name; el.style.color = color; el.style.top = (row * 1.75) + 'cqw';
+      this.ptrEls[name] = el; return el;
+    }));
+    if (this.ctl) [...this.ctl.querySelectorAll('button')].slice(0, this.cfg.scen.length > 1 ? this.cfg.scen.length : 0)
+      .forEach((b, k) => b.classList.toggle('on', k === this.si));
+    this.next();
+  }
+  next() {
+    if (this.done) return false;
+    const r = this.gen.next();
+    if (r.done) { this.done = true; this.stop(); return false; }
+    this.draw(r.value);
+    if (r.value.end) { this.done = true; this.stop(); }
+    return true;
+  }
+  draw(f) {
+    const n = f.a.length, cls = f.cls || {};
+    f.a.forEach((it, p) => {
+      const el = this.els[it.id];
+      el.style.left = (p * 100 / n) + '%';
+      el.className = 'it ' + Object.keys(cls).filter(k => cls[k].includes(p)).join(' ');
+    });
+    for (const [name, el] of Object.entries(this.ptrEls)) {
+      const p = f.ptr ? f.ptr[name] : undefined;
+      const vis = p !== undefined && p >= 0 && p < n;
+      el.style.opacity = vis ? 1 : 0;
+      if (vis) el.style.left = ((p + .5) * 100 / n) + '%';
+    }
+    this.cnt.textContent = Object.entries(f.cnt || {}).map(([k, v]) => `${k}: ${v}`).join(' · ');
+    this.msg.textContent = f.msg || '';
+    if (this.code) this.code.querySelectorAll('.ln').forEach((l, k) => l.classList.toggle('on', k === f.line));
+  }
+  step() { this.stop(); if (this.done) this.reset(); else this.next(); }
+  toggle() {
+    if (this.timer) { this.stop(); return; }
+    if (this.done) this.reset();
+    this.timer = setInterval(() => { if (!this.next()) this.stop(); }, this.fast ? this.speed / 3 : this.speed);
+    this.label('Pausa');
+  }
+  stop() { clearInterval(this.timer); this.timer = null; this.label('Animar'); }
+  label(t) { if (this.ctl) this.ctl.querySelector('[data-k=anim]').textContent = t; }
+}
+
+// la carrera: tres animaciones sobre la misma lista, una comparación por paso
+class Carrera {
+  constructor(root, cfg) {
+    this.cfg = cfg; this.si = 0; this.timer = null;
+    root.innerHTML = '<div class="race"></div><div class="ctl"></div>';
+    const race = root.querySelector('.race');
+    this.lanes = cfg.lanes.map(l => {
+      const d = document.createElement('div'); d.className = 'viz compact'; race.appendChild(d);
+      return new Viz(d, { ...l, kind: 'bars', controls: false, scen: [{ data: [1] }] });
+    });
+    this.ctl = root.querySelector('.ctl');
+    cfg.scen.forEach((s, k) => {
+      const b = document.createElement('button'); b.textContent = s.label;
+      b.onclick = () => { this.si = k; this.reset(); };
+      this.ctl.appendChild(b);
+    });
+    this.ctl.insertAdjacentHTML('beforeend', '<span class="sp"></span><button data-k="paso">Paso</button><button data-k="anim" class="go">Animar</button><button data-k="rap">×3</button><button data-k="rei">Reiniciar</button>');
+    this.ctl.querySelector('[data-k=paso]').onclick = () => this.step();
+    this.ctl.querySelector('[data-k=anim]').onclick = () => this.toggle();
+    this.ctl.querySelector('[data-k=rei]').onclick = () => this.reset(this.data);
+    const rap = this.ctl.querySelector('[data-k=rap]');
+    rap.onclick = () => { this.fast = !this.fast; rap.classList.toggle('on', this.fast); if (this.timer) { this.stop(); this.toggle(); } };
+    root.closest('.slide')._ctl.push(this);
+    this.reset();
+  }
+  reset(data) {
+    this.stop();
+    this.data = data || this.cfg.scen[this.si].data();
+    this.lanes.forEach(v => v.reset(this.data.slice()));
+    [...this.ctl.querySelectorAll('button')].slice(0, this.cfg.scen.length).forEach((b, k) => b.classList.toggle('on', k === this.si));
+    this.done = false;
+  }
+  next() {
+    let alguno = false;
+    for (const v of this.lanes) {
+      if (v.done) continue;
+      const antes = v.c.comparaciones;
+      while (v.next() && v.c.comparaciones === antes) { /* hasta la próxima comparación */ }
+      alguno = true;
+    }
+    if (!alguno || this.lanes.every(v => v.done)) { this.done = true; this.stop(); }
+    return alguno;
+  }
+  step() { this.stop(); if (this.done) this.reset(this.data); else this.next(); }
+  toggle() {
+    if (this.timer) { this.stop(); return; }
+    if (this.done) this.reset(this.data);
+    this.timer = setInterval(() => { if (!this.next()) this.stop(); }, this.fast ? 60 : 180);
+    this.ctl.querySelector('[data-k=anim]').textContent = 'Pausa';
+  }
+  stop() { clearInterval(this.timer); this.timer = null; this.ctl.querySelector('[data-k=anim]').textContent = 'Animar'; }
+}
+
+// el pedazo de la búsqueda binaria, buscando -5 en range(n)
+class Rango {
+  constructor(root) {
+    this.n = 1000; this.timer = null;
+    root.innerHTML = `<div class="vhead"><span class="vt">buscar_binaria(range(n), -5)</span><span class="cnt"></span></div>
+      <div class="rtrack"><div class="rpiece"></div><div class="rmid"></div></div>
+      <div class="rends"><span>0</span><span class="rn"></span></div>
+      <div class="rtrail"></div><div class="ctl"></div>`;
+    this.piece = root.querySelector('.rpiece'); this.mid = root.querySelector('.rmid');
+    this.trail = root.querySelector('.rtrail'); this.cnt = root.querySelector('.cnt'); this.rn = root.querySelector('.rn');
+    this.ctl = root.querySelector('.ctl');
+    [[1000, 'mil'], [1_000_000, 'un millón'], [1_000_000_000, 'mil millones']].forEach(([n, t]) => {
+      const b = document.createElement('button'); b.textContent = t; b.dataset.n = n;
+      b.onclick = () => { this.n = n; this.reset(); };
+      this.ctl.appendChild(b);
+    });
+    this.ctl.insertAdjacentHTML('beforeend', '<span class="sp"></span><button data-k="paso">Paso</button><button data-k="anim" class="go">Animar</button><button data-k="rei">Reiniciar</button>');
+    this.ctl.querySelector('[data-k=paso]').onclick = () => this.step();
+    this.ctl.querySelector('[data-k=anim]').onclick = () => this.toggle();
+    this.ctl.querySelector('[data-k=rei]').onclick = () => this.reset();
+    root.closest('.slide')._ctl.push(this);
+    this.reset();
+  }
+  reset() {
+    this.stop();
+    this.izq = 0; this.der = this.n - 1; this.vueltas = 0; this.tamanos = []; this.done = false;
+    this.rn.textContent = miles(this.n - 1);
+    this.ctl.querySelectorAll('[data-n]').forEach(b => b.classList.toggle('on', +b.dataset.n === this.n));
+    this.draw(null);
+  }
+  next() {
+    if (this.done) return false;
+    if (this.izq > this.der) { this.done = true; this.draw(null); this.stop(); return false; }
+    this.vueltas++;
+    this.tamanos.push(this.der - this.izq + 1);
+    const medio = Math.floor((this.izq + this.der) / 2);
+    this.draw(medio);
+    this.der = medio - 1;          // el medio siempre es mayor que -5
+    return true;
+  }
+  draw(medio) {
+    const n = this.n, w = Math.max(0, this.der - this.izq + 1);
+    this.piece.style.left = (this.izq / n * 100) + '%';
+    this.piece.style.width = (w / n * 100) + '%';
+    this.piece.style.opacity = w ? 1 : 0;
+    this.mid.style.opacity = medio === null ? 0 : 1;
+    if (medio !== null) this.mid.style.left = (medio / n * 100) + '%';
+    this.cnt.textContent = `vueltas: ${this.vueltas}`;
+    const t = this.tamanos.map(miles).join(' → ');
+    this.trail.innerHTML = this.done ? `${t} → <b>vacío, tras ${this.vueltas} vueltas</b>` : (t ? `pedazos: ${t}` : `pedazo inicial: ${miles(n)} elementos`);
+  }
+  step() { this.stop(); if (this.done) this.reset(); else this.next(); }
+  toggle() {
+    if (this.timer) { this.stop(); return; }
+    if (this.done) this.reset();
+    this.timer = setInterval(() => { if (!this.next()) this.stop(); }, 700);
+    this.ctl.querySelector('[data-k=anim]').textContent = 'Pausa';
+  }
+  stop() { clearInterval(this.timer); this.timer = null; this.ctl.querySelector('[data-k=anim]').textContent = 'Animar'; }
+}
+
+// la tabla de conteos, como barras a escala fija
+class Crecer {
+  constructor(root) {
+    this.ns = [100, 200, 400, 800, 1600];
+    this.filas = [
+      ['binaria', '#81c784', [6, 7, 8, 9, 10]],
+      ['lineal', '#ffb74d', [100, 200, 400, 800, 1600]],
+      ['inserción', '#ce93d8', [2573, 10180, 39218, 160691, 639673]],
+      ['selección', '#f48fb1', [4950, 19900, 79800, 319600, 1279200]],
+      ['burbuja', '#ef5350', [4947, 19809, 79547, 318610, 1278672]],
+    ];
+    this.k = 0; this.timer = null;
+    root.innerHTML = `<div class="gr" style="margin-top:0"><div class="gn" style="color:#8b949e">n =</div><div class="gnow"></div><div></div></div>` +
+      this.filas.map(([t, col]) => `<div class="gr"><div class="gn" style="color:${col}">${t}</div><div class="gt"><div class="gf" style="background:${col}"></div></div><div class="gv"></div></div>`).join('') +
+      `<div class="ctl" style="margin-top:1.4cqw"></div>`;
+    this.now = root.querySelector('.gnow'); this.fills = [...root.querySelectorAll('.gf')]; this.vals = [...root.querySelectorAll('.gv')];
+    this.ctl = root.querySelector('.ctl');
+    this.ns.forEach((n, k) => {
+      const b = document.createElement('button'); b.textContent = `n = ${n}`;
+      b.onclick = () => { this.stop(); this.k = k; this.draw(); };
+      this.ctl.appendChild(b);
+    });
+    this.ctl.insertAdjacentHTML('beforeend', '<span class="sp"></span><button data-k="paso">Duplicar n</button><button data-k="anim" class="go">Animar</button><button data-k="rei">Reiniciar</button>');
+    this.ctl.querySelector('[data-k=paso]').onclick = () => this.step();
+    this.ctl.querySelector('[data-k=anim]').onclick = () => this.toggle();
+    this.ctl.querySelector('[data-k=rei]').onclick = () => this.reset();
+    root.closest('.slide')._ctl.push(this);
+    this.draw();
+  }
+  draw() {
+    const k = this.k, max = 1279200;
+    this.now.textContent = this.ns[k];
+    this.filas.forEach(([t, col, vs], r) => {
+      this.fills[r].style.width = (vs[k] / max * 100) + '%';
+      const antes = k ? vs[k - 1] : null;
+      const cambio = antes === null ? '' : (vs[k] - antes === 1 ? '+1' : `×${(vs[k] / antes).toFixed(1)}`);
+      this.vals[r].innerHTML = `${miles(vs[k])}<small>${cambio}</small>`;
+    });
+    [...this.ctl.querySelectorAll('button')].slice(0, this.ns.length).forEach((b, i) => b.classList.toggle('on', i === k));
+  }
+  next() { if (this.k >= this.ns.length - 1) { this.stop(); return false; } this.k++; this.draw(); return true; }
+  reset() { this.stop(); this.k = 0; this.draw(); }
+  step() { this.stop(); if (this.k >= this.ns.length - 1) this.reset(); else this.next(); }
+  toggle() {
+    if (this.timer) { this.stop(); return; }
+    if (this.k >= this.ns.length - 1) this.reset();
+    this.timer = setInterval(() => { if (!this.next()) this.stop(); }, 1400);
+    this.ctl.querySelector('[data-k=anim]').textContent = 'Pausa';
+  }
+  stop() { clearInterval(this.timer); this.timer = null; this.ctl.querySelector('[data-k=anim]').textContent = 'Animar'; }
+}
+
+const LISTA = [6, 3, 8, 1, 7, 2, 5];
+const ORDENAR = [
+  { label: 'la de las notas', data: LISTA },
+  { label: 'al azar', data: () => barajar(10) },
+  { label: 'ordenada', data: range(1, 9) },
+  { label: 'al revés', data: range(1, 9).reverse() },
+];
+const PARES = range(0, 10).map(k => 2 * k);
+const $ = id => document.getElementById(id);
+
+new Viz($('v-lineal'), {
+  title: 'buscar(edades, x)', kind: 'cells', gen: gLineal, code: 'c-lineal', ptrs: { i: [0, '#ffb74d'] },
+  scen: [21, 18, 30].map(x => ({ label: `x = ${x}`, data: [19, 18, 21, 18, 20, 22], x })),
+});
+new Viz($('v-binaria'), {
+  title: 'buscar_binaria(ordenada, x)', kind: 'cells', gen: gBinaria, code: 'c-binaria',
+  ptrs: { izq: [0, '#4fc3f7'], medio: [1, '#81c784'], der: [2, '#ffb74d'] },
+  scen: [13, 2, 29, 12].map(x => ({ label: `x = ${x}`, data: [2, 3, 5, 7, 11, 13, 17, 19, 23, 29], x })),
+});
+new Rango($('v-rango'));
+new Viz($('v-desordenada'), {
+  title: 'buscar_binaria([7, 2, 19, 5, 13], 5)', kind: 'cells', gen: gBinaria,
+  ptrs: { izq: [0, '#4fc3f7'], medio: [1, '#81c784'], der: [2, '#ffb74d'] },
+  scen: [{ label: 'x = 5', data: [7, 2, 19, 5, 13], x: 5 }],
+});
+new Viz($('v-mal'), {
+  title: 'buscar_binaria_mal(lista, x)', kind: 'cells', gen: gBinariaMal, code: 'c-mal', speed: 500,
+  ptrs: { izq: [0, '#4fc3f7'], medio: [1, '#81c784'], der: [2, '#ffb74d'] },
+  scen: [
+    { label: '[3, 7] · 9', data: [3, 7], x: 9 },
+    { label: 'pares · 5', data: PARES, x: 5 },
+    { label: 'pares · 6', data: PARES, x: 6 },
+    { label: 'pares · 8', data: PARES, x: 8 },
+  ],
+});
+new Viz($('v-seleccion'), {
+  title: 'seleccion(lista)', gen: gSeleccion, code: 'c-seleccion', scen: ORDENAR,
+  ptrs: { i: [0, '#4fc3f7'], menor: [1, '#f48fb1'], j: [2, '#ffb74d'] },
+});
+new Viz($('v-insercion'), {
+  title: 'insercion(lista)', gen: gInsercion, code: 'c-insercion', scen: ORDENAR,
+  ptrs: { i: [0, '#4fc3f7'], j: [1, '#ffb74d'] },
+});
+new Viz($('v-burbuja'), {
+  title: 'burbuja(lista)', gen: gBurbuja, code: 'c-burbuja', scen: ORDENAR,
+  ptrs: { j: [0, '#ffb74d'] },
+});
+new Carrera($('v-carrera'), {
+  lanes: [
+    { title: 'selección', gen: gSeleccion },
+    { title: 'inserción', gen: gInsercion },
+    { title: 'burbuja', gen: gBurbuja },
+  ],
+  scen: [
+    { label: 'al azar', data: () => barajar(16) },
+    { label: 'casi ordenada', data: () => { const a = range(1, 17); [a[3], a[4]] = [a[4], a[3]]; [a[10], a[11]] = [a[11], a[10]]; return a; } },
+    { label: 'ordenada', data: () => range(1, 17) },
+    { label: 'al revés', data: () => range(1, 17).reverse() },
+  ],
+});
+new Crecer($('v-crecer'));
+
+// la portada: una burbuja que se repite sola, sin controles
+{
+  const v = new Viz($('v-portada'), { gen: gBurbuja, controls: false, scen: [{ data: () => barajar(24) }] });
+  v.root.querySelector('.vhead').style.display = 'none';
+  v.msg.style.display = 'none';
+  setInterval(() => { if (!slides[0].classList.contains('active')) return; if (!v.next()) setTimeout(() => v.reset(), 0); }, 140);
+}
+
+// el triángulo de comparaciones de la selección con 7 elementos
+{
+  const svg = $('triangulo'), n = 7;
+  let h = '<text x="20" y="24" fill="#8b949e" font-size="16" letter-spacing="1">una columna por pasada, un punto por comparación</text>';
+  for (let i = 0; i < n - 1; i++) {
+    const x = 50 + i * 80;
+    for (let j = 0; j < n - 1 - i; j++) h += `<circle cx="${x}" cy="${290 - j * 40}" r="13" fill="rgba(244,143,177,.3)" stroke="#f48fb1" stroke-width="2"/>`;
+    h += `<text x="${x}" y="325" fill="#e6edf3" font-size="17" text-anchor="middle" class="mono">i=${i}</text>`;
+    h += `<text x="${x}" y="${290 - (n - 1 - i) * 40 + 8}" fill="#8b949e" font-size="17" text-anchor="middle">${n - 1 - i}</text>`;
+  }
+  h += '<text x="540" y="70" fill="#f48fb1" font-size="40" font-weight="800" text-anchor="end">21</text>';
+  h += '<text x="540" y="96" fill="#8b949e" font-size="16" text-anchor="end">= 7 · 6 / 2</text>';
+  svg.innerHTML = h;
+}
+
+// guion de demos, construido a partir de las diapositivas marcadas
+const guion = document.getElementById('guion');
+guion.innerHTML = '<tr><th>Diap.</th><th>Dónde</th><th>Qué se muestra</th></tr>' +
+  slides.map((s, i) => [s, i]).filter(([s]) => s.querySelector('.live')).map(([s, i]) => {
+    const where = s.querySelector('.live').textContent.replace(/^En vivo · /, '');
+    return `<tr><td><a href="#${i + 1}" style="color:#ef5350;font-weight:700;text-decoration:none">${i + 1}</a></td><td>${where}</td><td>${s.querySelector('h1').innerHTML}</td></tr>`;
+  }).join('');
+
+function go(n) {
+  n = Math.max(0, Math.min(slides.length - 1, n));
+  if (n !== cur) slides[cur]._ctl.forEach(c => c.stop());
+  slides.forEach((s, i) => { s.classList.toggle('active', i === n); s.classList.toggle('prev', i < n); });
+  cur = n;
+  bar.style.width = ((n + 1) / slides.length * 100) + '%';
+  bar.style.background = getComputedStyle(slides[n]).getPropertyValue('--ac');
+  num.textContent = `${n + 1} / ${slides.length}`;
+  if (location.hash !== '#' + (n + 1)) history.replaceState(null, '', '#' + (n + 1));
+}
+function reveal() {
+  const hidden = slides[cur].querySelector('pre.out.hidden');
+  if (hidden) { hidden.classList.remove('hidden'); return true; }
+  return false;
+}
+document.querySelectorAll('pre.out.hidden').forEach(p => p.addEventListener('click', e => { e.stopPropagation(); p.classList.remove('hidden'); }));
+
+document.addEventListener('keydown', e => {
+  if (e.key >= '0' && e.key <= '9') { typed += e.key; return; }
+  if (e.key === 'Enter' && typed) { go(parseInt(typed, 10) - 1); typed = ''; return; }
+  typed = '';
+  const ctl = slides[cur]._ctl;
+  if (['ArrowRight', ' ', 'PageDown', 'ArrowDown'].includes(e.key)) { e.preventDefault(); go(cur + 1); }
+  else if (['ArrowLeft', 'PageUp', 'ArrowUp', 'Backspace'].includes(e.key)) { e.preventDefault(); go(cur - 1); }
+  else if (e.key === 'Home') go(0);
+  else if (e.key === 'End') go(slides.length - 1);
+  else if (e.key === 'r' || e.key === 'R') reveal();
+  else if (e.key === 'a' || e.key === 'A') ctl.forEach(c => c.toggle());
+  else if (e.key === 's' || e.key === 'S') ctl.forEach(c => c.step());
+  else if (e.key === 'x' || e.key === 'X') ctl.forEach(c => c.reset());
+  else if (e.key === 'v' || e.key === 'V') {
+    const next = slides.findIndex((s, i) => i > cur && s.querySelector('.live'));
+    if (next >= 0) go(next);
+  }
+  else if (e.key === 'f' || e.key === 'F') { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); }
+  else if (e.key === '?') help.classList.toggle('on');
+  else if (e.key === 'Escape') help.classList.remove('on');
+});
+document.getElementById('deck').addEventListener('click', e => {
+  if (e.target.closest('a, button, .viz, .grow, #v-carrera, pre.code')) return;
+  const r = e.currentTarget.getBoundingClientRect();
+  go(e.clientX - r.left > r.width / 3 ? cur + 1 : cur - 1);
+});
+window.addEventListener('hashchange', () => go(parseInt(location.hash.slice(1), 10) - 1 || 0));
+go(parseInt(location.hash.slice(1), 10) - 1 || 0);
+</script>
+</body>
+</html>
