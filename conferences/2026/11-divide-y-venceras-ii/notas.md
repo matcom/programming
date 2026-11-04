@@ -32,9 +32,10 @@ Para ordenar, partir es cortar la lista por la mitad, cada mitad es el mismo pro
 combinar es mezclar, o pegar. Nadie tuvo que preguntarse qué hacer con cada pedazo.
 
 Hoy vemos tres problemas donde eso deja de ser obvio. En el primero partir sigue siendo
-fácil, pero combinar exige pensar un caso que no está en ninguna de las dos mitades. En el
-segundo lo que no es obvio es qué partir. En el tercero hay que pedirle a cada mitad más
-de lo que el problema pide. Los tres tienen la misma pregunta detrás, y es la que hay que
+fácil, pero combinar exige pensar un caso que no está en ninguna de las dos mitades, y
+para combinar barato hay que pedirle a cada mitad más de lo que el problema pide. En el
+segundo lo que no es obvio es qué partir. En el tercero hay que pedirle a cada mitad que,
+además de contar, ordene. Los tres tienen la misma pregunta detrás, y es la que hay que
 aprender a hacerse: **¿qué tengo que saber de cada mitad para poder combinar?**
 
 ## 1. La mejor racha
@@ -46,7 +47,8 @@ dias = [3, -5, 4, -1, 2, 6, -4, 2, 3, -2, 5, 1, -7, 4, -3, 2]
 ```
 
 Queremos la **mejor racha**: los días seguidos, al menos uno, en los que el kiosco ganó
-más en total. No vale saltarse días: si la racha va del día 2 al día 5, cuenta todo lo de
+más en total. Numeramos los días desde 0, como los índices de la lista. No vale saltarse días: si la
+racha va del día 2 al día 5, cuenta todo lo de
 en medio, sea ganancia o pérdida. En otros libros este problema se llama el **subarreglo de
 suma máxima**.
 
@@ -260,7 +262,9 @@ print("pruebas terminadas")
 ```
 
 Ahora combinar cuesta lo mismo tenga el pedazo dos días o un millón: unas pocas sumas y
-`max`. El árbol tiene $n$ hojas, una por día, y $n - 1$ nodos internos, así que hay
+`max`. El árbol tiene $n$ hojas, una por día, y $n - 1$ nodos internos: cada nodo interno
+junta dos pedazos en uno, y para pasar de $n$ pedazos a uno solo hacen falta $n - 1$
+juntas. Así que hay
 $2n - 1$ llamadas, cada una con trabajo constante. El total es proporcional a $n$, mejor
 que $n \log n$.
 
@@ -281,6 +285,24 @@ for n in [500, 1000, 2000, 4000]:
           f"{cronometrar(mejor_racha, v):>8.3f}s "
           f"{cronometrar(mejor_racha_rapida, v):>8.3f}s")
 ```
+
+Con estos tamaños la fuerza bruta ya está lejos, pero las dos versiones de divide y
+vencerás tardan tan poco que no se distinguen. Para ver la diferencia entre $n \log n$ y
+$n$ hacen falta listas más grandes, sin la fuerza bruta:
+
+```{python continue}
+random.seed(8)
+print(f"{'n':>7} {'mitades':>9} {'resumen':>9}")
+for n in [10_000, 20_000, 40_000, 80_000]:
+    v = [random.randint(-100, 100) for _ in range(n)]
+    print(f"{n:>7} {cronometrar(mejor_racha, v):>8.4f}s "
+          f"{cronometrar(mejor_racha_rapida, v):>8.4f}s")
+```
+
+Lee las columnas de arriba abajo. Las dos se duplican, más o menos, con cada
+duplicación de $n$, porque $\log_2 n$ crece tan despacio que entre 10 000 y 80 000 solo
+pasa de 13 a 16. La diferencia está en la constante: `mejor_racha` recorre el pedazo
+entero en cada llamada interna, y `resumen` solo hace unas sumas.
 
 Lo que cambió entre `mejor_racha` y `resumen` no es la división: las dos parten igual. Es
 lo que devuelve cada llamada. Pedirle a cada mitad un poco más de lo que el problema
@@ -395,7 +417,7 @@ para que los números nunca crezcan:
 def potencia_resto(a, n, m):
     """a ** n % m, sin calcular a ** n."""
     if n == 0:
-        return 1 % m
+        return 1 % m          # y no 1: si m es 1, todo resto es 0
     mitad = potencia_resto(a, n // 2, m)
     if n % 2 == 0:
         return mitad * mitad % m
@@ -406,11 +428,16 @@ print(potencia_resto(7, 10 ** 18, 1000))
 print(potencia_resto(7, 12345, 1000) == 7 ** 12345 % 1000)
 ```
 
-El primer resultado es 1: $7^{10^{18}}$ termina en `001`. La segunda línea comprueba la
+El primer resultado es 1: $7^{10^{18}}$ termina en `001`. No es casualidad: $7^{20}$ ya
+termina en `001`, y como $10^{18}$ es múltiplo de 20, $7^{10^{18}}$ es una potencia de
+$7^{20}$, y un número que termina en `001` multiplicado por sí mismo sigue terminando en
+`001`. La segunda línea comprueba la
 función contra `**` con un exponente que todavía se puede calcular entero.
 
-Es el cálculo que hace la criptografía de clave pública cada vez que abres una página con
-`https`, con exponentes de cientos de cifras. Con la potencia lenta no terminaría nunca.
+Es el cálculo central de RSA, uno de los sistemas de criptografía de clave pública con los
+que se construyó `https`, que usa exponentes y restos de cientos de cifras. Los sistemas
+más usados hoy en `https` trabajan con curvas elípticas en lugar de restos, pero con la
+misma idea de duplicar y sumar. Con la potencia lenta no terminaría nunca.
 
 ## 5. Contar inversiones
 
@@ -512,11 +539,12 @@ problema, pero sin la lista ordenada no había manera barata de contar lo que cr
 
 ## 6. La pregunta
 
-Los cuatro problemas de las dos últimas clases, puestos juntos:
+Los cinco problemas de las dos últimas clases, puestos juntos:
 
 | Problema | Dividir | Qué devuelve cada mitad | Combinar |
 |---|---|---|---|
-| Ordenar por mezcla | por la mitad | la mitad ordenada | mezclar, $n$ |
+| Ordenar por mezcla | por la mitad, gratis | la mitad ordenada | mezclar, $n$ |
+| Ordenación rápida | alrededor de un pivote, $n$ | la parte ordenada | pegar, gratis |
 | Mejor racha | por la mitad | total, prefijo, sufijo y mejor | unas sumas y `max` |
 | Potencia | el exponente a la mitad | $a^{n/2}$, una sola vez | una o dos multiplicaciones |
 | Inversiones | por la mitad | la mitad ordenada y su cuenta | mezclar y contar, $n$ |
