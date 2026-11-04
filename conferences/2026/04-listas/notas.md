@@ -866,7 +866,7 @@ Ahí está la diferencia, y no es que un programa sea diez veces más lento que 
 que **la distancia entre los dos se ensancha cada vez que crece `n`.** Un factor de diez se
 paga comprando una computadora mejor. Esto no.
 
-Eso se llama **orden de crecimiento**, es el tema de la conferencia siete, y esta tabla se
+Eso se llama **orden de crecimiento**, es el tema de la conferencia ocho, y esta tabla se
 va a volver a hacer allí con nombres y con fórmulas. Por ahora quédate con la razón
 intuitiva de por qué la criba gana. El método de uno en uno empieza de cero con cada
 número y tira a la basura todo lo que averiguó. La criba hace lo contrario: cada primo que

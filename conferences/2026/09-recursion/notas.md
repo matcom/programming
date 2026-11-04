@@ -119,18 +119,35 @@ llamada con `medio + 1` en el lugar de `izq`. La condición del `while`, `izq <=
 aquí es su contraria, `izq > der`, en el caso base. Es el mismo algoritmo.
 
 Tener que escribir `0, len(primos) - 1` en cada llamada es incómodo. Lo normal es
-darles a los dos índices un valor por defecto, como en la conferencia 3, y que `der`
-valga `None` para indicar "hasta el final":
+darles a los dos índices un valor por defecto, como en la conferencia 3. Para `izq` es
+fácil, `izq=0`. Para `der` no, porque el valor que queremos, `len(lista) - 1`, depende de
+otro parámetro, y un valor por defecto no puede depender de los otros parámetros. El truco
+es darle a `der` el valor `None` y calcular el de verdad dentro de la función:
 
 ```{python continue}
-def buscar(lista, x, izq=0, der=None):
+def buscar_binaria(lista, x, izq=0, der=None):
+    """Busca x en lista[izq..der], que está ordenada. Devuelve su índice, o -1."""
     if der is None:
-        der = len(lista) - 1
-    return buscar_binaria(lista, x, izq, der)
+        der = len(lista) - 1            # no nos dijeron dónde termina: hasta el final
+    if izq > der:
+        return -1
+    medio = (izq + der) // 2
+    if lista[medio] == x:
+        return medio
+    elif lista[medio] < x:
+        return buscar_binaria(lista, x, medio + 1, der)
+    else:
+        return buscar_binaria(lista, x, izq, medio - 1)
 
 
-print(buscar(primos, 29))
+print(buscar_binaria(primos, 29))
 ```
+
+`None` es un valor de Python que significa "no hay valor". Es lo que devuelve una función
+que no tiene `return`, como viste en la conferencia 3. Para preguntar si una variable vale
+`None` se escribe `der is None`, no `der == None`; las dos funcionan aquí, pero `is` es la
+forma que vas a ver en todo el código de Python. Solo la primera llamada recibe
+`der = None`. Las recursivas ya le pasan un número.
 
 ## 3. La pila de llamadas
 
@@ -157,9 +174,11 @@ su `n = 4` guardado, mientras `factorial(3)` trabaja. Y `factorial(3)` se queda 
 a `factorial(2)`, y así hasta `factorial(0)`, que devuelve 1 sin esperar a nadie.
 
 En ese momento hay cinco llamadas a `factorial` vivas a la vez, cada una con su propia
-`n`. Python las guarda una encima de otra, en lo que se llama la **pila de llamadas**.
-Cuando `factorial(0)` devuelve 1, se saca de la pila, y la de abajo, que esperaba,
-multiplica `1 * 1` y devuelve 1; la de abajo multiplica `2 * 1`, y así hacia arriba.
+`n`. Python las guarda en orden, cada una a continuación de la que la llamó, en lo que se
+llama la **pila de llamadas**. En la figura de abajo cada llamada nueva baja un escalón.
+Cuando `factorial(0)` devuelve 1, sale de la pila, y la llamada que la esperaba, un escalón
+más arriba, multiplica `1 * 1` y devuelve 1; la siguiente hacia arriba multiplica `2 * 1`,
+y así hasta la primera.
 
 ```{python echo=false output=asis continue}
 def _factorial_traza(n, nivel, pasos):
@@ -178,7 +197,7 @@ _factorial_traza(4, 0, _pasos)
 print(F.escalera([tuple(p) for p in _pasos], ident="pila-factorial",
                  pie="La pila de <code>factorial(4)</code>. Cada llamada baja un "
                      "escalón y se queda esperando. A la derecha, lo que devuelve cada "
-                     "una cuando la de abajo le contesta: el valor cambia en cada "
+                     "una cuando la de debajo le contesta: el valor cambia en cada "
                      "escalón, porque cada llamada todavía tenía una multiplicación "
                      "pendiente."))
 ```
@@ -279,6 +298,11 @@ try:
 except RecursionError as error:
     print(type(error).__name__, error)
 ```
+
+El `try` y el `except` son los de la conferencia 5, con una cosa nueva: `as error` le
+pone nombre al error que se atrapó, para poder mirarlo. `type(error).__name__` es el nombre
+de su tipo, y al imprimir `error` sale el mensaje que lo acompaña. Así vemos el error sin
+que el programa se muera.
 
 El ciclo calcula $1500!$, un número de más de cuatro mil cifras, sin problema. La
 versión recursiva falla con `RecursionError`, aunque sea de cola. La pila de llamadas
@@ -407,7 +431,8 @@ tan rápida.
 
 ## 7. Recursión sobre listas y cadenas
 
-La recursión no es solo para números. Una lista que no está vacía es su primer elemento
+Antes del último problema volvemos un momento a funciones con una sola llamada, para que
+la recursión no quede asociada solo a los números. La recursión no es solo para números. Una lista que no está vacía es su primer elemento
 seguido de una lista más corta, y eso basta para recorrerla:
 
 ```{python continue}
@@ -512,6 +537,10 @@ for k, (n, t) in enumerate(tiempos):
     print(f"fib({n}): {t:7.3f} s  {razon}")
 ```
 
+La expresión `a if condicion else b` vale `a` si la condición es verdadera y `b` si no.
+Es un `if` que se puede usar dentro de una expresión, y aquí sirve para no imprimir razón
+en la primera fila, que no tiene una anterior con qué compararse.
+
 Cada dos términos más, el tiempo se multiplica por algo más de dos y medio. Con eso se
 puede estimar cuánto tardarían el término 40 y el 50:
 
@@ -520,8 +549,14 @@ n, t = tiempos[-1]
 razon = (tiempos[-1][1] / tiempos[0][1]) ** (1 / (len(tiempos) - 1))
 for objetivo in [40, 50]:
     estimado = t * razon ** ((objetivo - n) / 2)
-    print(f"fib({objetivo}): unos {estimado:,.0f} segundos")
+    print(f"fib({objetivo}): unos {estimado:.0f} segundos, {estimado / 60:.1f} minutos")
 ```
+
+La segunda línea calcula la razón media. Del primer tiempo al último hubo seis saltos de
+dos términos, y en total el tiempo se multiplicó por `tiempos[-1][1] / tiempos[0][1]`.
+Si cada salto multiplica por la misma razón $r$, entonces $r^6$ es ese total, y $r$ es su
+raíz sexta. En Python la raíz sexta se escribe como potencia: `** (1 / 6)`. Después, para
+llegar de 32 a 40 faltan cuatro saltos más, y se multiplica por $r^4$.
 
 La razón está en el árbol de llamadas. `fib(5)` llama a `fib(4)` y a `fib(3)`, pero
 `fib(4)` también llama a `fib(3)`, que se calcula dos veces desde cero:
