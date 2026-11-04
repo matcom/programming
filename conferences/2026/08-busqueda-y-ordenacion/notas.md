@@ -214,14 +214,21 @@ La cantidad de veces que hay que partir $n$ a la mitad hasta llegar a 1 es el
 $2^k$: $\log_2 1024 = 10$, $\log_2 1\,048\,576 = 20$. Crece tan despacio que, a efectos
 prácticos, una búsqueda binaria no cuesta nada.
 
+La tabla dio 9 vueltas para mil y no 10, y 19 para un millón y no 20. No es un error.
+Cuando $n$ es par, las dos mitades no son iguales: si quitas el medio de 1000 elementos,
+quedan 499 a la izquierda y 500 a la derecha. Buscando un valor menor que todos, la
+búsqueda se va siempre al pedazo izquierdo, el más chico, y llega antes al final. Las
+vueltas de una búsqueda binaria son $\log_2 n$ redondeado, a veces una menos.
+
 El precio es que la lista tiene que estar ordenada. Si está desordenada, la búsqueda
 binaria devuelve respuestas falsas sin dar ningún error:
 
 ```{python continue}
-print(buscar_binaria([7, 2, 19, 5, 13], 7))
+print(buscar_binaria([7, 2, 19, 5, 13], 5))
 ```
 
-El 7 está en la posición 0, y la función dice que no está. Mirar `lista[medio]` y
+El 5 está en la posición 3, y la función dice que no está: mira el 19 del medio, que es
+mayor que 5, y descarta toda la derecha, donde estaba el 5. Mirar `lista[medio]` y
 descartar una mitad solo es correcto si la lista está ordenada. Si no lo está, la
 función hace lo mismo, pero el resultado ya no significa nada.
 
@@ -245,7 +252,7 @@ def buscar_binaria_mal(lista, x):
     return -1
 ```
 
-Con casi todas las pruebas funciona. Pero busca el 9 en `[3, 7]`: `izq = 0`, `der = 1`,
+Busca el 9 en `[3, 7]`: `izq = 0`, `der = 1`,
 el medio es 0, `lista[0]` es 3, menor que 9, así que `izq = 0`. No cambió nada. La
 vuelta siguiente es idéntica a la anterior, y la función no termina nunca. Lo vemos
 dando solo seis vueltas:
@@ -260,12 +267,48 @@ for vuelta in range(6):
     print(f"vuelta {vuelta}: izq={izq} der={der} medio={medio}")
 ```
 
+¿Es un caso raro? Lo medimos. Esta versión de la función con el error se rinde a las
+cien vueltas y devuelve `None`, para que podamos contar cuántas búsquedas se quedan
+colgadas en una lista de diez números:
+
+```{python continue}
+def buscar_binaria_mal(lista, x):
+    izq, der = 0, len(lista) - 1
+    vueltas = 0
+    while izq <= der:
+        vueltas += 1
+        if vueltas > 100:
+            return None              # se quedó dando vueltas
+        medio = (izq + der) // 2
+        if lista[medio] == x:
+            return medio
+        elif lista[medio] < x:
+            izq = medio
+        else:
+            der = medio - 1
+    return -1
+
+
+pares = list(range(0, 20, 2))       # [0, 2, 4, ..., 18]
+colgadas = []
+for x in range(-1, 21):
+    if buscar_binaria_mal(pares, x) is None:
+        colgadas.append(x)
+
+print(len(colgadas), "de", len(range(-1, 21)), "búsquedas colgadas:", colgadas)
+```
+
+Más de la mitad, entre ellas valores que sí están en la lista. El error aparece cada vez
+que el pedazo queda de uno o dos elementos y `lista[medio] < x`: en esos dos casos el
+medio es el propio `izq`, y `izq = medio` no lo mueve. Cualquier búsqueda de un valor
+mayor que todos llega a esa situación. Así que este error no es difícil de atrapar, lo
+atrapa casi cualquier prueba. Lo difícil es acordarse de hacer las pruebas.
+
 Lo que garantiza que un `while` termina es que cada vuelta achique algo, y aquí el pedazo
 `der - izq` tiene que achicarse. Con `medio + 1` y `medio - 1` siempre se achica, porque
-el medio queda fuera. Con `izq = medio` hay un caso, el de dos elementos, en que no se
-achica. Las pruebas con listas de un elemento, o buscando valores que están, no lo
-encuentran. Por eso conviene probar siempre con listas de cero, uno y dos elementos, y
-con valores menores que todos, mayores que todos y que caen en medio.
+el medio queda fuera. Con `izq = medio`, a veces no. Por eso conviene probar siempre con
+listas de cero, uno y dos elementos, y con valores menores que todos, mayores que todos y
+que caen en medio, tanto valores que están como valores que no están.
 
 ## 3. Ordenación por selección
 
@@ -365,10 +408,14 @@ insercion(notas)
 print(notas)
 ```
 
-El `while` tiene dos condiciones, y el orden importa. Si `j` llega a `-1`, la primera es
-falsa y el `and` ya no evalúa la segunda, así que nunca se mira `lista[-1]`, que en
-Python no daría error sino el último elemento de la lista, y el resultado sería falso sin
-ningún aviso.
+El `while` tiene dos condiciones, y el orden importa por una regla de `and` que no
+habíamos necesitado hasta ahora: si la primera condición es falsa, Python **no evalúa la
+segunda**, porque el resultado ya es falso sea lo que sea la segunda. Se llama
+**evaluación en cortocircuito**, y `or` hace lo mismo cuando la primera es verdadera. Aquí
+es lo que nos salva: cuando `j` llega a `-1`, `j >= 0` es falsa y nunca se mira
+`lista[-1]`, que en Python no daría error sino el último elemento de la lista, y el
+resultado sería falso sin ningún aviso. Con las dos condiciones en el orden contrario,
+el programa estaría mal.
 
 ```{python echo=false output=asis continue}
 def _insercion_con_historial(lista):
@@ -517,6 +564,13 @@ print("pruebas terminadas")
 Los números van del 1 al 5 a propósito, para que haya muchos repetidos, que es otro caso
 que se rompe con facilidad.
 
+Fíjate en `for metodo in [seleccion, insercion, burbuja]`. Es una lista de **funciones**, no
+de resultados: no hay paréntesis después de los nombres, así que no se llama a ninguna.
+En la conferencia 3 dijimos que una función es un dato más, que se puede guardar en una
+variable o pasar como argumento, y aquí lo usamos por primera vez: en cada vuelta `metodo`
+es una de las tres funciones, y `metodo(copia)` la llama. `metodo.__name__` es el nombre
+con que se definió la función, para que el mensaje de error diga cuál falló.
+
 ## 6. Contar en lugar de cronometrar
 
 Tenemos tres métodos que ordenan. ¿Cuál es mejor? La respuesta tentadora es
@@ -580,8 +634,8 @@ anterior.
   proporcional a $\log_2 n$.
 - Los **tres métodos de ordenación** multiplican su trabajo por cuatro cuando la lista se
   duplica. Su trabajo es proporcional a $n^2$. La selección hace exactamente
-  $\frac{n(n-1)}{2}$; la inserción, alrededor de la mitad; la burbuja, algo menos que la
-  selección. Pero los tres se multiplican por cuatro.
+  $\frac{n(n-1)}{2}$; la inserción, alrededor de la mitad; la burbuja, prácticamente lo
+  mismo que la selección. Pero los tres se multiplican por cuatro.
 
 Ese "proporcional a" es lo que se llama el **orden de crecimiento** de un algoritmo, y se
 escribe con una O mayúscula: la búsqueda lineal es $O(n)$, la binaria es $O(\log n)$ y
@@ -635,7 +689,8 @@ print(F.lineas(tamanos,
                    "por cuatro."))
 ```
 
-La burbuja es la más lenta, aunque haga menos comparaciones que la selección. Hace muchos
+La burbuja es la más lenta, aunque haga prácticamente las mismas comparaciones que la
+selección. Hace muchos
 más intercambios, y un intercambio cuesta más que una comparación. Las constantes, otra
 vez. Pero las tres curvas tienen la misma forma, la de @fig-tiempos, y esa forma es la
 del $n^2$. Lo vemos dividiendo cada tiempo por el anterior:
@@ -645,6 +700,11 @@ for metodo, ts in tiempos.items():
     razones = [ts[k + 1] / ts[k] for k in range(len(ts) - 1)]
     print(f"{metodo:>10}: " + "  ".join(f"×{r:.1f}" for r in razones))
 ```
+
+La línea que imprime une las razones con `"  ".join(...)`, y lo que va dentro del `join`
+es una lista por comprensión sin corchetes. Dentro de una llamada se pueden omitir: Python
+va produciendo los elementos uno a uno y se los pasa al `join`, sin construir la lista
+entera. El resultado es el mismo.
 
 Las razones no salen exactamente 4, porque el reloj mide también otras cosas, pero
 rondan el 4. Con eso podemos hacer una predicción. Si 4000 elementos tardan lo que dice
@@ -674,8 +734,8 @@ print(f"sorted: {time.perf_counter() - inicio:.2f} s")
 ```
 
 Menos de un segundo. `sorted` no es un $n^2$ escrito en un lenguaje más rápido; es otro
-algoritmo, con otro orden de crecimiento. Cómo se ordena un millón de números en un
-segundo es el tema de la conferencia 10.
+algoritmo, con otro orden de crecimiento. Cómo se ordena un millón de números en
+segundos es el tema de la conferencia 10.
 
 ## 8. El proyecto: las palabras por frecuencia
 
@@ -713,7 +773,8 @@ de la sección 4 línea por línea. Un algoritmo de ordenación no sabe qué est
 solo necesita saber cuándo un elemento va antes que otro.
 
 Hay un detalle que vale la pena notar. Las palabras con el mismo conteo quedan en el mismo
-orden en que estaban en el diccionario, porque la inserción nunca pasa un elemento por
+orden en que estaban en el diccionario, que como vimos en la conferencia 6 es el orden en
+que aparecieron por primera vez en el texto, porque la inserción nunca pasa un elemento por
 encima de otro igual: el `while` se detiene ante uno que no es estrictamente menor. Un
 método con esa propiedad se llama **estable**, y la tiene también `sorted`. La selección
 no la tiene; el ejercicio 4 te pide encontrar una lista que lo demuestre.
@@ -737,8 +798,8 @@ for palabra in ["hidalgo", "rocinante", "molino"]:
         print(f"{palabra}: posición {i}, aparece {conteo[palabra]}")
 ```
 
-La inserción ordena las cadenas sin cambiar nada, porque `<` entre cadenas compara en
-orden alfabético, letra por letra, como en un diccionario de papel. Ese orden es el de
+La inserción ordena las cadenas sin cambiar una línea de su código, porque `<` entre
+cadenas compara letra por letra, en un orden que se parece al alfabético. Ese orden es el de
 los códigos de los caracteres, y en esos códigos las letras con tilde y la `ñ` van
 después de la `z`: por eso `él` e `ínsula` salen al final. Si una palabra empieza por `á`, la búsqueda binaria la encuentra igual, porque
 la lista y la búsqueda usan la misma comparación.
@@ -749,10 +810,10 @@ la lista y la búsqueda usan la misma comparación.
   trabajo es proporcional a $n$.
 - La **búsqueda binaria** descarta la mitad del pedazo en cada vuelta. Necesita la lista
   ordenada, y si no lo está devuelve respuestas falsas sin ningún error. Su trabajo es
-  proporcional a $\log_2 n$: unas veinte vueltas para un millón.
+  proporcional a $\log_2 n$: diecinueve o veinte vueltas para un millón.
 - En la búsqueda binaria, `izq = medio + 1` y `der = medio - 1` garantizan que el pedazo
-  se achica en cada vuelta. Cambiar uno de los dos puede dejar el ciclo dando vueltas para
-  siempre en listas de dos elementos.
+  se achica en cada vuelta. Con `izq = medio`, el ciclo se queda dando vueltas en cuanto
+  el pedazo tiene uno o dos elementos y el valor buscado es mayor que el del medio.
 - La **selección** busca el menor de lo que falta y lo intercambia a su lugar. Hace
   siempre $\frac{n(n-1)}{2}$ comparaciones.
 - La **inserción** mete cada elemento nuevo en su lugar dentro de la parte ya ordenada.
@@ -788,7 +849,7 @@ la lista y la búsqueda usan la misma comparación.
 6. Cuenta, además de las comparaciones, cuántas veces se **escribe** en la lista en cada
    uno de los tres métodos, para listas al azar de 100, 200 y 400 elementos. ¿Cuál escribe
    menos? Con eso explica por qué la burbuja es más lenta en el reloj que la selección
-   aunque haga menos comparaciones.
+   aunque haga casi las mismas comparaciones.
 7. Construye una lista de 1000 elementos con la que la inserción haga **menos** de 2000
    comparaciones, y otra con la que la burbuja haga exactamente 999. Después construye
    una lista de 1000 elementos casi ordenada, en la que solo el último elemento esté fuera
