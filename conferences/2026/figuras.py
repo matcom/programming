@@ -453,3 +453,73 @@ def split_visual(texto, piezas, ident="split", pie=""):
         _txt("una lista, y los espacios ya no están", (x - hueco) / 2, 88,
              APAGADO, PIE)
     return _figura(canvas, ident, pie)
+
+
+# --------------------------------------------------------------------------
+# conferencia 8: búsqueda, ordenación y costo
+# --------------------------------------------------------------------------
+
+def pasadas(estados, fijos, movidos=None, ident="pasadas", pie=""):
+    """Una fila por cada estado de la lista, tal como los fue guardando el
+    algoritmo. En la fila `k` las primeras `fijos[k]` casillas van en color: es
+    la parte que el algoritmo ya dejó ordenada. `movidos[k]`, si se da, son los
+    índices que esa pasada tocó."""
+    lado, paso = 26.0, 34.0
+    with Canvas() as canvas:
+        for k, (fila, f) in enumerate(zip(estados, fijos)):
+            y = k * paso
+            tocados = movidos[k] if movidos else ()
+            for i, v in enumerate(fila):
+                x = i * lado
+                if i in tocados:
+                    color, relleno, grosor = CALIDO, 0.18, 1.4
+                elif i < f:
+                    color, relleno, grosor = ACENTO, 0.16, 1.2
+                else:
+                    color, relleno, grosor = REGLA.darker(0.25), 0.35, 0.9
+                fondo = REGLA if color is not ACENTO and color is not CALIDO \
+                    else color
+                Rect(lado, lado, fill=fondo.transparent(relleno), stroke=color,
+                     width=grosor).move_to(Point(x, y), anchor="topleft")
+                _codigo(str(v), x + lado / 2, y + lado / 2, TINTA)
+            etiqueta = "al empezar" if k == 0 else f"pasada {k}"
+            _txt(etiqueta, -10, y + lado / 2, APAGADO, PIE, ancla="right")
+    return _figura(canvas, ident, pie)
+
+
+def lineas(xs, series, unidad="s", ident="lineas", pie=""):
+    """Gráfica de líneas. `series` es [(nombre, ys, color)] con las medidas que
+    el documento acaba de tomar; `xs` son los tamaños de la entrada."""
+    ancho, alto = 280.0, 150.0
+    tope = max(max(ys) for _, ys, _ in series) * 1.1
+    ex = lambda x: (x - xs[0]) / (xs[-1] - xs[0]) * ancho
+    ey = lambda y: alto - y / tope * alto
+    colores = {"acento": ACENTO, "alarma": ALARMA, "calido": CALIDO,
+               "verde": VERDE, "oscuro": OSCURO}
+    with Canvas() as canvas:
+        for k in range(5):
+            v = tope * k / 4
+            Line(Point(0, ey(v)), Point(ancho, ey(v)), stroke=REGLA, width=0.7)
+            _txt(f"{v:.2f} {unidad}" if k else "0", -8, ey(v), APAGADO, PIE,
+                 ancla="right")
+        for x in xs:
+            _codigo(f"{x}", ex(x), alto + 11, APAGADO, PIE)
+        _txt("tamaño de la lista", ancho / 2, alto + 25, APAGADO, PIE)
+        Line(Point(0, alto), Point(ancho, alto), stroke=APAGADO, width=1.0)
+        finales = []
+        for nombre, ys, c in series:
+            color = colores[c]
+            puntos = [Point(ex(x), ey(y)) for x, y in zip(xs, ys)]
+            for a, b in zip(puntos, puntos[1:]):
+                Line(a, b, stroke=color, width=1.4)
+            for p in puntos:
+                Circle(2.4, fill=color, stroke=color).move_to(p)
+            finales.append([puntos[-1].y, nombre, color])
+        # separa las etiquetas del final para que no se monten
+        finales.sort()
+        for i in range(1, len(finales)):
+            if finales[i][0] - finales[i - 1][0] < 11:
+                finales[i][0] = finales[i - 1][0] + 11
+        for y, nombre, color in finales:
+            _txt(nombre, ancho + 8, y, color, PIE, ancla="left")
+    return _figura(canvas, ident, pie)
