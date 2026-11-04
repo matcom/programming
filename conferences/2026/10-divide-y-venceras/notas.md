@@ -124,7 +124,7 @@ base es una lista de cero o un elemento, que ya está ordenada.
 def ordenar_mezcla(lista):
     """Devuelve una lista nueva con los elementos de lista, ordenados."""
     if len(lista) <= 1:
-        return lista
+        return list(lista)
     medio = len(lista) // 2
     izquierda = ordenar_mezcla(lista[:medio])
     derecha = ordenar_mezcla(lista[medio:])
@@ -135,7 +135,10 @@ print(ordenar_mezcla([38, 27, 43, 3, 9, 82, 10, 5]))
 ```
 
 A diferencia de los métodos de la conferencia 8, esta función no modifica la lista que
-recibe: construye y devuelve una nueva, como `sorted`.
+recibe: construye y devuelve una nueva, como `sorted`. Por eso el caso base devuelve
+`list(lista)`, una copia, y no `lista`: si devolviera la misma lista que recibió, con cero
+o un elemento el resultado y la original serían la misma lista con dos nombres, la sorpresa
+de la conferencia 4.
 
 Lo primero, como siempre, es probarla contra algo que sabemos que está bien:
 
@@ -199,8 +202,8 @@ pedazos se achican, pero hay más pedazos, y la suma es siempre la lista entera.
 
 **Hay $\log_2 n$ niveles.** Cada nivel parte las listas a la mitad, y la pregunta de
 cuántas veces se puede partir $n$ a la mitad hasta llegar a 1 es la de la búsqueda
-binaria: $\log_2 n$. Para 8 elementos son 3 niveles de mezclas, como se ve en las
-figuras.
+binaria: $\log_2 n$. Para 8 elementos las figuras tienen 4 niveles, pero el de abajo, el
+de las listas de un elemento, no mezcla nada: son 3 niveles de mezclas, y $\log_2 8 = 3$.
 
 Entonces el trabajo total es $n$ por nivel por $\log_2 n$ niveles: $n \log_2 n$. Lo
 comprobamos contando las comparaciones de `mezclar`:
@@ -258,8 +261,8 @@ copia sin comparar.
 
 Para $n = 3200$, la selección hace más de cinco millones de comparaciones y la mezcla
 unas treinta y tres mil. Y la diferencia crece con $n$: es la diferencia entre
-multiplicar por $n$ y multiplicar por $\log_2 n$, que para un millón son un millón y
-veinte.
+multiplicar por $n$ y multiplicar por $\log_2 n$, que para un millón es un millón contra
+unos veinte.
 
 ## 4. El esquema
 
@@ -297,7 +300,7 @@ van antes que todos los mayores, así que basta pegar las tres listas.
 def ordenar_rapida(lista):
     """Devuelve una lista nueva con los elementos de lista, ordenados."""
     if len(lista) <= 1:
-        return lista
+        return list(lista)
     pivote = lista[0]
     menores, iguales, mayores = [], [], []
     for x in lista:
@@ -323,8 +326,9 @@ print("pruebas terminadas")
 El `+` entre listas las pega una detrás de otra, en una lista nueva. La lista `iguales`
 nunca está vacía, porque contiene al menos el pivote, y por eso las dos llamadas
 recursivas reciben listas más pequeñas que la original. Si pusiéramos el pivote junto con
-los menores, una lista donde todo es igual al pivote se llamaría a sí misma con la misma
-lista para siempre; el ejercicio 4 te pide verlo.
+los menores, habría listas que se llamarían a sí mismas con la misma lista una y otra vez,
+hasta chocar con el tope de mil llamadas de la conferencia 9 y dar `RecursionError`; el
+ejercicio 4 te pide encontrarlas.
 
 ```{python echo=false output=asis continue}
 def _arbol_rapida(lista):
@@ -365,8 +369,8 @@ print(F.arbol(_arbol_rapida([1, 2, 3, 4, 5, 6]), columna=40, ident="rapida-orden
 ```
 
 El árbol de la @fig-rapida-ordenada tiene $n$ niveles en lugar de $\log_2 n$, y el nivel
-$k$ reparte $n - k$ elementos. Es la suma de la selección, $\frac{n(n-1)}{2}$, otra vez
-cuadrática. Y peor aún, con $n$ niveles de recursión se llega al tope de la pila de la
+$k$ reparte $n - k$ elementos. En total, $n + (n-1) + \cdots + 1 = \frac{n(n+1)}{2}$,
+casi la misma suma que la de la selección y del mismo orden: otra vez cuadrática. Y peor aún, con $n$ niveles de recursión se llega al tope de la pila de la
 conferencia 9:
 
 ```{python continue}
@@ -387,7 +391,7 @@ cualquiera de la lista:
 ```{python continue}
 def ordenar_rapida_azar(lista):
     if len(lista) <= 1:
-        return lista
+        return list(lista)
     pivote = random.choice(lista)
     menores, iguales, mayores = [], [], []
     for x in lista:
@@ -450,7 +454,7 @@ print(F.lineas(tamanos,
 ```
 
 En la @fig-tiempos, la mezcla y la rápida apenas se separan del cero. Con 4000 elementos
-ya son decenas de veces más rápidas, y la ventaja crece con cada duplicación.
+ya son más de diez veces más rápidas, y la ventaja crece con cada duplicación.
 
 Y ahora, el millón que en la conferencia 8 habría tardado horas:
 
@@ -506,11 +510,12 @@ orden de crecimiento es el mismo.
    una lista de uno, y mezcla de dos en dos hasta que quede una sola. Es el árbol de la
    @fig-mezclar recorrido de abajo arriba.
 4. Cambia `ordenar_rapida` para que el pivote vaya en `menores` en lugar de en `iguales`,
-   es decir, usando `x <= pivote`. Encuentra una lista con la que la función nunca
-   termine, y explica qué parte del razonamiento de la sección 5 deja de ser cierta.
+   es decir, usando `x <= pivote`. Encuentra la lista más corta con la que la función
+   dé `RecursionError`, y explica qué parte del razonamiento de la sección 5 deja de ser
+   cierta.
 5. Escribe `contar_rapida(lista)` que cuente las comparaciones de `ordenar_rapida` con el
    primer elemento como pivote, y úsala con listas ordenadas de 100, 200 y 400 elementos.
-   ¿Coincide con $\frac{n(n-1)}{2}$? ¿Por qué no hace falta que la lista esté ordenada de
+   ¿Se parece a la suma $\frac{n(n+1)}{2}$ de la sección 6? ¿Por qué no hace falta que la lista esté ordenada de
    menor a mayor para el peor caso? Encuentra otra lista mala.
 6. Usa `ordenar_mezcla` para ordenar las parejas `(palabra, veces)` del Quijote de la
    conferencia 8 de más a menos frecuente. Tienes que cambiar la comparación en
@@ -524,4 +529,6 @@ orden de crecimiento es el mismo.
 8. Con un millón de elementos, la ordenación rápida con el primer elemento como pivote
    funciona bien si la lista está al azar. Calcula cuántos niveles tendría el árbol si la
    lista estuviera ordenada, y cuánto tiempo tardaría, usando lo que mediste en la
-   conferencia 8 para un algoritmo cuadrático. ¿Llega siquiera a empezar?
+   conferencia 8 para un algoritmo cuadrático. En Python, con el tope de mil llamadas, ¿qué
+   pasa en realidad: termina, o da `RecursionError`? ¿Con qué tamaño de lista empieza a
+   fallar?
