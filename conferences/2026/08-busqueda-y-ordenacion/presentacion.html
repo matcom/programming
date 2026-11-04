@@ -1289,7 +1289,7 @@ class Rango {
       <div class="rends"><span>0</span><span class="rn"></span></div>
       <div class="rtrail"></div><div class="ctl"></div>`;
     this.piece = root.querySelector('.rpiece'); this.mid = root.querySelector('.rmid');
-    this.trail = root.querySelector('.rtrail'); this.cnt = root.querySelector('.cnt'); this.rn = root.querySelector('.rn');
+    this.trail = this.msg = root.querySelector('.rtrail'); this.cnt = root.querySelector('.cnt'); this.rn = root.querySelector('.rn');
     this.ctl = root.querySelector('.ctl');
     [[1000, 'mil'], [1_000_000, 'un millón'], [1_000_000_000, 'mil millones']].forEach(([n, t]) => {
       const b = document.createElement('button'); b.textContent = t; b.dataset.n = n;
@@ -1356,7 +1356,7 @@ class Crecer {
     root.innerHTML = `<div class="gr" style="margin-top:0"><div class="gn" style="color:#8b949e">n =</div><div class="gnow"></div><div></div></div>` +
       this.filas.map(([t, col]) => `<div class="gr"><div class="gn" style="color:${col}">${t}</div><div class="gt"><div class="gf" style="background:${col}"></div></div><div class="gv"></div></div>`).join('') +
       `<div class="ctl" style="margin-top:1.4cqw"></div>`;
-    this.now = root.querySelector('.gnow'); this.fills = [...root.querySelectorAll('.gf')]; this.vals = [...root.querySelectorAll('.gv')];
+    this.now = this.msg = root.querySelector('.gnow'); this.fills = [...root.querySelectorAll('.gf')]; this.vals = [...root.querySelectorAll('.gv')];
     this.ctl = root.querySelector('.ctl');
     this.ns.forEach((n, k) => {
       const b = document.createElement('button'); b.textContent = `n = ${n}`;
