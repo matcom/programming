@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Conferencia 5: cadenas y archivos</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+
+html,body{
+  width:100%;height:100%;
+  background:#0d1117;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+}
+
+#deck{
+  width:min(100vw,177.78vh);
+  aspect-ratio:16/9;
+  position:relative;
+  overflow:hidden;
+  background:#0d1117;
+  container-type:size;
+  color:#e6edf3;
+}
+
+.slide{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;
+  justify-content:center;
+  padding:3.4cqw 5cqw;
+  opacity:0;
+  transform:translateX(4%);
+  transition:opacity .35s ease,transform .35s ease;
+  pointer-events:none;
+  --ac:#4fc3f7;
+}
+.slide.active{opacity:1;transform:none;pointer-events:auto}
+.slide.prev{opacity:0;transform:translateX(-4%)}
+.slide.ctr{align-items:center;text-align:center}
+
+/* un color por sección */
+.a0{--ac:#e6edf3}
+.a1{--ac:#4fc3f7}
+.a2{--ac:#ffb74d}
+.a3{--ac:#81c784}
+.a4{--ac:#f48fb1}
+.a5{--ac:#ce93d8}
+
+.lbl{
+  font-size:.9cqw;font-weight:700;
+  letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ac);margin-bottom:1cqw;
+}
+h1{
+  font-size:3.4cqw;font-weight:800;
+  line-height:1.12;color:#e6edf3;
+  margin-bottom:1.3cqw;max-width:30ch;
+}
+h1 em{color:var(--ac);font-style:normal}
+h1.hero{font-size:5.6cqw;max-width:100%}
+h1 code,.sub code,li code,.cb code,td code,.kick code,.note code{
+  font-family:'JetBrains Mono','Fira Code',ui-monospace,Menlo,Consolas,monospace;
+  font-size:.92em;color:var(--ac);
+  background:rgba(255,255,255,.06);padding:.05em .3em;border-radius:.25em;
+}
+
+.sub{
+  font-size:1.6cqw;color:#8b949e;
+  line-height:1.5;max-width:60ch;
+  margin-bottom:1.1cqw;
+}
+.sub b{color:#e6edf3}
+
+ul.pts{list-style:none;margin-top:.3cqw}
+ul.pts li{
+  font-size:1.45cqw;line-height:1.45;
+  padding:.35cqw 0 .35cqw 1.9cqw;
+  position:relative;color:#e6edf3;
+}
+ul.pts li::before{content:'→';position:absolute;left:0;color:var(--ac)}
+ul.pts li strong{color:var(--ac)}
+ul.pts.sm li{font-size:1.2cqw}
+
+.c2{display:grid;grid-template-columns:1fr 1fr;gap:1.6cqw;width:100%;margin-top:1cqw;align-items:start}
+.c2.wl{grid-template-columns:1.25fr 1fr}
+.c3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.25cqw;width:100%;margin-top:1.2cqw}
+
+.card{
+  background:#161b22;border-radius:.75cqw;
+  padding:1.3cqw 1.5cqw;border:1px solid rgba(255,255,255,.08);
+}
+.card.ac{border-color:color-mix(in srgb,var(--ac) 40%,transparent)}
+.card.bad{border-color:rgba(239,83,80,.55)}
+.ct{
+  font-size:.9cqw;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;
+  margin-bottom:.6cqw;color:var(--ac);
+}
+.card.bad .ct{color:#ef5350}
+.cb{font-size:1.18cqw;color:#8b949e;line-height:1.55}
+.cb em{color:#e6edf3;font-style:normal}
+
+.kick{font-size:1.5cqw;color:#e6edf3;line-height:1.5;max-width:70ch;margin-top:1.2cqw}
+.kick b{color:var(--ac)}
+.note{font-size:1.1cqw;color:#8b949e;line-height:1.55;margin-top:.8cqw;max-width:80ch}
+.note b{color:#e6edf3}
+
+/* código */
+pre.code,pre.out{
+  font-family:'JetBrains Mono','Fira Code',ui-monospace,Menlo,Consolas,monospace;
+  font-size:1.3cqw;line-height:1.5;
+  background:#161b22;border:1px solid rgba(255,255,255,.08);
+  border-radius:.6cqw;padding:1cqw 1.3cqw;
+  white-space:pre;overflow:hidden;color:#e6edf3;
+}
+pre.code.sm,pre.out.sm{font-size:1.08cqw}
+pre.code.xs{font-size:.98cqw}
+.kw{color:#ff7b72}.st{color:#a5d6ff}.cm{color:#6e7681;font-style:italic}
+.bi{color:#d2a8ff}.nu{color:#79c0ff}.fn{color:#ffa657}
+
+pre.out{
+  position:relative;margin-top:.6cqw;
+  border-style:dashed;border-color:rgba(255,255,255,.18);
+  color:#c9d1d9;
+}
+pre.out::before{
+  content:'salida';position:absolute;top:.35cqw;right:.7cqw;
+  font-family:-apple-system,system-ui,sans-serif;font-size:.75cqw;
+  letter-spacing:.14em;text-transform:uppercase;color:#6e7681;
+}
+pre.out .err{color:#ff7b72}
+pre.out.hidden{color:transparent;cursor:pointer}
+pre.out.hidden .err{color:transparent}
+pre.out.hidden::after{
+  content:'¿qué imprime? (R o clic para ver)';
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:-apple-system,system-ui,sans-serif;font-size:1.1cqw;color:#8b949e;
+  letter-spacing:.04em;
+}
+
+/* demo en vivo */
+.live{
+  display:inline-flex;align-items:center;gap:.6cqw;
+  background:#ef5350;color:#fff;
+  font-size:.95cqw;font-weight:800;letter-spacing:.16em;text-transform:uppercase;
+  padding:.45cqw 1cqw;border-radius:2cqw;margin-bottom:1cqw;align-self:flex-start;
+}
+.live svg{width:1.4cqw;height:1.4cqw}
+.slide.ctr .live{align-self:center}
+.steps{list-style:none;counter-reset:s;margin-top:.4cqw}
+.steps li{
+  counter-increment:s;font-size:1.25cqw;line-height:1.45;color:#e6edf3;
+  padding:.35cqw 0 .35cqw 2.4cqw;position:relative;
+}
+.steps li::before{
+  content:counter(s);position:absolute;left:0;top:.35cqw;
+  width:1.7cqw;height:1.7cqw;border-radius:50%;
+  background:#ef5350;color:#fff;font-size:.95cqw;font-weight:800;
+  display:flex;align-items:center;justify-content:center;
+}
+.steps li code{
+  font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
+  font-size:.92em;color:#ffa657;background:rgba(255,255,255,.06);
+  padding:.05em .3em;border-radius:.25em;
+}
+.steps li em{color:#8b949e;font-style:normal}
+
+/* tablas */
+table.br{width:100%;border-collapse:collapse;margin-top:1cqw;font-size:1.15cqw}
+table.br th{text-align:left;font-size:.85cqw;letter-spacing:.12em;text-transform:uppercase;color:#8b949e;padding:.55cqw .9cqw;border-bottom:1px solid #30363d}
+table.br td{padding:.6cqw .9cqw;border-bottom:1px solid rgba(255,255,255,.05);color:#c9d1d9;vertical-align:top}
+table.br td:first-child{white-space:nowrap}
+table.br td code{font-size:1em}
+
+/* recorrido del curso */
+.road{display:grid;grid-template-columns:repeat(6,1fr);gap:.8cqw;width:100%;margin-top:1.6cqw}
+.road .stop{background:#161b22;border:1px solid rgba(255,255,255,.08);border-radius:.6cqw;padding:1cqw 1.1cqw;position:relative}
+.road .stop .n{font-size:2.2cqw;font-weight:900;color:#3d4450;line-height:1}
+.road .stop .t{font-size:1.1cqw;font-weight:700;color:#e6edf3;margin-top:.5cqw}
+.road .stop .d{font-size:.95cqw;color:#8b949e;margin-top:.35cqw;line-height:1.4}
+.road .stop.now{border-color:var(--ac);background:color-mix(in srgb,var(--ac) 10%,#161b22)}
+.road .stop.now .n{color:var(--ac)}
+.road .stop.next{border-style:dashed}
+
+svg.fig{width:100%;height:auto;display:block;margin-top:.8cqw}
+svg text{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif}
+svg .mono{font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace}
+
+/* chrome */
+#bar{position:absolute;left:0;bottom:0;height:.3cqw;background:#4fc3f7;transition:width .3s ease;z-index:5}
+#num{position:absolute;right:1.6cqw;bottom:1cqw;font-size:.85cqw;color:#6e7681;z-index:5;letter-spacing:.08em}
+#foot{position:absolute;left:1.6cqw;bottom:1cqw;font-size:.85cqw;color:#484f58;z-index:5;letter-spacing:.08em}
+#help{
+  position:absolute;inset:0;background:rgba(13,17,23,.94);z-index:10;
+  display:none;align-items:center;justify-content:center;
+}
+#help.on{display:flex}
+#help .box{background:#161b22;border:1px solid #30363d;border-radius:1cqw;padding:2.4cqw 3cqw;font-size:1.3cqw;color:#c9d1d9;line-height:2}
+#help kbd{font-family:ui-monospace,Menlo,monospace;background:#0d1117;border:1px solid #30363d;border-radius:.3cqw;padding:.1cqw .5cqw;color:#e6edf3}
+</style>
+</head>
+<body>
+<div id="deck">
+
+<!-- ============================================================ portada -->
+<section class="slide a1 ctr">
+  <div class="lbl">Programación · MatCom · Conferencia 5 · 14 de octubre de 2026</div>
+  <h1 class="hero">Cadenas <em>y archivos</em></h1>
+  <p class="sub" style="max-width:52ch">Proyecto de hoy: un programa que abre un archivo de texto y cuenta sus palabras.</p>
+  <svg class="fig" viewBox="0 0 1000 120" style="max-width:62cqw;margin-top:2cqw">
+    <g class="mono" font-size="26" text-anchor="middle">
+      <rect x="20" y="25" width="200" height="70" rx="10" fill="#161b22" stroke="#4fc3f7"/>
+      <text x="120" y="68" fill="#e6edf3">quijote.txt</text>
+      <path d="M230 60 H330" stroke="#6e7681" stroke-width="3" marker-end="url(#ah0)"/>
+      <rect x="340" y="25" width="300" height="70" rx="10" fill="#161b22" stroke="#6e7681"/>
+      <text x="490" y="68" fill="#c9d1d9">contar.py</text>
+      <path d="M650 60 H750" stroke="#6e7681" stroke-width="3" marker-end="url(#ah0)"/>
+      <rect x="760" y="25" width="220" height="70" rx="10" fill="#161b22" stroke="#ce93d8"/>
+      <text x="870" y="68" fill="#ce93d8">196 palabras</text>
+    </g>
+    <defs><marker id="ah0" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e7681"/></marker></defs>
+  </svg>
+</section>
+
+<!-- ============================================================ dónde estamos -->
+<section class="slide a1">
+  <div class="lbl">Dónde estamos</div>
+  <h1>Cuatro clases usando texto <em>sin abrirlo por dentro</em></h1>
+  <p class="sub">Hasta hoy una cadena era algo que se imprime o que devuelve <code>input</code>. Hoy es una secuencia, con los mismos índices y rebanadas que la lista de la semana pasada.</p>
+  <div class="road">
+    <div class="stop"><div class="n">1</div><div class="t">Lo básico</div><div class="d">la calculadora de la ecuación de segundo grado</div></div>
+    <div class="stop"><div class="n">2</div><div class="t">Condicionales y ciclos</div><div class="d">adivinar un número del 1 al 100</div></div>
+    <div class="stop"><div class="n">3</div><div class="t">Funciones</div><div class="d"><code style="font-size:.9em">es_primo</code>, mejorada cambiando una línea</div></div>
+    <div class="stop"><div class="n">4</div><div class="t">Listas</div><div class="d">notas del grupo, tuplas, la criba</div></div>
+    <div class="stop now"><div class="n">5</div><div class="t">Cadenas y archivos</div><div class="d">contar las palabras de un archivo</div></div>
+    <div class="stop next"><div class="n">6</div><div class="t">Diccionarios</div><div class="d">cuántas veces aparece cada palabra</div></div>
+  </div>
+</section>
+
+<!-- ============================================================ el plan -->
+<section class="slide a1">
+  <div class="lbl">El plan de la hora</div>
+  <h1>Cuatro piezas y <em>un programa</em> que las junta</h1>
+  <svg class="fig" viewBox="0 0 1200 330">
+    <defs><marker id="ah1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e7681"/></marker></defs>
+    <g text-anchor="middle">
+      <rect x="10" y="40" width="250" height="150" rx="12" fill="#161b22" stroke="#4fc3f7" stroke-width="2"/>
+      <text x="135" y="85" fill="#4fc3f7" font-size="17" font-weight="700" letter-spacing="2">1 · SECUENCIA</text>
+      <text x="135" y="125" fill="#e6edf3" font-size="22" class="mono">s[0]  s[-1]  s[2:5]</text>
+      <text x="135" y="160" fill="#8b949e" font-size="17">índices, rebanadas, in</text>
+
+      <rect x="310" y="40" width="250" height="150" rx="12" fill="#161b22" stroke="#ffb74d" stroke-width="2"/>
+      <text x="435" y="85" fill="#ffb74d" font-size="17" font-weight="700" letter-spacing="2">2 · MÉTODOS</text>
+      <text x="435" y="125" fill="#e6edf3" font-size="22" class="mono">split  join</text>
+      <text x="435" y="160" fill="#8b949e" font-size="17">lower, strip, replace…</text>
+
+      <rect x="610" y="40" width="250" height="150" rx="12" fill="#161b22" stroke="#81c784" stroke-width="2"/>
+      <text x="735" y="85" fill="#81c784" font-size="17" font-weight="700" letter-spacing="2">3 · ARCHIVOS</text>
+      <text x="735" y="125" fill="#e6edf3" font-size="22" class="mono">with open(…)</text>
+      <text x="735" y="160" fill="#8b949e" font-size="17">leer, escribir, utf-8</text>
+
+      <rect x="910" y="40" width="250" height="150" rx="12" fill="#161b22" stroke="#f48fb1" stroke-width="2"/>
+      <text x="1035" y="85" fill="#f48fb1" font-size="17" font-weight="700" letter-spacing="2">4 · ERRORES</text>
+      <text x="1035" y="125" fill="#e6edf3" font-size="22" class="mono">try  except</text>
+      <text x="1035" y="160" fill="#8b949e" font-size="17">atender en vez de morir</text>
+
+      <path d="M135 195 C135 250 500 240 560 262" stroke="#4fc3f7" stroke-width="2" fill="none" marker-end="url(#ah1)" opacity=".7"/>
+      <path d="M435 195 C435 235 560 240 585 260" stroke="#ffb74d" stroke-width="2" fill="none" marker-end="url(#ah1)" opacity=".7"/>
+      <path d="M735 195 C735 235 640 240 615 260" stroke="#81c784" stroke-width="2" fill="none" marker-end="url(#ah1)" opacity=".7"/>
+      <path d="M1035 195 C1035 250 700 240 640 262" stroke="#f48fb1" stroke-width="2" fill="none" marker-end="url(#ah1)" opacity=".7"/>
+      <rect x="430" y="265" width="340" height="56" rx="12" fill="#1c1626" stroke="#ce93d8" stroke-width="2"/>
+      <text x="600" y="301" fill="#ce93d8" font-size="22" font-weight="700">5 · contar las palabras</text>
+    </g>
+  </svg>
+</section>
+
+<!-- ============================================================ 1. secuencia -->
+<section class="slide a1 ctr">
+  <div class="lbl">Parte 1</div>
+  <h1 class="hero">Una cadena es <em>una secuencia</em></h1>
+  <p class="sub">Todo lo que aprendiste de listas sirve aquí.</p>
+</section>
+
+<section class="slide a1">
+  <div class="lbl">Índices y rebanadas</div>
+  <h1>La misma fila de casillas, <em>con un carácter en cada una</em></h1>
+  <svg class="fig" viewBox="0 0 1200 330">
+    <g class="mono" text-anchor="middle">
+      <!-- índices positivos -->
+      <g fill="#4fc3f7" font-size="20">
+        <text x="185" y="60">0</text><text x="275" y="60">1</text><text x="365" y="60">2</text><text x="455" y="60">3</text><text x="545" y="60">4</text><text x="635" y="60">5</text><text x="725" y="60">6</text><text x="815" y="60">7</text><text x="905" y="60">8</text><text x="995" y="60">9</text><text x="1085" y="60">10</text>
+      </g>
+      <g fill="#161b22" stroke="#30363d" stroke-width="2">
+        <rect x="140" y="75" width="90" height="90"/><rect x="230" y="75" width="90" height="90"/><rect x="320" y="75" width="90" height="90"/><rect x="410" y="75" width="90" height="90"/><rect x="500" y="75" width="90" height="90"/><rect x="590" y="75" width="90" height="90"/><rect x="680" y="75" width="90" height="90"/><rect x="770" y="75" width="90" height="90"/><rect x="860" y="75" width="90" height="90"/><rect x="950" y="75" width="90" height="90"/><rect x="1040" y="75" width="90" height="90"/>
+      </g>
+      <g fill="#e6edf3" font-size="44">
+        <text x="185" y="136">c</text><text x="275" y="136">o</text><text x="365" y="136">m</text><text x="455" y="136">p</text><text x="545" y="136">u</text><text x="635" y="136">t</text><text x="725" y="136">a</text><text x="815" y="136">c</text><text x="905" y="136">i</text><text x="995" y="136">ó</text><text x="1085" y="136">n</text>
+      </g>
+      <!-- índices negativos -->
+      <g fill="#6e7681" font-size="18">
+        <text x="185" y="192">-11</text><text x="275" y="192">-10</text><text x="365" y="192">-9</text><text x="455" y="192">-8</text><text x="545" y="192">-7</text><text x="635" y="192">-6</text><text x="725" y="192">-5</text><text x="815" y="192">-4</text><text x="905" y="192">-3</text><text x="995" y="192">-2</text><text x="1085" y="192">-1</text>
+      </g>
+      <text x="70" y="128" fill="#8b949e" font-size="20">palabra</text>
+      <!-- rebanadas -->
+      <path d="M142 225 V240 H588 V225" stroke="#ffb74d" stroke-width="3" fill="none"/>
+      <text x="365" y="275" fill="#ffb74d" font-size="22">palabra[0:5] → "compu"</text>
+      <path d="M592 225 V240 H1128 V225" stroke="#81c784" stroke-width="3" fill="none"/>
+      <text x="860" y="275" fill="#81c784" font-size="22">palabra[5:] → "tación"</text>
+      <text x="300" y="318" fill="#8b949e" font-size="19">len(palabra) → 11</text><text x="600" y="318" fill="#8b949e" font-size="19">palabra[-1] → "n"</text><text x="910" y="318" fill="#8b949e" font-size="19">palabra[::-1] → "nóicatupmoc"</text>
+    </g>
+  </svg>
+  <p class="note">La rebanada <code>[0:5]</code> incluye el 0 y excluye el 5, igual que en las listas. La ó es <b>un</b> carácter, aunque en el archivo ocupe dos bytes. Eso vuelve en la parte 3.</p>
+</section>
+
+<section class="slide a1">
+  <span class="live"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M1 20h22"/></svg>En vivo · consola interactiva</span>
+  <h1>Que adivinen <em>antes</em> de ejecutar</h1>
+  <div class="c2">
+    <div>
+      <pre class="code" data-hl>palabra = "computación"
+
+print(len(palabra))
+print(palabra[0])
+print(palabra[-1])
+print(palabra[0:5])
+print(palabra[5:])
+print(palabra[::-1])
+
+for letra in "MatCom":
+    print(letra, end="-")</pre>
+      <pre class="out hidden">11
+c
+n
+compu
+tación
+nóicatupmoc
+M-a-t-C-o-m-</pre>
+    </div>
+    <div>
+      <ol class="steps">
+        <li>Abre <code>python</code> en la terminal, sin archivo. Escribe la primera línea.</li>
+        <li>Antes de cada <code>print</code>, pregunta al aula qué va a salir. Ejecuta después.</li>
+        <li><code>palabra[11]</code> <em>da IndexError, como en una lista de 11 elementos.</em></li>
+        <li><code>palabra[5:100]</code> <em>no da error: la rebanada se recorta sola.</em></li>
+        <li>Cierra con el <code>for</code>. El <code>end="-"</code> viene de la conferencia 1.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section class="slide a1">
+  <div class="lbl">Una diferencia con las listas</div>
+  <h1>En una cadena, <code>in</code> busca <em>un pedazo</em></h1>
+  <div class="c2 wl">
+    <svg class="fig" viewBox="0 0 640 330">
+      <g class="mono" text-anchor="middle">
+        <text x="20" y="40" fill="#8b949e" font-size="20" text-anchor="start">"ola" in "hola"</text>
+        <g fill="#161b22" stroke="#30363d" stroke-width="2"><rect x="20" y="60" width="80" height="80"/><rect x="100" y="60" width="80" height="80"/><rect x="180" y="60" width="80" height="80"/><rect x="260" y="60" width="80" height="80"/></g>
+        <rect x="100" y="60" width="240" height="80" fill="rgba(129,199,132,.14)" stroke="#81c784" stroke-width="3"/>
+        <g fill="#e6edf3" font-size="38"><text x="60" y="113">h</text><text x="140" y="113">o</text><text x="220" y="113">l</text><text x="300" y="113">a</text></g>
+        <text x="460" y="113" fill="#81c784" font-size="28">True</text>
+
+        <text x="20" y="200" fill="#8b949e" font-size="20" text-anchor="start">"alo" in "hola"</text>
+        <g fill="#161b22" stroke="#30363d" stroke-width="2"><rect x="20" y="220" width="80" height="80"/><rect x="100" y="220" width="80" height="80"/><rect x="180" y="220" width="80" height="80"/><rect x="260" y="220" width="80" height="80"/></g>
+        <g fill="#e6edf3" font-size="38"><text x="60" y="273">h</text><text x="140" y="273">o</text><text x="220" y="273">l</text><text x="300" y="273">a</text></g>
+        <text x="460" y="273" fill="#ef5350" font-size="28">False</text>
+        <text x="460" y="305" fill="#6e7681" font-size="16">tiene las letras, no el pedazo</text>
+      </g>
+    </svg>
+    <div>
+      <div class="card ac"><div class="ct">Lista</div><div class="cb"><code>3 in [1, 2, 3]</code> pregunta si <em>3 es uno de los elementos</em>.</div></div>
+      <div class="card ac" style="margin-top:1cqw"><div class="ct">Cadena</div><div class="cb"><code>"ola" in "hola"</code> pregunta si <em>"ola" aparece seguido</em> dentro de "hola". Sirve para buscar una palabra en un texto, y las listas no tienen nada parecido.</div></div>
+      <pre class="code sm" data-hl style="margin-top:1cqw">if letra in "aeiouáéíóú":
+    vocales += 1</pre>
+    </div>
+  </div>
+</section>
+
+<section class="slide a1">
+  <div class="lbl">La diferencia grande</div>
+  <h1>Las cadenas <em>no se pueden modificar</em></h1>
+  <div class="c2">
+    <div>
+      <pre class="code" data-hl>palabra = "hola"
+palabra[0] = "H"</pre>
+      <pre class="out"><span class="err">TypeError: 'str' object does not support item assignment</span></pre>
+      <p class="note">Toda operación sobre una cadena <b>construye una cadena nueva</b> y deja la original intacta. Para "cambiarla" se reasigna el nombre.</p>
+      <pre class="code sm" data-hl style="margin-top:.8cqw">mayuscula = palabra.upper()   # palabra sigue siendo "hola"
+palabra = palabra.upper()     # ahora el nombre apunta a "HOLA"</pre>
+    </div>
+    <svg class="fig" viewBox="0 0 560 400">
+      <defs><marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#4fc3f7"/></marker>
+      <marker id="ah2g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#484f58"/></marker></defs>
+      <text x="20" y="30" fill="#8b949e" font-size="17" letter-spacing="2">ANTES</text>
+      <g class="mono">
+        <rect x="20" y="50" width="150" height="50" rx="8" fill="#161b22" stroke="#30363d"/>
+        <text x="95" y="82" fill="#e6edf3" font-size="20" text-anchor="middle">palabra</text>
+        <path d="M172 75 H318" stroke="#4fc3f7" stroke-width="3" marker-end="url(#ah2)"/>
+        <rect x="320" y="50" width="200" height="50" rx="8" fill="#161b22" stroke="#4fc3f7"/>
+        <text x="420" y="82" fill="#a5d6ff" font-size="20" text-anchor="middle">"hola"</text>
+      </g>
+      <text x="20" y="175" fill="#8b949e" font-size="17" letter-spacing="2">DESPUÉS DE  palabra = palabra.upper()</text>
+      <g class="mono">
+        <rect x="20" y="205" width="150" height="50" rx="8" fill="#161b22" stroke="#30363d"/>
+        <text x="95" y="237" fill="#e6edf3" font-size="20" text-anchor="middle">palabra</text>
+        <rect x="320" y="205" width="200" height="50" rx="8" fill="#0d1117" stroke="#30363d" stroke-dasharray="6 5"/>
+        <text x="420" y="237" fill="#484f58" font-size="20" text-anchor="middle">"hola"</text>
+        <path d="M172 240 C240 260 250 315 318 320" stroke="#4fc3f7" stroke-width="3" fill="none" marker-end="url(#ah2)"/>
+        <rect x="320" y="295" width="200" height="50" rx="8" fill="#161b22" stroke="#4fc3f7"/>
+        <text x="420" y="327" fill="#a5d6ff" font-size="20" text-anchor="middle">"HOLA"</text>
+      </g>
+      <text x="420" y="378" fill="#6e7681" font-size="15" text-anchor="middle">"hola" no cambió: se quedó sin nombre</text>
+    </svg>
+  </div>
+</section>
+
+<section class="slide a1">
+  <div class="lbl">Por qué importa</div>
+  <h1>Sin la sorpresa de <em>los nombres compartidos</em></h1>
+  <div class="c2">
+    <div class="card bad">
+      <div class="ct">Lista · la clase pasada</div>
+      <pre class="code sm" data-hl>a = [1, 2, 3]
+b = a
+b.append(4)
+print(a)</pre>
+      <pre class="out sm">[1, 2, 3, 4]</pre>
+      <p class="cb" style="margin-top:.6cqw">Dos nombres, una sola lista. Cambiar por un nombre se ve por el otro.</p>
+    </div>
+    <div class="card ac">
+      <div class="ct">Cadena · hoy</div>
+      <pre class="code sm" data-hl>a = "hola"
+b = a
+b = b.upper()
+print(a)</pre>
+      <pre class="out sm">hola</pre>
+      <p class="cb" style="margin-top:.6cqw">Nadie puede cambiar <em>"hola"</em>. <code>b.upper()</code> fabrica otra cadena y <code>b</code> pasa a nombrarla.</p>
+    </div>
+  </div>
+  <p class="kick">Las cadenas se comportan como los números: <b>inmutables</b>. Un <code>int</code> tampoco se modifica, se reemplaza.</p>
+</section>
+
+<!-- ============================================================ 2. métodos -->
+<section class="slide a2 ctr">
+  <div class="lbl">Parte 2</div>
+  <h1 class="hero">Métodos <em>de cadena</em></h1>
+  <p class="sub">Funciones que trae la cadena y que se llaman con un punto detrás del valor. Ninguna la modifica.</p>
+</section>
+
+<section class="slide a2">
+  <div class="lbl">Los que vas a usar todo el tiempo</div>
+  <h1>Todos devuelven <em>algo nuevo</em></h1>
+  <table class="br">
+    <tr><th>Método</th><th>Qué devuelve</th><th>Ejemplo</th></tr>
+    <tr><td><code>s.lower()</code>, <code>s.upper()</code></td><td>la cadena en minúsculas o mayúsculas</td><td><code>"MatCom".lower()</code> → <code>"matcom"</code></td></tr>
+    <tr><td><code>s.strip()</code></td><td>sin espacios ni saltos al principio y al final</td><td><code>"  hola\n".strip()</code> → <code>"hola"</code></td></tr>
+    <tr><td><code>s.replace(a, b)</code></td><td>una copia con cada <code>a</code> cambiado por <code>b</code></td><td><code>"a,b".replace(",", " ")</code> → <code>"a b"</code></td></tr>
+    <tr><td><code>s.split()</code></td><td>la <b style="color:#ffb74d">lista</b> de palabras, separando por espacios</td><td><code>"un dos".split()</code> → <code>["un", "dos"]</code></td></tr>
+    <tr><td><code>sep.join(lista)</code></td><td>pega los elementos con ese separador</td><td><code>"-".join(["a", "b"])</code> → <code>"a-b"</code></td></tr>
+    <tr><td><code>s.find(t)</code></td><td>la posición de <code>t</code>, o <code>-1</code> si no está</td><td><code>"hola".find("la")</code> → <code>2</code></td></tr>
+    <tr><td><code>s.count(t)</code></td><td>cuántas veces aparece <code>t</code></td><td><code>"banana".count("a")</code> → <code>3</code></td></tr>
+    <tr><td><code>s.startswith(t)</code></td><td>si empieza con <code>t</code> (y <code>endswith</code>, si termina)</td><td><code>"foto.png".endswith(".png")</code> → <code>True</code></td></tr>
+  </table>
+</section>
+
+<section class="slide a2">
+  <div class="lbl">La pareja importante</div>
+  <h1><code>split</code> te devuelve <em>a la clase pasada</em></h1>
+  <svg class="fig" viewBox="0 0 1200 370">
+    <defs><marker id="ah3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ffb74d"/></marker></defs>
+    <g class="mono" text-anchor="middle">
+      <rect x="200" y="15" width="800" height="62" rx="10" fill="#161b22" stroke="#30363d"/>
+      <text x="600" y="56" fill="#a5d6ff" font-size="28">"En un lugar de la Mancha"</text>
+      <path d="M600 82 V128" stroke="#ffb74d" stroke-width="3" marker-end="url(#ah3)"/>
+      <text x="660" y="112" fill="#ffb74d" font-size="20" text-anchor="start">.split()</text>
+      <g fill="#161b22" stroke="#ffb74d" stroke-width="2">
+        <rect x="130" y="138" width="150" height="62" rx="6"/><rect x="290" y="138" width="150" height="62" rx="6"/><rect x="450" y="138" width="150" height="62" rx="6"/><rect x="610" y="138" width="150" height="62" rx="6"/><rect x="770" y="138" width="150" height="62" rx="6"/><rect x="930" y="138" width="150" height="62" rx="6"/>
+      </g>
+      <g fill="#e6edf3" font-size="24"><text x="205" y="177">"En"</text><text x="365" y="177">"un"</text><text x="525" y="177">"lugar"</text><text x="685" y="177">"de"</text><text x="845" y="177">"la"</text><text x="1005" y="177">"Mancha"</text></g>
+      <g fill="#6e7681" font-size="17"><text x="205" y="225">0</text><text x="365" y="225">1</text><text x="525" y="225">2</text><text x="685" y="225">3</text><text x="845" y="225">4</text><text x="1005" y="225">5</text></g>
+      <text x="80" y="177" fill="#8b949e" font-size="18">lista</text>
+      <path d="M600 240 V286" stroke="#ffb74d" stroke-width="3" marker-end="url(#ah3)"/>
+      <text x="660" y="270" fill="#ffb74d" font-size="20" text-anchor="start">"-".join(palabras)</text>
+      <rect x="200" y="296" width="800" height="62" rx="10" fill="#161b22" stroke="#30363d"/>
+      <text x="600" y="337" fill="#a5d6ff" font-size="28">"En-un-lugar-de-la-Mancha"</text>
+    </g>
+  </svg>
+  <p class="note">El separador va <b>delante</b>: <code>" ".join(lista)</code>, no <code>lista.join(" ")</code>. Partir en palabras, trabajar con la lista, volver a pegar: así se transforma un texto en Python.</p>
+</section>
+
+<section class="slide a2">
+  <span class="live"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M1 20h22"/></svg>En vivo · consola interactiva</span>
+  <h1><code>repr</code> enseña <em>dónde están los espacios</em></h1>
+  <div class="c2">
+    <div>
+      <pre class="code sm" data-hl>linea = "  En un lugar de la Mancha  "
+
+print(linea)
+print(repr(linea))
+print(repr(linea.strip()))
+print(linea.strip().lower())
+print(linea.count("a"))
+print(linea.find("lugar"))</pre>
+      <pre class="out sm hidden">  En un lugar de la Mancha
+'  En un lugar de la Mancha  '
+'En un lugar de la Mancha'
+en un lugar de la mancha
+4
+8</pre>
+    </div>
+    <div>
+      <ol class="steps">
+        <li>Imprime <code>linea</code> sin <code>repr</code>. <em>Los espacios del final no se ven.</em></li>
+        <li>Con <code>repr</code> aparecen las comillas y se ven los espacios.</li>
+        <li>Encadena <code>.strip().lower()</code>: cada método recibe la cadena nueva que devolvió el anterior.</li>
+        <li>Pregunta: ¿por qué <code>find("lugar")</code> da 8 y no 6? <em>Los dos espacios del principio.</em></li>
+        <li>Prueba <code>linea.split()</code> y <code>linea.split(" ")</code>. <em>El segundo deja cadenas vacías.</em></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section class="slide a2">
+  <div class="lbl">Para pensar · ejercicio 7b de las notas</div>
+  <h1>¿Cuántos pedazos <em>en cada caso</em>?</h1>
+  <div class="c2">
+    <div>
+      <pre class="code" data-hl>print(len("a,b,,c".split(",")))
+print(len("a b  c".split()))</pre>
+      <pre class="out hidden">4
+3</pre>
+    </div>
+    <div class="card ac">
+      <div class="ct">La regla</div>
+      <div class="cb"><code>split(",")</code> parte en <em>cada</em> coma, y entre dos comas seguidas queda una cadena vacía: <code>["a", "b", "", "c"]</code>.<br><br><code>split()</code> sin argumento trata cualquier tramo de espacios como un solo separador y nunca devuelve cadenas vacías: <code>["a", "b", "c"]</code>.</div>
+    </div>
+  </div>
+  <p class="note">Esa diferencia importa al leer un CSV, donde un campo vacío entre dos comas es un dato.</p>
+</section>
+
+<!-- ============================================================ 3. archivos -->
+<section class="slide a3 ctr">
+  <div class="lbl">Parte 3</div>
+  <h1 class="hero">Archivos</h1>
+  <p class="sub">El texto de verdad no se escribe a mano: vive en archivos.</p>
+</section>
+
+<section class="slide a3">
+  <div class="lbl">De disco a variable</div>
+  <h1><code>open</code> da un archivo; <code>read</code> da <em>una cadena</em></h1>
+  <svg class="fig" viewBox="0 0 1200 250">
+    <defs><marker id="ah4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#81c784"/></marker></defs>
+    <g text-anchor="middle">
+      <rect x="20" y="40" width="280" height="140" rx="12" fill="#161b22" stroke="#30363d" stroke-width="2"/>
+      <text x="160" y="80" fill="#8b949e" font-size="16" letter-spacing="2">EN EL DISCO</text>
+      <text x="160" y="120" fill="#e6edf3" font-size="26" class="mono">quijote.txt</text>
+      <text x="160" y="155" fill="#6e7681" font-size="18">1121 bytes</text>
+
+      <path d="M305 110 H425" stroke="#81c784" stroke-width="3" marker-end="url(#ah4)"/>
+      <text x="365" y="95" fill="#81c784" font-size="18" class="mono">open</text>
+
+      <rect x="430" y="40" width="320" height="140" rx="12" fill="#161b22" stroke="#81c784" stroke-width="2"/>
+      <text x="590" y="80" fill="#81c784" font-size="16" letter-spacing="2">OBJETO ARCHIVO</text>
+      <text x="590" y="120" fill="#e6edf3" font-size="26" class="mono">archivo</text>
+      <text x="590" y="155" fill="#6e7681" font-size="18">abierto, sabe por dónde va</text>
+
+      <path d="M755 110 H875" stroke="#81c784" stroke-width="3" marker-end="url(#ah4)"/>
+      <text x="815" y="95" fill="#81c784" font-size="18" class="mono">.read()</text>
+
+      <rect x="880" y="40" width="300" height="140" rx="12" fill="#161b22" stroke="#4fc3f7" stroke-width="2"/>
+      <text x="1030" y="80" fill="#4fc3f7" font-size="16" letter-spacing="2">str EN MEMORIA</text>
+      <text x="1030" y="120" fill="#e6edf3" font-size="26" class="mono">contenido</text>
+      <text x="1030" y="155" fill="#6e7681" font-size="18">1101 caracteres</text>
+      <text x="600" y="235" fill="#8b949e" font-size="19">1121 contra 1101: la diferencia la explica la codificación, dos diapositivas más adelante</text>
+    </g>
+  </svg>
+  <div class="c3">
+    <div class="card ac"><div class="ct"><code>"r"</code> · leer</div><div class="cb">El modo por defecto. Si el archivo no existe, <em>FileNotFoundError</em>.</div></div>
+    <div class="card bad"><div class="ct"><code>"w"</code> · escribir</div><div class="cb">Crea el archivo, y si ya existía <em>lo borra</em> antes de escribir.</div></div>
+    <div class="card ac"><div class="ct"><code>"a"</code> · agregar</div><div class="cb">Escribe al final de lo que ya había. No borra nada.</div></div>
+  </div>
+</section>
+
+<section class="slide a3">
+  <div class="lbl">La forma correcta de abrir</div>
+  <h1><code>with</code> cierra el archivo <em>aunque algo falle</em></h1>
+  <div class="c2">
+    <div>
+      <pre class="code" data-hl>with open("quijote.txt", encoding="utf-8") as archivo:
+    contenido = archivo.read()
+
+print(len(contenido))
+print(contenido[:60])</pre>
+      <pre class="out">1101
+En un lugar de la Mancha, de cuyo nombre no quiero acordarme</pre>
+      <p class="note">Se lee así: abre el archivo, llámalo <code>archivo</code> mientras dure el bloque, y ciérralo al salir. <code>contenido</code> sigue vivo después, porque es una variable normal.</p>
+    </div>
+    <svg class="fig" viewBox="0 0 520 380">
+      <defs><marker id="ah5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e7681"/></marker></defs>
+      <line x1="60" y1="30" x2="60" y2="350" stroke="#30363d" stroke-width="3"/>
+      <circle cx="60" cy="50" r="12" fill="#81c784"/>
+      <text x="90" y="56" fill="#e6edf3" font-size="21">se abre el archivo</text>
+      <rect x="40" y="95" width="440" height="140" rx="10" fill="rgba(129,199,132,.08)" stroke="#81c784" stroke-dasharray="6 5"/>
+      <text x="90" y="130" fill="#81c784" font-size="17" letter-spacing="2">BLOQUE INDENTADO</text>
+      <text x="90" y="168" fill="#e6edf3" font-size="20" class="mono">contenido = archivo.read()</text>
+      <text x="90" y="205" fill="#8b949e" font-size="17">si aquí ocurre un error, se salta al cierre</text>
+      <circle cx="60" cy="280" r="12" fill="#81c784"/>
+      <text x="90" y="286" fill="#e6edf3" font-size="21">se cierra, pase lo que pase</text>
+      <path d="M60 238 V262" stroke="#ef5350" stroke-width="3" stroke-dasharray="5 4" fill="none" marker-end="url(#ah5)"/>
+      <text x="90" y="340" fill="#6e7681" font-size="17">fuera del bloque, archivo está cerrado</text>
+    </svg>
+  </div>
+</section>
+
+<section class="slide a3">
+  <div class="lbl">La codificación</div>
+  <h1>Un archivo son <em>bytes</em>; la codificación dice qué letra es cada uno</h1>
+  <svg class="fig" viewBox="0 0 1200 330">
+    <g class="mono" text-anchor="middle">
+      <text x="100" y="62" fill="#8b949e" font-size="18">texto</text>
+      <g fill="#e6edf3" font-size="34"><text x="245" y="65">E</text><text x="355" y="65">s</text><text x="465" y="65">p</text><text x="575" y="65">a</text><text x="740" y="65" fill="#ffb74d">ñ</text><text x="905" y="65">a</text></g>
+
+      <text x="100" y="140" fill="#81c784" font-size="18">UTF-8</text>
+      <g fill="#161b22" stroke="#81c784" stroke-width="2"><rect x="200" y="100" width="90" height="62"/><rect x="310" y="100" width="90" height="62"/><rect x="420" y="100" width="90" height="62"/><rect x="530" y="100" width="90" height="62"/><rect x="640" y="100" width="95" height="62" stroke="#ffb74d"/><rect x="745" y="100" width="95" height="62" stroke="#ffb74d"/><rect x="860" y="100" width="90" height="62"/></g>
+      <g fill="#e6edf3" font-size="24"><text x="245" y="140">45</text><text x="355" y="140">73</text><text x="465" y="140">70</text><text x="575" y="140">61</text><text x="687" y="140" fill="#ffb74d">C3</text><text x="792" y="140" fill="#ffb74d">B1</text><text x="905" y="140">61</text></g>
+      <text x="1080" y="140" fill="#8b949e" font-size="17">7 bytes</text>
+
+      <text x="100" y="225" fill="#ffb74d" font-size="18">cp1252</text>
+      <g fill="#161b22" stroke="#6e7681" stroke-width="2"><rect x="200" y="185" width="90" height="62"/><rect x="310" y="185" width="90" height="62"/><rect x="420" y="185" width="90" height="62"/><rect x="530" y="185" width="90" height="62"/><rect x="692" y="185" width="95" height="62" stroke="#ffb74d"/><rect x="860" y="185" width="90" height="62"/></g>
+      <g fill="#e6edf3" font-size="24"><text x="245" y="225">45</text><text x="355" y="225">73</text><text x="465" y="225">70</text><text x="575" y="225">61</text><text x="740" y="225" fill="#ffb74d">F1</text><text x="905" y="225">61</text></g>
+      <text x="1080" y="225" fill="#8b949e" font-size="17">6 bytes</text>
+      <text x="600" y="300" fill="#8b949e" font-size="19">las letras sin tilde valen lo mismo en las dos tablas; la ñ, no</text>
+    </g>
+  </svg>
+</section>
+
+<section class="slide a3">
+  <div class="lbl">Cuando la tabla no es la correcta</div>
+  <h1>Los dos síntomas de <em>la codificación equivocada</em></h1>
+  <div class="c2">
+    <div class="card bad">
+      <div class="ct">Bytes UTF-8 leídos como cp1252</div>
+      <pre class="code sm" data-hl>open("quijote.txt", encoding="cp1252")</pre>
+      <pre class="out sm">años     →  aÃ±os
+salpicón →  salpicÃ³n</pre>
+      <p class="cb" style="margin-top:.6cqw">No hay error. Cada byte de la ñ se lee como una letra aparte: <em>C3</em> es Ã, <em>B1</em> es ±. El programa sigue con basura dentro.</p>
+    </div>
+    <div class="card bad">
+      <div class="ct">Bytes cp1252 leídos como UTF-8</div>
+      <pre class="code sm" data-hl>b"Espa\xf1a".decode("utf-8")</pre>
+      <pre class="out sm"><span class="err">UnicodeDecodeError: 'utf-8' codec can't decode
+byte 0xf1 in position 4: invalid continuation byte</span></pre>
+      <p class="cb" style="margin-top:.6cqw">Aquí sí se cae. <em>F1</em> no es una secuencia válida en UTF-8.</p>
+    </div>
+  </div>
+  <p class="kick">Escribe <code>encoding="utf-8"</code> <b>siempre</b>, aunque tu sistema lo tenga por defecto. El programa tiene que funcionar también en la computadora del profesor, y los sistemas viejos de esta universidad exportan en cp1252.</p>
+</section>
+
+<section class="slide a3">
+  <span class="live"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M1 20h22"/></svg>En vivo · terminal y Python</span>
+  <h1><code>wc</code> y <code>len</code> <em>no están de acuerdo</em></h1>
+  <div class="c2">
+    <div>
+      <pre class="code" data-hl># en la terminal, junto a quijote.txt
+$ wc quijote.txt</pre>
+      <pre class="out hidden">  17  196 1121 quijote.txt</pre>
+      <pre class="code" data-hl style="margin-top:1cqw">with open("quijote.txt", encoding="utf-8") as archivo:
+    contenido = archivo.read()
+
+print(len(contenido))
+print(len(contenido.encode("utf-8")))</pre>
+      <pre class="out hidden">1101
+1121</pre>
+    </div>
+    <div>
+      <ol class="steps">
+        <li>Corre <code>wc quijote.txt</code>: líneas, palabras, bytes. Anota 1121 en la pizarra.</li>
+        <li>En Python, <code>len(contenido)</code> da 1101. Pregunta de dónde salen los 20 de diferencia.</li>
+        <li>El fragmento tiene <em>20 letras con tilde o ñ</em> (á, í, ñ, ó, ú) y cada una ocupa 2 bytes en UTF-8. <code>len</code> cuenta caracteres; <code>wc -c</code>, bytes.</li>
+        <li>Abre con <code>encoding="cp1252"</code> e imprime <code>contenido[:300]</code>. <em>Las tildes salen rotas: <code>más</code> se lee <code>mÃ¡s</code>.</em></li>
+        <li>Es el ejercicio 2 de las notas: ya saben la respuesta, que lo programen.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section class="slide a3">
+  <div class="lbl">Leer línea por línea</div>
+  <h1>Un archivo se recorre con <code>for</code>, <em>una línea por vuelta</em></h1>
+  <div class="c2 wl">
+    <div>
+      <pre class="code sm" data-hl>with open("quijote.txt", encoding="utf-8") as archivo:
+    for numero, linea in enumerate(archivo, start=1):
+        if numero > 3:
+            break
+        print(numero, repr(linea[-4:]))</pre>
+      <pre class="out sm">1 'que\n'
+2 'lgo\n'
+3 's y\n'</pre>
+      <p class="note">Cada línea trae su <code>\n</code> al final. Por eso casi siempre se le hace <code>strip()</code> antes de usarla. Y no se carga el archivo entero en memoria, que importa cuando pesa gigas.</p>
+    </div>
+    <svg class="fig" viewBox="0 0 520 330">
+      <g class="mono" font-size="17">
+        <rect x="10" y="20" width="500" height="290" rx="10" fill="#161b22" stroke="#30363d"/>
+        <text x="40" y="62" fill="#6e7681">1</text><text x="75" y="62" fill="#e6edf3">En un lugar de la Mancha … que</text><text x="455" y="62" fill="#81c784">↵</text>
+        <text x="40" y="102" fill="#6e7681">2</text><text x="75" y="102" fill="#e6edf3">vivía un hidalgo de los de … y galgo</text><text x="455" y="102" fill="#81c784">↵</text>
+        <text x="40" y="142" fill="#6e7681">3</text><text x="75" y="142" fill="#e6edf3">corredor. Una olla de algo … duelos y</text><text x="455" y="142" fill="#81c784">↵</text>
+        <text x="40" y="182" fill="#484f58">4</text><text x="75" y="182" fill="#484f58">…</text>
+        <text x="40" y="262" fill="#484f58">17</text><text x="75" y="262" fill="#484f58">…</text><text x="455" y="262" fill="#484f58">↵</text>
+        <path d="M30 40 V155" stroke="#81c784" stroke-width="3"/>
+        <text x="260" y="222" fill="#8b949e" font-size="16" text-anchor="middle" font-family="system-ui">la vuelta 4 sale con break</text>
+      </g>
+    </svg>
+  </div>
+</section>
+
+<section class="slide a3">
+  <span class="live"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M1 20h22"/></svg>En vivo · archivo escribir.py</span>
+  <h1>El modo <code>"w"</code> <em>borra lo que había</em></h1>
+  <div class="c2">
+    <div>
+      <pre class="code sm" data-hl>with open("salida.txt", "w", encoding="utf-8") as archivo:
+    archivo.write("primera línea\n")
+    archivo.write("segunda línea\n")
+
+with open("salida.txt", encoding="utf-8") as archivo:
+    print(archivo.read())</pre>
+      <pre class="out sm">primera línea
+segunda línea
+</pre>
+      <p class="note"><code>write</code> no agrega el salto de línea: hay que ponerlo a mano.</p>
+    </div>
+    <div>
+      <ol class="steps">
+        <li>Ejecuta el programa y abre <code>salida.txt</code> en el editor.</li>
+        <li>Cambia el texto a <code>"otra cosa\n"</code>, borra la segunda línea y ejecuta de nuevo. <em>Lo anterior desapareció.</em></li>
+        <li>Cambia el modo a <code>"a"</code> y ejecuta dos veces. <em>Ahora se acumula.</em></li>
+        <li>Quita el <code>\n</code> de los <code>write</code>. <em>Todo sale pegado en una línea.</em></li>
+        <li>Pregunta: ¿qué pasa si escribo con <code>"w"</code> sobre <code>quijote.txt</code>? <em>No lo hagas en vivo.</em></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ 4. errores -->
+<section class="slide a4 ctr">
+  <div class="lbl">Parte 4</div>
+  <h1 class="hero">Cuando las cosas <em>salen mal</em></h1>
+  <p class="sub">Hasta hoy, cada error que hemos visto ha terminado el programa.</p>
+</section>
+
+<section class="slide a4">
+  <div class="lbl">El archivo que no existe</div>
+  <h1>La última línea del traceback dice <em>el tipo del error</em></h1>
+  <pre class="code" data-hl>with open("no-existe.txt", encoding="utf-8") as archivo:
+    print(archivo.read())</pre>
+  <svg class="fig" viewBox="0 0 1200 120" style="margin-top:1cqw">
+    <g class="mono">
+      <rect x="0" y="10" width="1200" height="60" rx="8" fill="#161b22" stroke="rgba(255,255,255,.18)" stroke-dasharray="6 5"/>
+      <text x="25" y="49" font-size="24"><tspan fill="#ff7b72" font-weight="700">FileNotFoundError</tspan><tspan fill="#c9d1d9">: [Errno 2] No such file or directory: 'no-existe.txt'</tspan></text>
+      <path d="M25 80 H262" stroke="#f48fb1" stroke-width="3"/>
+      <text x="25" y="108" fill="#f48fb1" font-size="18" font-family="system-ui">el tipo, que es lo que nombra except</text>
+      <path d="M290 80 H1050" stroke="#6e7681" stroke-width="3"/>
+      <text x="640" y="108" fill="#8b949e" font-size="18" font-family="system-ui">el mensaje: para el humano</text>
+    </g>
+  </svg>
+  <p class="kick">Si el usuario escribe mal el nombre del archivo, lo correcto es <b>decírselo y seguir</b>, no volcarle un traceback en la pantalla.</p>
+</section>
+
+<section class="slide a4">
+  <div class="lbl">try y except</div>
+  <h1>El programa <em>atiende</em> el error y continúa</h1>
+  <div class="c2">
+    <div>
+      <pre class="code sm" data-hl>try:
+    with open("no-existe.txt", encoding="utf-8") as archivo:
+        contenido = archivo.read()
+    print(f"El archivo tiene {len(contenido)} caracteres")
+except FileNotFoundError:
+    print("No encontré ese archivo")
+
+print("y el programa sigue")</pre>
+      <pre class="out sm">No encontré ese archivo
+y el programa sigue</pre>
+    </div>
+    <svg class="fig" viewBox="0 0 520 430">
+      <defs>
+        <marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#81c784"/></marker>
+        <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#f48fb1"/></marker>
+        <marker id="ax" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ef5350"/></marker>
+      </defs>
+      <g text-anchor="middle" font-size="18">
+        <rect x="150" y="10" width="220" height="56" rx="10" fill="#161b22" stroke="#e6edf3"/>
+        <text x="260" y="44" fill="#e6edf3" class="mono">bloque try</text>
+        <path d="M200 66 V330" stroke="#81c784" stroke-width="3" marker-end="url(#ag)"/>
+        <text x="130" y="200" fill="#81c784" font-size="16">sin error</text>
+        <path d="M320 66 V112" stroke="#f48fb1" stroke-width="3" marker-end="url(#ar)"/>
+        <text x="395" y="96" fill="#f48fb1" font-size="16">ocurre un error</text>
+        <polygon points="320,118 440,170 320,222 200,170" fill="#161b22" stroke="#f48fb1" transform="translate(0,0)"/>
+        <text x="320" y="166" fill="#e6edf3" font-size="16">¿el tipo coincide</text>
+        <text x="320" y="186" fill="#e6edf3" font-size="16">con el except?</text>
+        <path d="M320 222 V262" stroke="#f48fb1" stroke-width="3" marker-end="url(#ar)"/>
+        <text x="345" y="248" fill="#f48fb1" font-size="15" text-anchor="start">sí</text>
+        <rect x="250" y="266" width="160" height="50" rx="10" fill="#161b22" stroke="#f48fb1"/>
+        <text x="330" y="297" fill="#e6edf3" class="mono" font-size="17">except</text>
+        <path d="M330 316 V330 H215" stroke="#f48fb1" stroke-width="3" fill="none" marker-end="url(#ar)"/>
+        <path d="M440 170 H500 V400" stroke="#ef5350" stroke-width="2.5" stroke-dasharray="6 5" fill="none" marker-end="url(#ax)"/>
+        <text x="470" y="158" fill="#ef5350" font-size="15">no</text>
+        <text x="440" y="420" fill="#ef5350" font-size="16">el programa muere</text>
+        <rect x="80" y="336" width="250" height="56" rx="10" fill="#161b22" stroke="#81c784"/>
+        <text x="205" y="370" fill="#81c784" font-size="17">el programa sigue</text>
+      </g>
+    </svg>
+  </div>
+</section>
+
+<section class="slide a4">
+  <div class="lbl">Cada problema tiene su tipo</div>
+  <h1>Ya los conoces <em>casi todos</em></h1>
+  <table class="br">
+    <tr><th>Error</th><th>Cuándo</th><th>Lo vimos en</th></tr>
+    <tr><td><code>ValueError</code></td><td><code>int("hola")</code>: el texto no representa un número</td><td>conferencia 1, con la raíz de un número negativo</td></tr>
+    <tr><td><code>ZeroDivisionError</code></td><td>dividir entre cero</td><td>conferencia 1, la calculadora con <code>a = 0</code></td></tr>
+    <tr><td><code>NameError</code></td><td>usar una variable que no existe</td><td>conferencia 1, con <code>radio</code> sin definir</td></tr>
+    <tr><td><code>IndexError</code></td><td><code>lista[10]</code> en una lista de tres elementos</td><td>conferencia 4</td></tr>
+    <tr><td><code>TypeError</code></td><td><code>"5" + 3</code>, o modificar una cadena</td><td>hoy, parte 1</td></tr>
+    <tr><td><code>FileNotFoundError</code></td><td>abrir un archivo que no está</td><td>hoy</td></tr>
+  </table>
+  <p class="note">Un <code>try</code> puede llevar varios <code>except</code>, uno por tipo. Se ejecuta el primero que coincide.</p>
+</section>
+
+<section class="slide a4">
+  <span class="live"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M1 20h22"/></svg>En vivo · una función que atiende su error</span>
+  <h1><code>leer_entero</code> <em>no se muere</em></h1>
+  <div class="c2">
+    <div>
+      <pre class="code sm" data-hl>def leer_entero(texto):
+    """Convierte texto a entero. Devuelve None si no se puede."""
+    try:
+        return int(texto)
+    except ValueError:
+        print(f"'{texto}' no es un número entero")
+        return None
+
+print(leer_entero("42"))
+print(leer_entero("3.5"))
+print(leer_entero("hola"))</pre>
+      <pre class="out sm hidden">42
+'3.5' no es un número entero
+None
+'hola' no es un número entero
+None</pre>
+    </div>
+    <div>
+      <ol class="steps">
+        <li>Escribe primero la función <em>sin</em> <code>try</code> y llámala con <code>"hola"</code>. Lee el traceback con el aula.</li>
+        <li>Copia de la última línea el nombre <code>ValueError</code> y envuelve el <code>int</code>.</li>
+        <li>Pregunta: ¿por qué <code>"3.5"</code> falla? <em><code>int</code> no acepta texto con punto.</em></li>
+        <li>Pide un número con <code>input</code> en un ciclo hasta que sea válido. Es el ejercicio 6.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section class="slide a4">
+  <span class="live"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M1 20h22"/></svg>En vivo · el error que se esconde</span>
+  <h1><code>except:</code> a secas <em>atrapa también tus fallos</em></h1>
+  <div class="c2">
+    <div class="card bad">
+      <div class="ct">Con un error de tecleo</div>
+      <pre class="code sm" data-hl>texto = "42"
+try:
+    numero = int(textp)    # textp, no texto
+except:
+    print("no es un número")</pre>
+      <pre class="out sm">no es un número</pre>
+      <p class="cb" style="margin-top:.6cqw">"42" sí es un número. El error real era un <em>NameError</em> y el <code>except</code> a secas lo tapó con un mensaje falso.</p>
+    </div>
+    <div class="card ac">
+      <div class="ct">Nombrando el error</div>
+      <pre class="code sm" data-hl>texto = "42"
+try:
+    numero = int(textp)
+except ValueError:
+    print("no es un número")</pre>
+      <pre class="out sm"><span class="err">NameError: name 'textp' is not defined. Did you mean: 'texto'?</span></pre>
+      <p class="cb" style="margin-top:.6cqw">El fallo de programación se ve, y Python hasta sugiere el arreglo. Nombra siempre el error que sabes manejar.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ 5. proyecto -->
+<section class="slide a5 ctr">
+  <div class="lbl">Parte 5</div>
+  <h1 class="hero">El proyecto: <em>contar las palabras</em></h1>
+  <p class="sub">Cuántas palabras tiene el archivo, cuál es la más larga y el promedio de letras.</p>
+</section>
+
+<section class="slide a5">
+  <div class="lbl">El primer problema</div>
+  <h1><code>split</code> a secas deja <em>la puntuación pegada</em></h1>
+  <svg class="fig" viewBox="0 0 1200 250">
+    <defs><marker id="ah6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ce93d8"/></marker></defs>
+    <g class="mono" text-anchor="middle">
+      <text x="600" y="35" fill="#a5d6ff" font-size="24">"En un lugar de la Mancha, ¡de cuyo nombre...!"</text>
+      <text x="300" y="85" fill="#ef5350" font-size="17">.split()</text>
+      <g font-size="20" fill="#e6edf3">
+        <rect x="40" y="100" width="520" height="56" rx="8" fill="#161b22" stroke="#ef5350"/>
+        <text x="300" y="135">… "la"  <tspan fill="#ef5350">"Mancha,"</tspan>  <tspan fill="#ef5350">"¡de"</tspan>  …</text>
+      </g>
+      <text x="900" y="85" fill="#ce93d8" font-size="17">limpiar(…).split()</text>
+      <g font-size="20" fill="#e6edf3">
+        <rect x="640" y="100" width="520" height="56" rx="8" fill="#161b22" stroke="#ce93d8"/>
+        <text x="900" y="135">… "la"  <tspan fill="#ce93d8">"mancha"</tspan>  <tspan fill="#ce93d8">"de"</tspan>  …</text>
+      </g>
+      <text x="300" y="200" fill="#8b949e" font-size="18" font-family="system-ui">"Mancha," y "Mancha" serían dos palabras distintas</text>
+      <text x="900" y="200" fill="#8b949e" font-size="18" font-family="system-ui">minúsculas, y cada signo cambiado por un espacio</text>
+    </g>
+  </svg>
+  <pre class="code sm" data-hl>SIGNOS = ".,;:¿?¡!()«»\"'—-"
+
+
+def limpiar(texto):
+    """Devuelve el texto en minúsculas y sin signos de puntuación."""
+    texto = texto.lower()
+    for signo in SIGNOS:
+        texto = texto.replace(signo, " ")
+    return texto</pre>
+</section>
+
+<section class="slide a5">
+  <div class="lbl">Cómo se reparte el trabajo</div>
+  <h1>Cuatro funciones, <em>cada una se explica en una frase</em></h1>
+  <svg class="fig" viewBox="0 0 1200 360">
+    <defs><marker id="ah7" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e7681"/></marker></defs>
+    <g text-anchor="middle">
+      <rect x="470" y="10" width="260" height="60" rx="10" fill="#1c1626" stroke="#ce93d8" stroke-width="2"/>
+      <text x="600" y="47" fill="#ce93d8" font-size="22" class="mono">programa principal</text>
+
+      <path d="M520 72 L230 140" stroke="#6e7681" stroke-width="2.5" marker-end="url(#ah7)"/>
+      <path d="M600 72 L600 140" stroke="#6e7681" stroke-width="2.5" marker-end="url(#ah7)"/>
+      <path d="M680 72 L970 140" stroke="#6e7681" stroke-width="2.5" marker-end="url(#ah7)"/>
+
+      <rect x="80" y="145" width="300" height="100" rx="10" fill="#161b22" stroke="#81c784" stroke-width="2"/>
+      <text x="230" y="185" fill="#e6edf3" font-size="21" class="mono">palabras_de(ruta)</text>
+      <text x="230" y="218" fill="#8b949e" font-size="16">abre, lee, limpia y parte</text>
+
+      <rect x="450" y="145" width="300" height="100" rx="10" fill="#161b22" stroke="#4fc3f7" stroke-width="2"/>
+      <text x="600" y="185" fill="#e6edf3" font-size="21" class="mono">mas_larga(palabras)</text>
+      <text x="600" y="218" fill="#8b949e" font-size="16">el mejor visto hasta ahora</text>
+
+      <rect x="820" y="145" width="300" height="100" rx="10" fill="#161b22" stroke="#4fc3f7" stroke-width="2"/>
+      <text x="970" y="178" fill="#e6edf3" font-size="19" class="mono">promedio_de_letras</text>
+      <text x="970" y="203" fill="#e6edf3" font-size="19" class="mono">(palabras)</text>
+      <text x="970" y="230" fill="#8b949e" font-size="16">el acumulador de siempre</text>
+
+      <path d="M230 250 V285" stroke="#6e7681" stroke-width="2.5" marker-end="url(#ah7)"/>
+      <rect x="80" y="290" width="300" height="60" rx="10" fill="#161b22" stroke="#ffb74d" stroke-width="2"/>
+      <text x="230" y="327" fill="#e6edf3" font-size="21" class="mono">limpiar(texto)</text>
+      <text x="790" y="300" fill="#6e7681" font-size="17">mas_larga y promedio_de_letras reciben la lista,</text>
+      <text x="790" y="326" fill="#6e7681" font-size="17">no saben que vino de un archivo</text>
+    </g>
+  </svg>
+</section>
+
+<section class="slide a5">
+  <div class="lbl">El código</div>
+  <h1>Con las piezas de hoy, <em>sale corto</em></h1>
+  <div class="c2">
+    <pre class="code xs" data-hl>def palabras_de(ruta):
+    """Devuelve la lista de palabras de un archivo de texto."""
+    with open(ruta, encoding="utf-8") as archivo:
+        return limpiar(archivo.read()).split()
+
+
+def mas_larga(palabras):
+    """Devuelve la palabra más larga de la lista."""
+    mayor = palabras[0]
+    for palabra in palabras:
+        if len(palabra) > len(mayor):
+            mayor = palabra
+    return mayor
+
+
+def promedio_de_letras(palabras):
+    """Devuelve el promedio de letras por palabra."""
+    letras = 0
+    for palabra in palabras:
+        letras += len(palabra)
+    return letras / len(palabras)</pre>
+    <div>
+      <pre class="code xs" data-hl>palabras = palabras_de("quijote.txt")
+
+print(f"{len(palabras)} palabras")
+print(f"la más larga es '{mas_larga(palabras)}'")
+print(f"promedio de {promedio_de_letras(palabras):.2f} letras")</pre>
+      <pre class="out sm">196 palabras
+la más larga es 'entresemana'
+promedio de 4.46 letras</pre>
+      <p class="note"><code>mas_larga</code> es el acumulador de la clase pasada con <code>len(palabra)</code> en lugar del valor. Guardar el mejor visto hasta ahora es un patrón que vas a escribir cien veces.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide a5">
+  <span class="live"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M1 20h22"/></svg>En vivo · archivo contar.py, el proyecto entero</span>
+  <h1>Construirlo, <em>romperlo</em> y arreglarlo</h1>
+  <div class="c2">
+    <ol class="steps">
+      <li>Crea <code>contar.py</code> junto a <code>quijote.txt</code>. Empieza con <code>palabras_de</code> sin limpiar e imprime las 20 primeras palabras. <em>Aparecen "Mancha," y "acordarme,".</em></li>
+      <li>Escribe <code>limpiar</code> y pruébala sola sobre una frase con signos.</li>
+      <li>Agrega <code>mas_larga</code> y <code>promedio_de_letras</code>. <em>196 palabras, "entresemana", 4.46.</em></li>
+      <li>Cambia la ruta fija por <code>input("Archivo: ")</code> y escribe mal el nombre. <em>FileNotFoundError.</em></li>
+      <li>Envuelve solo <code>palabras_de(ruta)</code> en el <code>try</code> y pon el reporte en el <code>else</code>.</li>
+      <li>Rómpelo otra vez con un archivo vacío. <em><code>palabras[0]</code> da IndexError: déjalo como pregunta.</em></li>
+    </ol>
+    <div>
+      <pre class="code sm" data-hl>ruta = input("Archivo: ")
+
+try:
+    palabras = palabras_de(ruta)
+except FileNotFoundError:
+    print(f"No encontré el archivo {ruta}")
+else:
+    print(f"{len(palabras)} palabras")
+    print(f"la más larga es '{mas_larga(palabras)}'")</pre>
+      <p class="note">El <code>else</code> de un <code>try</code> corre solo si no hubo error. Así dentro del <code>try</code> queda únicamente la línea que puede fallar: <b>cuanto más pequeño el try, más claro qué error atiendes.</b></p>
+    </div>
+  </div>
+</section>
+
+<section class="slide a5">
+  <div class="lbl">Lo que hoy no podemos responder</div>
+  <h1>¿Cuántas veces aparece <em>cada palabra</em>?</h1>
+  <div class="c2 wl">
+    <div>
+      <p class="sub">Con dos listas en paralelo se puede, pero cada palabra nueva obliga a recorrer la lista entera para ver si ya estaba.</p>
+      <pre class="code sm" data-hl>palabras_vistas = ["en", "un", "lugar", "de", "la"]
+conteos         = [  5,    3,      1,   20,   4]
+
+i = palabras_vistas.index("de")   # busca de una en una
+conteos[i] += 1</pre>
+      <p class="kick">La estructura que resuelve eso es el <b>diccionario</b>, y es la clase que viene: la frecuencia de cada palabra de este mismo texto, y las diez más comunes.</p>
+    </div>
+    <svg class="fig" viewBox="0 0 460 360">
+      <g class="mono" font-size="18" text-anchor="middle">
+        <text x="120" y="30" fill="#8b949e" font-size="15" font-family="system-ui">palabras_vistas</text>
+        <text x="330" y="30" fill="#8b949e" font-size="15" font-family="system-ui">conteos</text>
+        <g fill="#161b22" stroke="#30363d"><rect x="40" y="45" width="160" height="50"/><rect x="40" y="95" width="160" height="50"/><rect x="40" y="145" width="160" height="50"/><rect x="40" y="195" width="160" height="50" stroke="#ce93d8"/><rect x="40" y="245" width="160" height="50"/>
+        <rect x="280" y="45" width="100" height="50"/><rect x="280" y="95" width="100" height="50"/><rect x="280" y="145" width="100" height="50"/><rect x="280" y="195" width="100" height="50" stroke="#ce93d8"/><rect x="280" y="245" width="100" height="50"/></g>
+        <g fill="#e6edf3"><text x="120" y="77">"en"</text><text x="120" y="127">"un"</text><text x="120" y="177">"lugar"</text><text x="120" y="227" fill="#ce93d8">"de"</text><text x="120" y="277">"la"</text>
+        <text x="330" y="77">5</text><text x="330" y="127">3</text><text x="330" y="177">1</text><text x="330" y="227" fill="#ce93d8">20</text><text x="330" y="277">4</text></g>
+        <path d="M200 220 H280" stroke="#ce93d8" stroke-width="2" stroke-dasharray="5 4"/>
+        <text x="230" y="335" fill="#6e7681" font-size="15" font-family="system-ui">la misma posición i en las dos listas</text>
+      </g>
+    </svg>
+  </div>
+</section>
+
+<!-- ============================================================ cierre -->
+<section class="slide a1">
+  <div class="lbl">Resumen</div>
+  <h1>Lo que te llevas <em>de hoy</em></h1>
+  <ul class="pts">
+    <li>Una cadena es una secuencia: <code>len</code>, índices desde cero y negativos, rebanadas y <code>for</code>, igual que una lista.</li>
+    <li>En una cadena, <code>in</code> busca un pedazo, no solo un carácter.</li>
+    <li>Las cadenas son <strong>inmutables</strong>. Todo método devuelve una cadena nueva y deja la original intacta.</li>
+    <li><code>split</code> convierte texto en lista de palabras; <code>join</code> hace lo contrario.</li>
+    <li>Los archivos se abren con <code>with open(ruta, encoding="utf-8")</code>, que los cierra solo.</li>
+    <li>El modo <code>"w"</code> borra lo que había. Recorrer un archivo con <code>for</code> da una línea por vuelta, con su <code>\n</code>.</li>
+    <li><code>try</code> y <code>except</code> dejan que el programa atienda un error en vez de morirse. Nombra siempre el error concreto.</li>
+  </ul>
+</section>
+
+<section class="slide a2">
+  <div class="lbl">Ejercicios · están completos en las notas</div>
+  <h1>Para la clase práctica</h1>
+  <div class="c2">
+    <ul class="pts sm">
+      <li><code>es_palindromo(frase)</code>, que acepte "Dábale arroz a la zorra el abad".</li>
+      <li><code>contar_lineas</code>, <code>contar_palabras</code> y <code>contar_caracteres</code>, comparados con <code>wc</code>. Explica la diferencia.</li>
+      <li><code>capitalizar(frase)</code> sin <code>title</code> ni <code>capitalize</code>: <code>split</code>, un ciclo y <code>join</code>.</li>
+      <li>Escribir <code>quijote-numerado.txt</code> con cada línea precedida de su número.</li>
+    </ul>
+    <ul class="pts sm">
+      <li><code>palabras_largas(ruta, minimo=8)</code>: distintas, sin repeticiones, en orden alfabético.</li>
+      <li>Sumar números leídos hasta una línea vacía, sobreviviendo a <code>hola</code>, <code>3.5</code> y <code>--</code>.</li>
+      <li>Sin ejecutar: qué imprimen tres programas cortos. Uno ya lo vimos hoy.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="slide a0">
+  <div class="lbl" style="color:#ef5350">Para el profesor · guion de demos</div>
+  <h1>Los siete momentos <em style="color:#ef5350">en la laptop</em></h1>
+  <table class="br" id="guion"></table>
+  <p class="note">Todo corre en la carpeta de la conferencia, junto a <code>quijote.txt</code>. Pulsa el número de la diapositiva y Enter para saltar a ella.</p>
+</section>
+
+<div id="bar"></div>
+<div id="foot">Programación · Conferencia 5</div>
+<div id="num"></div>
+<div id="help"><div class="box">
+  <kbd>→</kbd> <kbd>Espacio</kbd> <kbd>RePág</kbd> siguiente · <kbd>←</kbd> anterior<br>
+  <kbd>R</kbd> revela las salidas ocultas · <kbd>V</kbd> salta a la próxima demo en vivo<br>
+  número + <kbd>Enter</kbd> va a esa diapositiva · <kbd>Inicio</kbd> <kbd>Fin</kbd><br>
+  <kbd>F</kbd> pantalla completa · <kbd>?</kbd> esta ayuda
+</div></div>
+</div>
+
+<script>
+// resaltado mínimo de Python
+const KW = /\b(def|return|for|in|if|elif|else|try|except|with|as|while|break|continue|not|and|or|None|True|False|import|from)\b/;
+const BI = /\b(print|len|open|int|float|str|input|repr|enumerate|range|sorted|list)\b/;
+function hl(src) {
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const re = /(#[^\n]*)|([fb]?"""[\s\S]*?"""|[fb]?"(?:[^"\\\n]|\\.)*"|[fb]?'(?:[^'\\\n]|\\.)*')|(\b[A-Za-z_]\w*\b)|(\b\d+(?:\.\d+)?\b)|(\$ [^\n]*)/g;
+  let out = '', last = 0, m;
+  while ((m = re.exec(src))) {
+    out += esc(src.slice(last, m.index));
+    const t = esc(m[0]);
+    if (m[1] || m[5]) out += `<span class="cm">${t}</span>`;
+    else if (m[2]) out += `<span class="st">${t}</span>`;
+    else if (m[3]) {
+      if (KW.test(m[3]) && m[3].match(KW)[0] === m[3]) out += `<span class="kw">${t}</span>`;
+      else if (BI.test(m[3]) && m[3].match(BI)[0] === m[3]) out += `<span class="bi">${t}</span>`;
+      else if (/^\s*\(/.test(src.slice(re.lastIndex)) && src.slice(Math.max(0, m.index - 4), m.index) === 'def ') out += `<span class="fn">${t}</span>`;
+      else out += t;
+    }
+    else if (m[4]) out += `<span class="nu">${t}</span>`;
+    last = re.lastIndex;
+  }
+  return out + esc(src.slice(last));
+}
+document.querySelectorAll('pre[data-hl]').forEach(p => { p.innerHTML = hl(p.textContent); });
+
+const slides = [...document.querySelectorAll('.slide')];
+const bar = document.getElementById('bar'), num = document.getElementById('num'), help = document.getElementById('help');
+let cur = 0, typed = '';
+
+// guion de demos, construido a partir de las diapositivas marcadas
+const guion = document.getElementById('guion');
+guion.innerHTML = '<tr><th>Diap.</th><th>Dónde</th><th>Qué se muestra</th></tr>' +
+  slides.map((s, i) => [s, i]).filter(([s]) => s.querySelector('.live')).map(([s, i]) => {
+    const where = s.querySelector('.live').textContent.replace(/^En vivo · /, '');
+    return `<tr><td><a href="#${i + 1}" style="color:#ef5350;font-weight:700;text-decoration:none">${i + 1}</a></td><td>${where}</td><td>${s.querySelector('h1').innerHTML}</td></tr>`;
+  }).join('');
+
+function go(n) {
+  n = Math.max(0, Math.min(slides.length - 1, n));
+  slides.forEach((s, i) => { s.classList.toggle('active', i === n); s.classList.toggle('prev', i < n); });
+  cur = n;
+  bar.style.width = ((n + 1) / slides.length * 100) + '%';
+  bar.style.background = getComputedStyle(slides[n]).getPropertyValue('--ac');
+  num.textContent = `${n + 1} / ${slides.length}`;
+  if (location.hash !== '#' + (n + 1)) history.replaceState(null, '', '#' + (n + 1));
+}
+function reveal() {
+  const hidden = slides[cur].querySelector('pre.out.hidden');
+  if (hidden) { hidden.classList.remove('hidden'); return true; }
+  return false;
+}
+document.querySelectorAll('pre.out.hidden').forEach(p => p.addEventListener('click', e => { e.stopPropagation(); p.classList.remove('hidden'); }));
+
+document.addEventListener('keydown', e => {
+  if (e.key >= '0' && e.key <= '9') { typed += e.key; return; }
+  if (e.key === 'Enter' && typed) { go(parseInt(typed, 10) - 1); typed = ''; return; }
+  typed = '';
+  if (['ArrowRight', ' ', 'PageDown', 'ArrowDown'].includes(e.key)) { e.preventDefault(); go(cur + 1); }
+  else if (['ArrowLeft', 'PageUp', 'ArrowUp', 'Backspace'].includes(e.key)) { e.preventDefault(); go(cur - 1); }
+  else if (e.key === 'Home') go(0);
+  else if (e.key === 'End') go(slides.length - 1);
+  else if (e.key === 'r' || e.key === 'R') reveal();
+  else if (e.key === 'v' || e.key === 'V') {
+    const next = slides.findIndex((s, i) => i > cur && s.querySelector('.live'));
+    if (next >= 0) go(next);
+  }
+  else if (e.key === 'f' || e.key === 'F') { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); }
+  else if (e.key === '?') help.classList.toggle('on');
+  else if (e.key === 'Escape') help.classList.remove('on');
+});
+document.getElementById('deck').addEventListener('click', e => {
+  if (e.target.closest('a')) return;
+  const r = e.currentTarget.getBoundingClientRect();
+  go(e.clientX - r.left > r.width / 3 ? cur + 1 : cur - 1);
+});
+window.addEventListener('hashchange', () => go(parseInt(location.hash.slice(1), 10) - 1 || 0));
+go(parseInt(location.hash.slice(1), 10) - 1 || 0);
+</script>
+</body>
+</html>
