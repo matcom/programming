@@ -392,14 +392,26 @@ insercion(notas)
 print(notas)
 ```
 
-El `while` tiene dos condiciones, y el orden importa por una regla de `and` que no
+El `while` tiene dos condiciones, y su orden tiene que ver con una regla de `and` que no
 habíamos necesitado hasta ahora: si la primera condición es falsa, Python **no evalúa la
 segunda**, porque el resultado ya es falso sea lo que sea la segunda. Se llama
-**evaluación en cortocircuito**, y `or` hace lo mismo cuando la primera es verdadera. Aquí
-es lo que nos salva: cuando `j` llega a `-1`, `j >= 0` es falsa y nunca se mira
-`lista[-1]`, que en Python no daría error sino el último elemento de la lista, y el
-resultado sería falso sin ningún aviso. Con las dos condiciones en el orden contrario,
-el programa estaría mal.
+**evaluación en cortocircuito**, y `or` hace lo mismo cuando la primera es verdadera. Aquí,
+cuando `j` llega a `-1`, `j >= 0` es falsa y nunca se mira `lista[-1]`. En Python esa
+lectura no daría error: `lista[-1]` es el último elemento de la lista, que no tiene nada
+que ver con el hueco que buscamos. Con las dos condiciones en el orden contrario la
+función seguiría ordenando bien, pero por casualidad: después de mirar ese elemento que
+no viene al caso, `j >= 0` cortaría el ciclo de todos modos. En otros ciclos el orden
+decide si el programa funciona. Esta búsqueda se detiene en `x` o al final de la lista:
+
+```python
+i = 0
+while i < len(lista) and lista[i] != x:
+    i += 1
+```
+
+Con las condiciones al revés, cuando `x` no está, `i` llega a `len(lista)` y
+`lista[i] != x` se evalúa antes de preguntar si `i` es válido: `IndexError`. Por costumbre,
+la condición que protege el índice va primero.
 
 ```{python echo=false output=asis continue}
 def _insercion_con_historial(lista):
