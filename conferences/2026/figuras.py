@@ -523,3 +523,75 @@ def lineas(xs, series, unidad="s", ident="lineas", pie=""):
         for y, nombre, color in finales:
             _txt(nombre, ancho + 8, y, color, PIE, ancla="left")
     return _figura(canvas, ident, pie)
+
+
+# --------------------------------------------------------------------------
+# conferencia 9: recursión
+# --------------------------------------------------------------------------
+
+def escalera(pasos, ident="escalera", pie=""):
+    """La pila de llamadas como una escalera. `pasos` es [(nivel, llamada,
+    devuelve)], en el orden en que se hicieron las llamadas, tal como los guardó
+    la función instrumentada. Cada llamada baja un escalón; lo que devuelve sube
+    por la derecha."""
+    sangria, paso, alto = 22.0, 28.0, 20.0
+    ancho = max(len(ll) for _, ll, _ in pasos) * 6.2 + 20
+    with Canvas() as canvas:
+        for k, (nivel, llamada, devuelve) in enumerate(pasos):
+            x, y = nivel * sangria, k * paso
+            _caja(x, y, ancho, alto, ACENTO, relleno=0.08, grosor=1.0)
+            _codigo(llamada, x + 8, y + alto / 2, TINTA, ancla="left")
+            if k + 1 < len(pasos):
+                Line(Point(x + 10, y + alto), Point(x + 10, y + paso + alto / 2),
+                     stroke=ACENTO, width=0.9)
+                Line(Point(x + 10, y + paso + alto / 2),
+                     Point(x + sangria, y + paso + alto / 2), stroke=ACENTO,
+                     width=0.9)
+            dx = x + ancho + 14
+            _codigo(f"→ {devuelve}", dx, y + alto / 2, CALIDO, ancla="left")
+        fondo = len(pasos) * paso
+        _txt("las llamadas bajan", -6, fondo / 2 - 8, APAGADO, PIE, ancla="right")
+        _txt("los valores suben", -6, fondo / 2 + 6, CALIDO, PIE, ancla="right")
+    return _figura(canvas, ident, pie)
+
+
+def _hojas(nodo):
+    _, hijos = nodo
+    return 1 if not hijos else sum(_hojas(h) for h in hijos)
+
+
+def arbol(raiz, columna=50.0, ident="arbol", pie="", por_nivel=True,
+          resaltar=None):
+    """Árbol de llamadas. Cada nodo es (etiqueta, [hijos]), construido por la
+    función instrumentada mientras corría. `resaltar` es un conjunto de
+    etiquetas que van en color de alarma, para las llamadas repetidas.
+    A la derecha, cuántas llamadas hay en cada nivel."""
+    fila = 36.0
+    niveles = {}
+    resaltar = resaltar or set()
+    with Canvas() as canvas:
+        def colocar(nodo, x0, nivel):
+            etiqueta, hijos = nodo
+            ancho = _hojas(nodo) * columna
+            cx, cy = x0 + ancho / 2, nivel * fila
+            niveles[nivel] = niveles.get(nivel, 0) + 1
+            x = x0
+            for h in hijos:
+                hx = colocar(h, x, nivel + 1)
+                Line(Point(cx, cy + 7), Point(hx, cy + fila - 7), stroke=REGLA.darker(0.3),
+                     width=0.9)
+                x += _hojas(h) * columna
+            color = ALARMA if etiqueta in resaltar else OSCURO
+            w = len(etiqueta) * 5.6 + 10
+            Rect(w, 15, fill=hex("#ffffff"), stroke=color, width=1.0).move_to(
+                Point(cx, cy), anchor="center")
+            _codigo(etiqueta, cx, cy, color, PIE)
+            return cx
+
+        colocar(raiz, 0, 0)
+        if por_nivel:
+            derecha = _hojas(raiz) * columna + 14
+            for nivel, cuantos in sorted(niveles.items()):
+                _txt(f"{cuantos}", derecha, nivel * fila, APAGADO, PIE, ancla="left")
+            _txt("llamadas", derecha, -18, APAGADO, PIE, ancla="left")
+    return _figura(canvas, ident, pie)
