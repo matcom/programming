@@ -31,6 +31,10 @@ segunda, de estrategias de solución, empieza con la recursión y llega hasta di
 vencerás. Backtrack, combinatoria y programación dinámica completan ese segundo tema y
 se agregarán como capítulos nuevos cuando se impartan.
 
+El libro se lee en línea en <https://matcom.github.io/programming/> y se descarga
+completo en PDF desde <https://matcom.github.io/programming/programacion.pdf>. Las dos
+versiones salen del mismo texto y se actualizan juntas.
+
 Cada capítulo termina con un resumen y una lista de ejercicios. Los ejercicios son parte
 del curso: varios retoman en capítulos posteriores funciones que se dejaron para
 escribir allí.
