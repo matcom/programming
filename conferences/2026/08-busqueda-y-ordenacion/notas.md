@@ -434,6 +434,29 @@ Para contar hubo que cambiar la forma del ciclo: la comparación `lista[j] > x` 
 `while` a un `if` con `break`, para poder sumar uno cada vez que se hace. Lo que hace la
 función es lo mismo.
 
+La lista al azar se construyó con una forma nueva, que vamos a usar mucho a partir de
+ahora:
+
+```python
+al_azar = [random.randint(1, 10_000) for _ in range(n)]
+```
+
+Se lee "la lista de `random.randint(1, 10_000)`, una vez por cada vuelta de
+`range(n)`", y es una abreviatura de lo que ya sabes escribir:
+
+```python
+al_azar = []
+for _ in range(n):
+    al_azar.append(random.randint(1, 10_000))
+```
+
+Se llama **lista por comprensión**. La variable del ciclo se llama `_` cuando no se usa
+para nada, que es una convención para decir justo eso. Si se usa, puede aparecer en la
+expresión: `[k * k for k in range(5)]` es `[0, 1, 4, 9, 16]`. El módulo `random`
+trae `randint(a, b)`, que devuelve un entero al azar entre `a` y `b`, ambos incluidos, y
+`random.seed(8)` fija la semilla para que la lista "al azar" sea la misma cada vez que
+corre el programa, y los números de estas notas se puedan repetir.
+
 Con una lista al azar, la inserción hace alrededor de la mitad del peor caso. Tiene
 sentido: en promedio, cada elemento nuevo tiene la mitad de los anteriores a su derecha.
 La mitad de $\frac{n(n-1)}{2}$ sigue siendo una cantidad que se multiplica por cuatro
