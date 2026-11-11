@@ -5,7 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cloning repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Creating file list
         id: files_list
         run: |
@@ -20,7 +20,7 @@ jobs:
         with:
           args: --output=exercises/exercises.pdf --pdf-engine=xelatex ${{ steps.files_list.outputs.files }}
       - name: Uploading pdf file
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: exercises
           path: exercises/exercises.pdf
