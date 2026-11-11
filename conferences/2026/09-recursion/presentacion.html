@@ -1,0 +1,1697 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Conferencia 9: recursión</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+
+html,body{
+  width:100%;height:100%;
+  background:#0d1117;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+}
+
+#deck{
+  width:min(100vw,177.78vh);
+  aspect-ratio:16/9;
+  position:relative;
+  overflow:hidden;
+  background:#0d1117;
+  container-type:size;
+  color:#e6edf3;
+}
+
+.slide{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;
+  justify-content:center;
+  padding:3.4cqw 5cqw;
+  opacity:0;
+  transform:translateX(4%);
+  transition:opacity .35s ease,transform .35s ease;
+  pointer-events:none;
+  --ac:#4fc3f7;
+}
+.slide.active{opacity:1;transform:none;pointer-events:auto}
+.slide.prev{opacity:0;transform:translateX(-4%)}
+.slide.ctr{align-items:center;text-align:center}
+
+/* un color por sección */
+.a0{--ac:#e6edf3}
+.a1{--ac:#4fc3f7}
+.a2{--ac:#ffb74d}
+.a3{--ac:#81c784}
+.a4{--ac:#f48fb1}
+.a5{--ac:#ce93d8}
+
+.lbl{
+  font-size:.9cqw;font-weight:700;
+  letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ac);margin-bottom:1cqw;
+}
+h1{
+  font-size:3.4cqw;font-weight:800;
+  line-height:1.12;color:#e6edf3;
+  margin-bottom:1.3cqw;max-width:30ch;
+}
+h1 em{color:var(--ac);font-style:normal}
+h1.hero{font-size:5.6cqw;max-width:100%}
+h1 code,.sub code,li code,.cb code,td code,.kick code,.note code{
+  font-family:'JetBrains Mono','Fira Code',ui-monospace,Menlo,Consolas,monospace;
+  font-size:.92em;color:var(--ac);
+  background:rgba(255,255,255,.06);padding:.05em .3em;border-radius:.25em;
+}
+
+.sub{
+  font-size:1.6cqw;color:#8b949e;
+  line-height:1.5;max-width:60ch;
+  margin-bottom:1.1cqw;
+}
+.sub b{color:#e6edf3}
+
+ul.pts{list-style:none;margin-top:.3cqw}
+ul.pts li{
+  font-size:1.45cqw;line-height:1.45;
+  padding:.35cqw 0 .35cqw 1.9cqw;
+  position:relative;color:#e6edf3;
+}
+ul.pts li::before{content:'→';position:absolute;left:0;color:var(--ac)}
+ul.pts li strong{color:var(--ac)}
+ul.pts.sm li{font-size:1.2cqw}
+
+.c2{display:grid;grid-template-columns:1fr 1fr;gap:1.6cqw;width:100%;margin-top:1cqw;align-items:start}
+.c2.wl{grid-template-columns:1.25fr 1fr}
+.c2.wr{grid-template-columns:1fr 1.25fr}
+.c2>*,.c3>*{min-width:0}
+.c3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.25cqw;width:100%;margin-top:1.2cqw}
+
+.card{
+  background:#161b22;border-radius:.75cqw;
+  padding:1.3cqw 1.5cqw;border:1px solid rgba(255,255,255,.08);
+}
+.card.ac{border-color:color-mix(in srgb,var(--ac) 40%,transparent)}
+.card.bad{border-color:rgba(239,83,80,.55)}
+.ct{
+  font-size:.9cqw;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;
+  margin-bottom:.6cqw;color:var(--ac);
+}
+.card.bad .ct{color:#ef5350}
+.cb{font-size:1.18cqw;color:#8b949e;line-height:1.55}
+.cb em{color:#e6edf3;font-style:normal}
+
+.kick{font-size:1.5cqw;color:#e6edf3;line-height:1.5;max-width:70ch;margin-top:1.2cqw}
+.kick b{color:var(--ac)}
+.note{font-size:1.1cqw;color:#8b949e;line-height:1.55;margin-top:.8cqw;max-width:80ch}
+.note b{color:#e6edf3}
+
+/* código */
+pre.code,pre.out{
+  font-family:'JetBrains Mono','Fira Code',ui-monospace,Menlo,Consolas,monospace;
+  font-size:1.3cqw;line-height:1.5;
+  background:#161b22;border:1px solid rgba(255,255,255,.08);
+  border-radius:.6cqw;padding:1cqw 1.3cqw;
+  white-space:pre;overflow:hidden;color:#e6edf3;
+}
+pre.code.sm,pre.out.sm{font-size:1.08cqw}
+pre.code.xs,pre.out.xs{font-size:.98cqw}
+.kw{color:#ff7b72}.st{color:#a5d6ff}.cm{color:#6e7681;font-style:italic}
+.bi{color:#d2a8ff}.nu{color:#79c0ff}.fn{color:#ffa657}
+pre .ln{display:inline-block;min-width:100%;border-radius:.2cqw;transition:background .2s}
+pre .ln.on{background:color-mix(in srgb,var(--ac) 24%,transparent);box-shadow:-.5cqw 0 0 color-mix(in srgb,var(--ac) 24%,transparent)}
+
+pre.out{
+  position:relative;margin-top:.6cqw;
+  border-style:dashed;border-color:rgba(255,255,255,.18);
+  color:#c9d1d9;
+}
+pre.out::before{
+  content:'salida';position:absolute;top:.35cqw;right:.7cqw;
+  font-family:-apple-system,system-ui,sans-serif;font-size:.75cqw;
+  letter-spacing:.14em;text-transform:uppercase;color:#6e7681;
+}
+pre.out .err{color:#ff7b72}
+pre.out.hidden{color:transparent;cursor:pointer}
+pre.out.hidden .err{color:transparent}
+pre.out.hidden::after{
+  content:'¿qué imprime? (R o clic para ver)';
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:-apple-system,system-ui,sans-serif;font-size:1.1cqw;color:#8b949e;
+  letter-spacing:.04em;
+}
+
+/* demo en vivo */
+.live{
+  display:inline-flex;align-items:center;gap:.6cqw;
+  background:#ef5350;color:#fff;
+  font-size:.95cqw;font-weight:800;letter-spacing:.16em;text-transform:uppercase;
+  padding:.45cqw 1cqw;border-radius:2cqw;margin-bottom:1cqw;align-self:flex-start;
+}
+.live svg{width:1.4cqw;height:1.4cqw}
+.slide.ctr .live{align-self:center}
+.steps{list-style:none;counter-reset:s;margin-top:.4cqw}
+.steps li{
+  counter-increment:s;font-size:1.25cqw;line-height:1.45;color:#e6edf3;
+  padding:.35cqw 0 .35cqw 2.4cqw;position:relative;
+}
+.steps li::before{
+  content:counter(s);position:absolute;left:0;top:.35cqw;
+  width:1.7cqw;height:1.7cqw;border-radius:50%;
+  background:#ef5350;color:#fff;font-size:.95cqw;font-weight:800;
+  display:flex;align-items:center;justify-content:center;
+}
+.steps li code{
+  font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
+  font-size:.92em;color:#ffa657;background:rgba(255,255,255,.06);
+  padding:.05em .3em;border-radius:.25em;
+}
+.steps li em{color:#8b949e;font-style:normal}
+
+/* tablas */
+table.br{width:100%;border-collapse:collapse;margin-top:1cqw;font-size:1.15cqw}
+table.br th{text-align:left;font-size:.85cqw;letter-spacing:.12em;text-transform:uppercase;color:#8b949e;padding:.55cqw .9cqw;border-bottom:1px solid #30363d}
+table.br td{padding:.6cqw .9cqw;border-bottom:1px solid rgba(255,255,255,.05);color:#c9d1d9;vertical-align:top}
+table.br td:first-child{white-space:nowrap}
+table.br td code{font-size:1em}
+table.br td.big{font-size:1.5cqw;font-weight:800;color:var(--ac)}
+
+/* recorrido del curso */
+.road{display:grid;grid-template-columns:repeat(6,1fr);gap:.8cqw;width:100%;margin-top:1.6cqw}
+.road .stop{background:#161b22;border:1px solid rgba(255,255,255,.08);border-radius:.6cqw;padding:1cqw 1.1cqw;position:relative}
+.road .stop .n{font-size:2.2cqw;font-weight:900;color:#3d4450;line-height:1}
+.road .stop .t{font-size:1.1cqw;font-weight:700;color:#e6edf3;margin-top:.5cqw}
+.road .stop .d{font-size:.95cqw;color:#8b949e;margin-top:.35cqw;line-height:1.4}
+.road .stop.now{border-color:var(--ac);background:color-mix(in srgb,var(--ac) 10%,#161b22)}
+.road .stop.now .n{color:var(--ac)}
+.road .stop.next{border-style:dashed}
+.road .stop.off{opacity:.55}
+
+svg.fig{width:100%;height:auto;display:block;margin-top:.8cqw}
+svg text{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif}
+svg .mono{font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace}
+
+/* animaciones */
+.viz{background:#161b22;border:1px solid rgba(255,255,255,.08);border-radius:.75cqw;padding:.9cqw 1.1cqw;cursor:default}
+.vhead{display:flex;justify-content:space-between;align-items:baseline;gap:1cqw;margin-bottom:.3cqw}
+.vhead .vt{font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:1cqw;font-weight:700;color:var(--ac)}
+.vhead .cnt{font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:1.05cqw;color:#e6edf3;white-space:nowrap}
+.items{position:relative;height:13cqw}
+.cells .items{height:6.6cqw}
+.compact .items{height:9cqw}
+.ixs,.ptrs{position:relative}
+.ixs{height:1.4cqw}
+.compact .ixs{display:none}
+.it{position:absolute;top:2.6cqw;bottom:0;padding:0 .18cqw;display:flex;flex-direction:column;justify-content:flex-end;transition:left .32s ease,transform .32s ease,opacity .25s}
+.it .b{position:relative;border-radius:.3cqw .3cqw 0 0;background:#3d4450;transition:background .2s,border-color .2s,color .2s}
+.it .b i{position:absolute;left:0;right:0;top:-1.45cqw;text-align:center;font-style:normal;font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:.95cqw;color:#8b949e}
+.compact .it .b i{font-size:.8cqw;top:-1.2cqw}
+.cells .it .b{height:3.8cqw;border-radius:.45cqw;background:#0d1117;border:2px solid #30363d;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:1.45cqw;color:#e6edf3}
+.it.done .b{background:#4fc3f7}
+.it.cmp .b{background:#ffb74d}
+.it.swap .b{background:#f48fb1}
+.it.found .b{background:#81c784}
+.it.key .b{background:#ce93d8}
+.it.key{transform:translateY(-1.7cqw)}
+.it.cmp .b i{color:#ffb74d}.it.swap .b i{color:#f48fb1}.it.key .b i{color:#ce93d8}
+.cells .it.cmp .b{background:rgba(255,183,77,.14);border-color:#ffb74d}
+.cells .it.found .b{background:rgba(129,199,132,.18);border-color:#81c784}
+.it.dim{opacity:.2}
+.ixs span{position:absolute;top:.2cqw;transform:translateX(-50%);font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:.78cqw;color:#6e7681}
+.pt{position:absolute;transform:translateX(-50%);transition:left .32s ease,opacity .2s;font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:.92cqw;font-weight:700;white-space:nowrap;text-align:center;line-height:1.05}
+.pt::before{content:'▲';display:block;font-size:.7cqw}
+.msg{font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:1.02cqw;color:#c9d1d9;min-height:1.55cqw;margin-top:.25cqw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ctl{display:flex;flex-wrap:wrap;gap:.45cqw;margin-top:.6cqw;align-items:center}
+.ctl button{font:inherit;font-size:.88cqw;background:#0d1117;border:1px solid #30363d;color:#c9d1d9;border-radius:1cqw;padding:.28cqw .8cqw;cursor:pointer}
+.ctl button:hover{border-color:#6e7681}
+.ctl button.on{border-color:var(--ac);color:var(--ac)}
+.ctl button.go{background:var(--ac);border-color:var(--ac);color:#0d1117;font-weight:700}
+.ctl .sp{flex:1}
+.race{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1cqw;margin-top:.6cqw}
+.race .viz{padding:.7cqw .8cqw}
+
+/* el pedazo que se parte */
+.rtrack{position:relative;height:3.2cqw;background:#0d1117;border:1px solid #30363d;border-radius:.4cqw;margin-top:2cqw;overflow:hidden}
+.rpiece{position:absolute;top:0;bottom:0;background:rgba(129,199,132,.35);border-left:2px solid #81c784;border-right:2px solid #81c784;min-width:3px;transition:left .45s ease,width .45s ease}
+.rmid{position:absolute;top:-.2cqw;bottom:-.2cqw;width:2px;background:#ffb74d;transition:left .45s ease,opacity .2s}
+.rends{display:flex;justify-content:space-between;font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:.85cqw;color:#6e7681;margin-top:.3cqw}
+.rtrail{font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:1.05cqw;color:#c9d1d9;line-height:1.7;margin-top:1cqw;min-height:5.4cqw}
+.rtrail b{color:#81c784}
+
+/* crecimiento */
+.grow .gr{display:grid;grid-template-columns:8.5cqw 1fr 12cqw;gap:1cqw;align-items:center;margin-top:.75cqw}
+.grow .gn{font-size:1.15cqw;font-weight:700;text-align:right}
+.grow .gt{height:2.1cqw;background:#0d1117;border-radius:.3cqw;position:relative;overflow:hidden}
+.grow .gf{position:absolute;left:0;top:0;bottom:0;min-width:3px;border-radius:.3cqw;transition:width .6s ease}
+.grow .gv{font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:1.1cqw;color:#e6edf3;white-space:nowrap}
+.grow .gv small{color:#8b949e;font-size:.85em;margin-left:.6cqw}
+.grow .gnow{font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:2.4cqw;font-weight:800;color:var(--ac)}
+
+/* chrome */
+#bar{position:absolute;left:0;bottom:0;height:.3cqw;background:#4fc3f7;transition:width .3s ease;z-index:5}
+#num{position:absolute;right:1.6cqw;bottom:1cqw;font-size:.85cqw;color:#6e7681;z-index:5;letter-spacing:.08em}
+#foot{position:absolute;left:1.6cqw;bottom:1cqw;font-size:.85cqw;color:#484f58;z-index:5;letter-spacing:.08em}
+#help{
+  position:absolute;inset:0;background:rgba(13,17,23,.94);z-index:10;
+  display:none;align-items:center;justify-content:center;
+}
+#help.on{display:flex}
+#help .box{background:#161b22;border:1px solid #30363d;border-radius:1cqw;padding:2.4cqw 3cqw;font-size:1.3cqw;color:#c9d1d9;line-height:2}
+#help kbd{font-family:ui-monospace,Menlo,monospace;background:#0d1117;border:1px solid #30363d;border-radius:.3cqw;padding:.1cqw .5cqw;color:#e6edf3}
+
+/* la pila de llamadas */
+.stack{display:flex;flex-direction:column;gap:.4cqw;margin-top:.5cqw}
+.fr{display:flex;justify-content:space-between;gap:1cqw;align-items:center;background:#0d1117;border:1px solid #30363d;border-left:.35cqw solid #3d4450;border-radius:.4cqw;padding:.4cqw .9cqw;font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:1.05cqw;color:#e6edf3;animation:entra .3s ease;transition:opacity .2s,border-color .2s}
+.fr .fc{white-space:nowrap}
+.fr .fx{color:#8b949e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fr.run{border-left-color:#ffb74d}
+.fr.run .fx{color:#ffb74d}
+.fr.wait{opacity:.7}
+.fr.ret{border-left-color:#81c784}
+.fr.ret .fx{color:#81c784;font-weight:700}
+@keyframes entra{from{opacity:0;transform:translateY(-.6cqw)}to{opacity:1;transform:none}}
+.ley{display:flex;gap:1.4cqw;font-size:.85cqw;color:#8b949e;margin-top:.5cqw}
+.ley i{display:inline-block;width:.8cqw;height:.8cqw;border-radius:.15cqw;margin-right:.35cqw;vertical-align:-.05cqw}
+
+/* las torres */
+.rods{position:relative;height:9cqw;margin-top:.3cqw}
+.rod{position:absolute;bottom:1.6cqw;width:.4cqw;height:7cqw;background:#3d4450;border-radius:.2cqw;transform:translateX(-50%)}
+.rbase{position:absolute;left:2%;right:2%;bottom:1.3cqw;height:.35cqw;background:#3d4450;border-radius:.2cqw}
+.rlab{position:absolute;bottom:0;transform:translateX(-50%);font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:.95cqw;color:#8b949e}
+.disk{position:absolute;height:.95cqw;border-radius:.5cqw;transform:translateX(-50%);transition:left .3s ease,bottom .3s ease,box-shadow .2s}
+.disk.mv{box-shadow:0 0 0 .18cqw #e6edf3}
+.big .rods{height:13cqw}
+.big .rod{height:11cqw}
+.big .disk{height:1.4cqw;border-radius:.7cqw}
+
+/* el árbol de llamadas */
+svg.tree{width:100%;height:auto;max-height:22cqw;display:block;margin-top:.4cqw}
+.tn rect{fill:#0d1117;stroke:#30363d;stroke-width:1.5;transition:fill .2s,stroke .2s}
+.tn text{fill:#484f58;font-size:15px;transition:fill .2s}
+.tn.act rect{stroke:#ffb74d;fill:rgba(255,183,77,.16)}
+.tn.dn rect{stroke:var(--ac);fill:color-mix(in srgb,var(--ac) 14%,transparent)}
+.tn.rep rect{stroke:#ef5350;fill:rgba(239,83,80,.2)}
+.tn.act text,.tn.dn text,.tn.rep text{fill:#e6edf3}
+.te{stroke:#21262d;stroke-width:1.5;transition:stroke .2s}
+.te.on{stroke:#6e7681}
+.tl{fill:#8b949e;font-size:15px}
+.tl.n{fill:var(--ac);font-weight:700;font-size:17px}
+
+</style>
+</head>
+<body>
+<div id="deck">
+
+<!-- ============================================================ portada -->
+<section class="slide a1 ctr">
+  <div class="lbl">Programación · MatCom · Conferencia 9 · 11 de noviembre de 2026</div>
+  <h1 class="hero">Una función que <em>se llama a sí misma</em></h1>
+  <p class="sub" style="max-width:58ch">Proyecto de hoy: las Torres de Hanói. Ocho discos, tres varillas, y un programa de cinco líneas que con <code>while</code> y <code>for</code> no sale fácil.</p>
+  <div class="viz big" id="v-portada" style="width:46cqw;margin-top:1cqw;background:transparent;border:none"></div>
+</section>
+
+<!-- ============================================================ dónde estamos -->
+<section class="slide a1">
+  <div class="lbl">Dónde estamos</div>
+  <h1>Empieza el segundo tema: <em>estrategias de solución</em></h1>
+  <p class="sub">La conferencia 2 cerró con la computadora adivinando un número partiendo el rango a la mitad, y la 8 lo escribió con un <code>while</code>. Hoy lo escribimos <b>otra vez</b>, sin ciclo.</p>
+  <div class="road">
+    <div class="stop"><div class="n">5</div><div class="t">Cadenas y archivos</div><div class="d">contar las palabras de un archivo</div></div>
+    <div class="stop"><div class="n">6</div><div class="t">Diccionarios y conjuntos</div><div class="d">cuántas veces aparece cada palabra</div></div>
+    <div class="stop off"><div class="n">7</div><div class="t">Examen</div><div class="d">el primer tema</div></div>
+    <div class="stop"><div class="n">8</div><div class="t">Búsqueda, ordenación y costo</div><div class="d">todas las palabras ordenadas, a mano</div></div>
+    <div class="stop now"><div class="n">9</div><div class="t">Recursión</div><div class="d">las Torres de Hanói</div></div>
+    <div class="stop next"><div class="n">10</div><div class="t">Divide y vencerás</div><div class="d">el millón de números que la 8 no pudo ordenar</div></div>
+  </div>
+</section>
+
+<!-- ============================================================ el plan -->
+<section class="slide a1">
+  <div class="lbl">El plan de la hora</div>
+  <h1>De la pila <em>al árbol</em></h1>
+  <svg class="fig" viewBox="0 0 1200 330">
+    <defs><marker id="ah1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e7681"/></marker></defs>
+    <g text-anchor="middle">
+      <rect x="10" y="40" width="250" height="150" rx="12" fill="#161b22" stroke="#ffb74d" stroke-width="2"/>
+      <text x="135" y="85" fill="#ffb74d" font-size="17" font-weight="700" letter-spacing="2">1 · LA PILA</text>
+      <text x="135" y="125" fill="#e6edf3" font-size="22" class="mono">f llama a f</text>
+      <text x="135" y="160" fill="#8b949e" font-size="17">como llamar a otra función</text>
+
+      <rect x="310" y="40" width="250" height="150" rx="12" fill="#161b22" stroke="#81c784" stroke-width="2"/>
+      <text x="435" y="85" fill="#81c784" font-size="17" font-weight="700" letter-spacing="2">2 · DE COLA</text>
+      <text x="435" y="125" fill="#e6edf3" font-size="22" class="mono">es un ciclo</text>
+      <text x="435" y="160" fill="#8b949e" font-size="17">y el límite de mil llamadas</text>
+
+      <rect x="610" y="40" width="250" height="150" rx="12" fill="#161b22" stroke="#f48fb1" stroke-width="2"/>
+      <text x="735" y="85" fill="#f48fb1" font-size="17" font-weight="700" letter-spacing="2">3 · DOS LLAMADAS</text>
+      <text x="735" y="125" fill="#e6edf3" font-size="22" class="mono">ya no es un ciclo</text>
+      <text x="735" y="160" fill="#8b949e" font-size="17">Hanói, aplanar una lista</text>
+
+      <rect x="910" y="40" width="250" height="150" rx="12" fill="#161b22" stroke="#ce93d8" stroke-width="2"/>
+      <text x="1035" y="85" fill="#ce93d8" font-size="17" font-weight="700" letter-spacing="2">4 · EL ÁRBOL</text>
+      <text x="1035" y="125" fill="#e6edf3" font-size="22" class="mono">fib(n)</text>
+      <text x="1035" y="160" fill="#8b949e" font-size="17">correcta, y lentísima</text>
+
+      <path d="M135 195 C135 250 500 240 560 262" stroke="#ffb74d" stroke-width="2" fill="none" marker-end="url(#ah1)" opacity=".7"/>
+      <path d="M435 195 C435 235 560 240 585 260" stroke="#81c784" stroke-width="2" fill="none" marker-end="url(#ah1)" opacity=".7"/>
+      <path d="M735 195 C735 235 640 240 615 260" stroke="#f48fb1" stroke-width="2" fill="none" marker-end="url(#ah1)" opacity=".7"/>
+      <path d="M1035 195 C1035 250 700 240 640 262" stroke="#ce93d8" stroke-width="2" fill="none" marker-end="url(#ah1)" opacity=".7"/>
+      <rect x="380" y="265" width="440" height="56" rx="12" fill="#10202b" stroke="#4fc3f7" stroke-width="2"/>
+      <text x="600" y="301" fill="#4fc3f7" font-size="22" font-weight="700">¿para qué sirve la recursión?</text>
+    </g>
+  </svg>
+  <p class="note">La primera mitad muestra recursiones que son ciclos escritos de otra manera. La segunda, las que no lo son: ahí está la respuesta a la pregunta de abajo.</p>
+</section>
+
+<section class="slide a1">
+  <div class="lbl">El proyecto</div>
+  <h1>Ocho discos, <em>dos reglas</em></h1>
+  <div class="c2">
+    <div>
+      <ul class="pts">
+        <li>Pasar todos los discos de la varilla <strong>A</strong> a la <strong>C</strong>.</li>
+        <li>Se mueve <strong>un disco cada vez</strong>, el de arriba de alguna varilla.</li>
+        <li><strong>Nunca</strong> un disco sobre otro más pequeño.</li>
+      </ul>
+      <p class="kick">Con un disco, un movimiento. Con dos, tres. Con tres ya hay que pensar. <b>¿Qué repetiría un <code>while</code>?</b></p>
+      <p class="note">Al final de la tercera parte lo resolvemos en cinco líneas, para cualquier cantidad de discos.</p>
+    </div>
+    <div class="viz big" id="v-reto" style="background:transparent;border:none"></div>
+  </div>
+</section>
+
+<!-- ============================================================ 1. la pila -->
+<section class="slide a2 ctr">
+  <div class="lbl">Parte 1</div>
+  <h1 class="hero">Una función <em>llama a otra</em></h1>
+  <p class="sub">Eso ya lo sabes hacer. Hoy miramos qué pasa por dentro mientras la otra trabaja.</p>
+</section>
+
+<section class="slide a2">
+  <div class="lbl">Nada nuevo todavía</div>
+  <h1>La que llama <em>se queda esperando</em></h1>
+  <div class="c2">
+    <div>
+      <pre class="code" data-hl id="c-tres">def fac1():
+    return 1
+
+def fac2():
+    return 2 * fac1()
+
+def fac3():
+    return 3 * fac2()
+
+print(fac3())</pre>
+    </div>
+    <div>
+      <div id="v-tres"></div>
+      <div class="ley"><span><i style="background:#ffb74d"></i>ejecutando</span><span><i style="background:#3d4450"></i>esperando</span><span><i style="background:#81c784"></i>devolviendo</span></div>
+      <p class="note">Cada llamada se <b>apila</b> sobre la que la llamó. La de abajo es la única que trabaja. Cuando devuelve, sale de la pila, y la de arriba sigue <b>justo donde se quedó</b>.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide a2">
+  <div class="lbl">La pregunta</div>
+  <h1>Son la misma función <em>con otro número</em></h1>
+  <div class="c2">
+    <div>
+      <pre class="code sm" data-hl>def fac3():
+    return 3 * fac2()
+
+def fac2():
+    return 2 * fac1()
+
+def fac1():
+    return 1</pre>
+      <p class="kick">Si el número pasa a ser un <b>parámetro</b>, las tres funciones se vuelven una sola:</p>
+      <pre class="code sm" data-hl style="margin-top:.6cqw">def factorial(n):
+    if n == 0:
+        return 1
+    return n * factorial(n - 1)</pre>
+    </div>
+    <div>
+      <div class="card ac" style="margin-top:1cqw">
+        <div class="ct">Caso base</div>
+        <div class="cb"><code>n == 0</code> se responde <em>sin llamar a nadie</em>. Es el papel de <code>fac1</code>, y usa que 0! = 1.</div>
+      </div>
+      <div class="card ac" style="margin-top:1cqw">
+        <div class="ct">Caso recursivo</div>
+        <div class="cb">Llama a la misma función con un <em>problema más pequeño</em>: <code>n - 1</code>. Como n no puede bajar para siempre, llega al caso base.</div>
+      </div>
+      <p class="note">Son las dos piezas que hacen terminar a un <code>while</code>: la condición de salida y algo que se achica en cada vuelta.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide a2">
+  <div class="lbl">Paso a paso</div>
+  <h1>Cada llamada <em>tiene su propia n</em></h1>
+  <div class="c2">
+    <div>
+      <pre class="code" data-hl id="c-factorial">def factorial(n):
+    if n == 0:
+        return 1
+    return n * factorial(n - 1)</pre>
+      <p class="note">Cuando <code>factorial(0)</code> devuelve, hay cinco <code>n</code> distintas guardadas a la vez, y no se pisan. Es lo de la conferencia 3: cada llamada crea sus variables de nuevo. Que la función que llama sea <b>la misma</b> no cambia nada.</p>
+    </div>
+    <div id="v-factorial"></div>
+  </div>
+</section>
+
+<section class="slide a2">
+  <span class="live"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M1 20h22"/></svg>En vivo · archivo recursion.py</span>
+  <h1>De tres funciones <em>a una</em></h1>
+  <div class="c2">
+    <div>
+      <pre class="code sm" data-hl>def factorial(n):
+    if n == 0:
+        return 1
+    return n * factorial(n - 1)
+
+
+print(factorial(4))
+print(factorial(20))</pre>
+      <pre class="out sm hidden">24
+2432902008176640000</pre>
+    </div>
+    <div>
+      <ol class="steps">
+        <li>Escribe <code>fac1</code>, <code>fac2</code> y <code>fac3</code>, y corre <code>print(fac3())</code>. <em>Nadie se sorprende.</em></li>
+        <li>Pregunta al aula qué tienen en común. Escribe <code>factorial(n)</code> con su ayuda.</li>
+        <li>Antes de correr: ¿cuántas llamadas hay vivas a la vez en <code>factorial(4)</code>? <em>Cinco: de la 4 a la 0.</em></li>
+        <li>Corre. Los enteros de Python no se desbordan: 20! tiene 19 cifras.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ 2. de cola -->
+<section class="slide a3 ctr">
+  <div class="lbl">Parte 2</div>
+  <h1 class="hero">Recursión <em>de cola</em></h1>
+  <p class="sub">Cuando la llamada es lo último que hace la función, no queda nada pendiente que recordar.</p>
+</section>
+
+<section class="slide a3">
+  <div class="lbl">La de la conferencia 3</div>
+  <h1>Euclides, <em>escrito tal cual</em></h1>
+  <div class="c2">
+    <div>
+      <pre class="code sm" data-hl>def mcd_traza(a, b):
+    print(f"mcd({a}, {b})")
+    if b == 0:
+        return a
+    return mcd_traza(b, a % b)
+
+
+print(mcd_traza(84, 36))</pre>
+      <pre class="out sm hidden">mcd(84, 36)
+mcd(36, 12)
+mcd(12, 0)
+12</pre>
+    </div>
+    <div>
+      <div class="card ac" style="margin-top:1cqw">
+        <div class="ct">La definición</div>
+        <div class="cb">El mcd de <code>a</code> y <code>b</code> es el de <code>b</code> y <code>a % b</code>. El mcd de cualquier número con 0 es el propio número.</div>
+      </div>
+      <p class="kick">El 12 lo encuentra la última llamada, y las otras dos lo devuelven <b>sin tocarlo</b>. Ninguna tenía nada pendiente.</p>
+      <p class="note">El segundo argumento se achica en cada llamada (<code>a % b</code> es menor que <code>b</code>), así que llega a 0.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide a3">
+  <div class="lbl">Un acumulador</div>
+  <h1>La multiplicación <em>antes de llamar</em></h1>
+  <div class="c2">
+    <div>
+      <pre class="code" data-hl id="c-cola">def factorial_cola(n, acumulado=1):
+    if n == 0:
+        return acumulado
+    return factorial_cola(n - 1, acumulado * n)</pre>
+      <p class="note">En <code>factorial</code> la llamada de arriba tenía pendiente <code>n * ?</code>. Aquí el trabajo se hace <b>al bajar</b>, en el segundo argumento, y al subir todas devuelven el mismo 24.</p>
+      <p class="kick">Si la llamada es lo último que se hace y su resultado se devuelve sin tocarlo, la función es <b>recursiva de cola</b>. <code>mcd</code> lo es; <code>factorial</code> no.</p>
+    </div>
+    <div id="v-cola"></div>
+  </div>
+</section>
+
+<section class="slide a3">
+  <div class="lbl">La traducción</div>
+  <h1>Una recursión de cola <em>es un ciclo</em></h1>
+  <div class="c2">
+    <div>
+      <pre class="code sm" data-hl>def factorial_cola(n, acumulado=1):
+    if n == 0:
+        return acumulado
+    return factorial_cola(n - 1, acumulado * n)</pre>
+      <pre class="code sm" data-hl style="margin-top:.6cqw">def factorial_ciclo(n):
+    acumulado = 1
+    while n != 0:
+        n, acumulado = n - 1, acumulado * n
+    return acumulado</pre>
+    </div>
+    <div>
+      <table class="br">
+        <tr><th>Recursión de cola</th><th>Ciclo</th></tr>
+        <tr><td>los parámetros</td><td>las variables</td></tr>
+        <tr><td>el caso base</td><td>la condición de salida</td></tr>
+        <tr><td>la llamada</td><td>una asignación simultánea</td></tr>
+      </table>
+      <p class="note">La asignación simultánea importa: con <code>n = n - 1</code> primero y <code>acumulado = acumulado * n</code> después, se multiplicaría por el <code>n</code> nuevo.</p>
+      <p class="note">La búsqueda binaria de la conferencia 8 también es de cola: <code>izq = medio + 1</code> pasa a ser una llamada con <code>medio + 1</code> en el lugar de <code>izq</code>.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide a3">
+  <div class="lbl">La conferencia 8, sin while</div>
+  <h1>Buscar en una mitad <em>es el mismo problema</em></h1>
+  <div class="c2 wl">
+    <div>
+      <pre class="code xs" data-hl>def buscar_binaria(lista, x, izq=0, der=None):
+    """Índice de x en lista[izq..der], ordenada; o -1."""
+    if der is None:
+        der = len(lista) - 1            # hasta el final
+    if izq &gt; der:
+        return -1                       # el pedazo está vacío
+    medio = (izq + der) // 2
+    if lista[medio] == x:
+        return medio
+    elif lista[medio] &lt; x:
+        return buscar_binaria(lista, x, medio + 1, der)
+    else:
+        return buscar_binaria(lista, x, izq, medio - 1)
+
+
+primos = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29]
+print(buscar_binaria(primos, 13))
+print(buscar_binaria(primos, 12))
+print(buscar_binaria(primos, 29))</pre>
+      <pre class="out xs hidden">5
+-1
+9</pre>
+    </div>
+    <div>
+      <ul class="pts sm">
+        <li>La condición del <code>while</code>, <code>izq &lt;= der</code>, es aquí su contraria en el <strong>caso base</strong>.</li>
+        <li>Un valor por defecto no puede depender de otro parámetro. Por eso <code>der=None</code>, y el valor de verdad se calcula dentro.</li>
+        <li><code>None</code> significa "no hay valor", y se pregunta con <code>is None</code>.</li>
+        <li>Solo la primera llamada recibe <code>der = None</code>. Las recursivas ya pasan un número.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide a3">
+  <span class="live"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M1 20h22"/></svg>En vivo · recursion.py, el límite</span>
+  <h1>La pila <em>tiene un tope</em></h1>
+  <div class="c2">
+    <div>
+      <pre class="code sm" data-hl>print(len(str(factorial_ciclo(1500))), "cifras")
+
+try:
+    factorial_cola(1500)
+except RecursionError as error:
+    print(type(error).__name__, error)
+
+print(sys.getrecursionlimit())</pre>
+      <pre class="out sm hidden">4115 cifras
+RecursionError maximum recursion depth exceeded
+1000</pre>
+    </div>
+    <div>
+      <ol class="steps">
+        <li>El ciclo calcula 1500!. <em>Más de cuatro mil cifras, sin problema.</em></li>
+        <li>La versión de cola, con el <code>try</code> de la conferencia 5. <code>as error</code> le pone nombre al error atrapado.</li>
+        <li>Python no deja pasar de mil llamadas. <em>Aunque sea de cola: no la convierte en ciclo, para que el error muestre todas las llamadas.</em></li>
+        <li>Quita el caso base. <em>Un ciclo infinito se cuelga; una recursión infinita se para sola en mil, con un error que dice qué pasó.</em></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section class="slide a3 ctr">
+  <div class="lbl">La conclusión de la primera mitad</div>
+  <h1 class="hero" style="font-size:4.4cqw">Si es un ciclo disfrazado, <em>¿para qué sirve?</em></h1>
+  <p class="sub" style="max-width:62ch">Una recursión de cola hace lo mismo que el ciclo, y en Python además se rompe a las mil llamadas. A veces se lee mejor, como <code>mcd</code>. Pero <b>no hace nada que el ciclo no haga</b>.</p>
+</section>
+
+<!-- ============================================================ 3. más de una llamada -->
+<section class="slide a4 ctr">
+  <div class="lbl">Parte 3</div>
+  <h1 class="hero">Cuando ya <em>no es un ciclo</em></h1>
+  <p class="sub">Una función que se llama dos veces tiene que acordarse de lo que le falta. Eso lo guarda la pila.</p>
+</section>
+
+<section class="slide a4">
+  <div class="lbl">La idea</div>
+  <h1>Piensa <em>en el disco grande</em></h1>
+  <div class="c2">
+    <div>
+      <p class="sub">Para mover el disco grande de A a C, los otros tienen que estar fuera del camino, todos en B.</p>
+      <ol class="steps">
+        <li>Mover los <code>n - 1</code> de arriba de A a B. <em>El mismo problema, con un disco menos.</em></li>
+        <li>Mover el disco grande de A a C.</li>
+        <li>Mover los <code>n - 1</code> de B a C. <em>Otra vez el mismo problema.</em></li>
+      </ol>
+      <p class="note">El disco grande no estorba: está abajo de todo, y cualquier disco puede ponerse sobre él. Con cero discos no hay nada que hacer.</p>
+    </div>
+    <div>
+      <pre class="code" data-hl>def hanoi(n, origen, destino, auxiliar):
+    if n == 0:
+        return
+    hanoi(n - 1, origen, auxiliar, destino)
+    print(f"disco {n}: {origen} -> {destino}")
+    hanoi(n - 1, auxiliar, destino, origen)</pre>
+      <p class="kick">La primera llamada <b>no es lo último</b>: después vienen un <code>print</code> y otra llamada. No es de cola.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide a4">
+  <div class="lbl">Paso a paso</div>
+  <h1>La pila <em>recuerda lo que falta</em></h1>
+  <div class="c2">
+    <div>
+      <pre class="code sm" data-hl id="c-hanoi">def hanoi(n, origen, destino, auxiliar):
+    if n == 0:
+        return
+    hanoi(n - 1, origen, auxiliar, destino)
+    print(f"disco {n}: {origen} -> {destino}")
+    hanoi(n - 1, auxiliar, destino, origen)</pre>
+      <p class="note">Mira las filas que esperan: cada una sabe si todavía le falta mover su disco o si ya terminó. Con un ciclo, esa lista de pendientes habría que llevarla a mano.</p>
+    </div>
+    <div id="v-hanoi"></div>
+  </div>
+</section>
+
+<section class="slide a4">
+  <span class="live"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M1 20h22"/></svg>En vivo · hanoi.py, el proyecto</span>
+  <h1>Cinco líneas, <em>cualquier cantidad de discos</em></h1>
+  <div class="c2">
+    <div>
+      <pre class="code xs" data-hl>hanoi(3, "A", "C", "B")
+
+
+def movimientos(n):
+    if n == 0:
+        return 0
+    return movimientos(n - 1) + 1 + movimientos(n - 1)
+
+
+for n in range(1, 11):
+    print(n, movimientos(n), 2 ** n - 1)
+
+segundos = 2 ** 64 - 1
+print(f"{segundos / (3600 * 24 * 365.25):.3e} años")</pre>
+      <div class="c2" style="margin-top:0">
+        <pre class="out xs hidden">disco 1: A -> C
+disco 2: A -> B
+disco 1: C -> B
+disco 3: A -> C
+disco 1: B -> A
+disco 2: B -> C
+disco 1: A -> C</pre>
+        <pre class="out xs hidden">1 1 1
+2 3 3
+3 7 7
+...
+8 255 255
+...
+10 1023 1023
+5.845e+11 años</pre>
+      </div>
+    </div>
+    <div>
+      <ol class="steps">
+        <li>Corre <code>hanoi(3, ...)</code> y que alguien lo siga con tres monedas. <em>¿Alguna grande sobre una pequeña?</em></li>
+        <li>Contar en vez de imprimir. Antes de correr: ¿cuántos con 4? <em>El doble de 3, más uno.</em></li>
+        <li>Con ocho discos, 255. La leyenda: 64 discos de oro, uno por segundo. <em>Unas cuarenta veces la edad del universo.</em></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section class="slide a4">
+  <div class="lbl">Contar sin correr</div>
+  <h1>Las llamadas <em>forman un árbol</em></h1>
+  <div class="c2" style="grid-template-columns:minmax(0,1fr) minmax(0,1.9fr)">
+    <div>
+      <p class="sub">En el factorial las llamadas eran una fila. En Hanói cada llamada hace dos.</p>
+      <ul class="pts sm">
+        <li>Cada nodo es una llamada que mueve algo: cuántos discos y entre qué varillas.</li>
+        <li>Cada llamada hace <strong>un solo movimiento propio</strong>, el de su disco grande.</li>
+        <li>Así que hay tantos movimientos como nodos: <strong>1 + 2 + 4 + 8 = 15 = 2⁴ − 1</strong>.</li>
+      </ul>
+      <p class="note">Contar las llamadas nivel por nivel es la herramienta con la que la conferencia 10 explica por qué la mezcla ordena tan rápido.</p>
+    </div>
+    <div id="v-arbol-hanoi"></div>
+  </div>
+</section>
+
+<section class="slide a4">
+  <span class="live"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M1 20h22"/></svg>En vivo · aplanar.py</span>
+  <h1>Lo que un ciclo <em>no hace fácil</em></h1>
+  <div class="c2">
+    <div>
+      <pre class="code sm" data-hl>anidada = [1, [2, 3], [4, [5, 6, [7]], 8], [[[9]]]]
+
+
+def aplanar(lista):
+    plana = []
+    for x in lista:
+        if isinstance(x, list):
+            plana.extend(aplanar(x))     # aplánala y agrégala
+        else:
+            plana.append(x)
+    return plana
+
+
+print(aplanar(anidada))</pre>
+      <pre class="out sm hidden">[1, 2, 3, 4, 5, 6, 7, 8, 9]</pre>
+    </div>
+    <div>
+      <ol class="steps">
+        <li>Pide al aula aplanarla con ciclos. <em>Un <code>for</code> por nivel, ¿y cuántos niveles hay? No se sabe hasta que corre.</em></li>
+        <li>Escribe <code>aplanar</code>. <code>isinstance(x, list)</code> pregunta si es una lista; <code>extend</code> agrega todos los de otra.</li>
+        <li>¿Dónde está el caso base? <em>Una lista sin listas dentro: el ciclo nunca entra a la rama recursiva.</em></li>
+      </ol>
+      <p class="kick">Aquí la recursión está <b>dentro de un ciclo</b>: cero, una o muchas llamadas. Cada llamada recuerda en la pila por dónde iba su <code>for</code>.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide a4">
+  <div class="lbl">También con una sola llamada</div>
+  <h1>La recursión <em>no es solo para números</em></h1>
+  <div class="c2">
+    <div>
+      <pre class="code xs" data-hl>def suma(lista):
+    if len(lista) == 0:
+        return 0
+    return lista[0] + suma(lista[1:])
+
+
+def es_palindromo(palabra):
+    if len(palabra) &lt;= 1:
+        return True
+    return palabra[0] == palabra[-1] and es_palindromo(palabra[1:-1])
+
+
+print(suma([4, 2, 5, 3]))
+for palabra in ["reconocer", "anilina", "radar", "recursion"]:
+    print(palabra, es_palindromo(palabra))</pre>
+      <pre class="out xs hidden">14
+reconocer True
+anilina True
+radar True
+recursion False</pre>
+    </div>
+    <div>
+      <ul class="pts sm">
+        <li>Una lista no vacía es su primer elemento <strong>seguido de una lista más corta</strong>.</li>
+        <li><code>suma</code> no es de cola, se rompe con más de mil elementos, y cada rebanada copia la lista. Para sumar, <strong>el ciclo es mejor</strong>.</li>
+        <li>El caso base del palíndromo es <code>&lt;= 1</code> y no <code>== 0</code>: cada llamada quita dos letras, y con una cantidad impar se llega a una sola.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ 4. fibonacci -->
+<section class="slide a5 ctr">
+  <div class="lbl">Parte 4</div>
+  <h1 class="hero">Correcta <em>e inútil</em></h1>
+  <p class="sub">Una definición recursiva que se escribe sola, y es de las funciones más lentas que vas a escribir este año.</p>
+</section>
+
+<section class="slide a5">
+  <span class="live"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M1 20h22"/></svg>En vivo · fib.py, con el reloj</span>
+  <h1>Cada dos términos, <em>el tiempo por 2,7</em></h1>
+  <div class="c2">
+    <div>
+      <pre class="code xs" data-hl>def fib(n):
+    if n &lt; 2:
+        return n
+    return fib(n - 1) + fib(n - 2)
+
+
+print([fib(n) for n in range(12)])
+
+tiempos = []
+for n in range(20, 33, 2):
+    inicio = time.perf_counter()
+    fib(n)
+    tiempos.append((n, time.perf_counter() - inicio))
+
+for k, (n, t) in enumerate(tiempos):
+    razon = f"×{t / tiempos[k - 1][1]:.1f}" if k &gt; 0 else ""
+    print(f"fib({n}): {t:7.3f} s  {razon}")</pre>
+      <pre class="out xs hidden">[0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89]
+fib(20):   0.001 s
+fib(22):   0.003 s  ×2.7
+fib(24):   0.008 s  ×2.8
+fib(26):   0.019 s  ×2.5
+fib(28):   0.049 s  ×2.6
+fib(30):   0.132 s  ×2.7
+fib(32):   0.369 s  ×2.8</pre>
+    </div>
+    <div>
+      <ol class="steps">
+        <li>Escribe <code>fib</code> desde la definición: 0, 1, y cada uno la suma de los dos anteriores.</li>
+        <li>Mide de 20 a 32. <code>a if condicion else b</code> es un <code>if</code> dentro de una expresión.</li>
+        <li>Pide al aula que estime <code>fib(40)</code> y <code>fib(50)</code> con la razón. <em>Unos 20 segundos y unos 47 minutos.</em></li>
+        <li>Corre <code>fib(40)</code> y espera con el aula. <em>Los tiempos de tu laptop serán otros; la razón, no.</em></li>
+      </ol>
+      <p class="note">Los tiempos de la izquierda son los del libro.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide a5">
+  <div class="lbl">Por qué</div>
+  <h1>El árbol <em>repite trabajo</em></h1>
+  <div class="c2" style="grid-template-columns:minmax(0,1fr) minmax(0,1.9fr)">
+    <div>
+      <p class="sub"><code>fib(5)</code> llama a <code>fib(4)</code> y a <code>fib(3)</code>, pero <code>fib(4)</code> también llama a <code>fib(3)</code>, que se calcula dos veces desde cero.</p>
+      <ul class="pts sm">
+        <li>En rojo, las llamadas que repiten un cálculo ya hecho, <strong>con todo su subárbol</strong>.</li>
+        <li><code>fib(n)</code> tiene n + 1 valores distintos. Casi todas las llamadas sobran.</li>
+      </ul>
+    </div>
+    <div id="v-arbol-fib"></div>
+  </div>
+</section>
+
+<section class="slide a5">
+  <div class="lbl">Contar las llamadas</div>
+  <h1>Dos millones de llamadas <em>para treinta sumas</em></h1>
+  <div class="c2">
+    <div>
+      <pre class="code sm" data-hl>def llamadas(n):
+    if n &lt; 2:
+        return 1
+    return 1 + llamadas(n - 1) + llamadas(n - 2)
+
+
+for n in [10, 20, 30]:
+    print(f"fib({n}) = {fib(n)}, con {llamadas(n)} llamadas")</pre>
+      <pre class="out sm hidden">fib(10) = 55, con 177 llamadas
+fib(20) = 6765, con 21891 llamadas
+fib(30) = 832040, con 2692537 llamadas</pre>
+    </div>
+    <div>
+      <div class="card ac">
+        <div class="ct">Hanói</div>
+        <div class="cb">El árbol crece como 2<sup>n</sup>, y los 2<sup>n</sup> − 1 movimientos <em>son todos necesarios</em>.</div>
+      </div>
+      <div class="card bad" style="margin-top:1cqw">
+        <div class="ct">Fibonacci</div>
+        <div class="cb">El árbol también explota, pero <em>casi todo es trabajo repetido</em>. Un ciclo con dos variables lo hace en treinta sumas.</div>
+      </div>
+      <p class="kick">Una definición recursiva correcta <b>puede ser un programa inútil</b>, y lo que lo decide es el árbol. Recordar cada respuesta en vez de recalcularla es <b>programación dinámica</b>, en el segundo semestre.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ cierre -->
+<section class="slide a1">
+  <div class="lbl">Resumen</div>
+  <h1>Lo que te llevas <em>de hoy</em></h1>
+  <ul class="pts sm">
+    <li>Una función que se llama a sí misma es una función que llama a otra que <strong>resulta ser ella</strong>, con otros argumentos.</li>
+    <li>Necesita un <strong>caso base</strong>, que se responde sin llamar a nadie, y un <strong>caso recursivo</strong> que llama con un problema más pequeño.</li>
+    <li>Las llamadas que esperan se guardan en la <strong>pila de llamadas</strong>, cada una con sus propias variables.</li>
+    <li><strong>De cola</strong>: la llamada es lo último y su resultado se devuelve sin tocarlo. Se convierte en ciclo: parámetros a variables, llamada a asignación simultánea.</li>
+    <li>Python corta en <strong>mil llamadas</strong> con <code>RecursionError</code>, aunque sea de cola, igual que si falta el caso base.</li>
+    <li>Con <strong>más de una llamada</strong> se forma un árbol: Hanói, aplanar. Ahí la pila recuerda lo que un ciclo tendría que llevar a mano.</li>
+    <li>Contar el árbol nivel por nivel da el costo. Si repite subproblemas, como <code>fib</code>, es correcta e inútil.</li>
+  </ul>
+</section>
+
+<section class="slide a2">
+  <div class="lbl">Ejercicios · están completos en el libro</div>
+  <h1>Para la clase práctica</h1>
+  <div class="c2">
+    <ul class="pts sm">
+      <li><code>potencia(a, n)</code> recursiva, después de cola con acumulador, después con un ciclo.</li>
+      <li><code>contar_digitos(n)</code> y <code>suma_digitos(n)</code>. ¿Cuál es el problema más pequeño?</li>
+      <li><code>invertir(cadena)</code> y <code>maximo(lista)</code> recursivas. ¿Caso base de <code>maximo</code>?</li>
+      <li>¿Con qué tamaño de lista da <code>RecursionError</code> la binaria? Sin ejecutarla.</li>
+    </ul>
+    <ul class="pts sm">
+      <li><code>hanoi</code> que devuelva los movimientos, y <code>comprobar(n, movimientos)</code> con tres listas.</li>
+      <li><code>profundidad(lista)</code> de una lista anidada. ¿Y la de la lista vacía?</li>
+      <li><code>fib_ciclo(n)</code> contra <code>fib</code> en <code>n = 30</code>. ¿Cuántas sumas hace cada una?</li>
+      <li><code>suma(lista)</code> de cola con un índice, y su ciclo. ¿Cuál suma un millón?</li>
+    </ul>
+  </div>
+</section>
+
+<section class="slide a0">
+  <div class="lbl" style="color:#ef5350">Para el profesor · guion de demos</div>
+  <h1>Los momentos <em style="color:#ef5350">en la laptop</em></h1>
+  <table class="br" id="guion"></table>
+  <p class="note">Todo corre en la carpeta de la conferencia, con <code>import sys</code> y <code>import time</code> arriba. Pulsa el número de la diapositiva y Enter para saltar a ella. En las animaciones: <b>A</b> anima o pausa, <b>S</b> da un paso, <b>X</b> reinicia.</p>
+</section>
+
+<div id="bar"></div>
+<div id="foot">Programación · Conferencia 9</div>
+<div id="num"></div>
+<div id="help"><div class="box">
+  <kbd>→</kbd> <kbd>Espacio</kbd> <kbd>RePág</kbd> siguiente · <kbd>←</kbd> anterior<br>
+  <kbd>R</kbd> revela las salidas ocultas · <kbd>V</kbd> salta a la próxima demo en vivo<br>
+  <kbd>A</kbd> anima o pausa · <kbd>S</kbd> un paso · <kbd>X</kbd> reinicia la animación<br>
+  número + <kbd>Enter</kbd> va a esa diapositiva · <kbd>Inicio</kbd> <kbd>Fin</kbd><br>
+  <kbd>F</kbd> pantalla completa · <kbd>?</kbd> esta ayuda
+</div></div>
+</div>
+
+<script>
+// resaltado mínimo de Python
+const KW = /\b(def|return|for|in|if|elif|else|try|except|with|as|while|break|continue|not|and|or|None|True|False|import|from|del)\b/;
+const BI = /\b(print|len|open|int|float|str|input|repr|enumerate|range|sorted|list|dict|set|sum|max|type)\b/;
+function hl(src) {
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const re = /(#[^\n]*)|([fb]?"""[\s\S]*?"""|[fb]?"(?:[^"\\\n]|\\.)*"|[fb]?'(?:[^'\\\n]|\\.)*')|(\b[A-Za-z_]\w*\b)|(\b\d+(?:\.\d+)?\b)|(\$ [^\n]*)/g;
+  let out = '', last = 0, m;
+  while ((m = re.exec(src))) {
+    out += esc(src.slice(last, m.index));
+    const t = esc(m[0]);
+    if (m[1] || m[5]) out += `<span class="cm">${t}</span>`;
+    else if (m[2]) out += `<span class="st">${t}</span>`;
+    else if (m[3]) {
+      if (KW.test(m[3]) && m[3].match(KW)[0] === m[3]) out += `<span class="kw">${t}</span>`;
+      else if (BI.test(m[3]) && m[3].match(BI)[0] === m[3]) out += `<span class="bi">${t}</span>`;
+      else if (/^\s*\(/.test(src.slice(re.lastIndex)) && src.slice(Math.max(0, m.index - 4), m.index) === 'def ') out += `<span class="fn">${t}</span>`;
+      else out += t;
+    }
+    else if (m[4]) out += `<span class="nu">${t}</span>`;
+    last = re.lastIndex;
+  }
+  return out + esc(src.slice(last));
+}
+// cada línea en su propio span, para que las animaciones marquen la que se ejecuta
+document.querySelectorAll('pre[data-hl]').forEach(p => {
+  p.innerHTML = hl(p.textContent).split('\n').map(l => `<span class="ln">${l}</span>`).join('\n');
+});
+
+const slides = [...document.querySelectorAll('.slide')];
+slides.forEach(s => { s._ctl = []; });
+const bar = document.getElementById('bar'), num = document.getElementById('num'), help = document.getElementById('help');
+let cur = 0, typed = '';
+
+// ---------------------------------------------------------------- animaciones
+const range = (a, b) => Array.from({ length: Math.max(0, b - a) }, (_, k) => a + k);
+const barajar = n => { const a = range(1, n + 1); for (let i = n - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const miles = n => n.toLocaleString('es').replace(/\./g, ' ');
+class Viz {
+  constructor(root, cfg) {
+    this.root = root; this.cfg = cfg; this.si = 0; this.timer = null;
+    this.speed = cfg.speed || 650;
+    root.classList.add(cfg.kind || 'bars');
+    root.innerHTML = `<div class="vhead"><span class="vt">${cfg.title || ''}</span><span class="cnt"></span></div>
+      <div class="stage"><div class="items"></div><div class="ixs"></div><div class="ptrs"></div></div>
+      <div class="msg"></div>` + (cfg.controls === false ? '' : '<div class="ctl"></div>');
+    this.items = root.querySelector('.items'); this.ixs = root.querySelector('.ixs');
+    this.ptrs = root.querySelector('.ptrs'); this.msg = root.querySelector('.msg'); this.cnt = root.querySelector('.cnt');
+    this.code = cfg.code ? document.getElementById(cfg.code) : null;
+    const rows = cfg.ptrs ? Math.max(...Object.values(cfg.ptrs).map(p => p[0])) + 1 : 0;
+    this.ptrs.style.height = (rows * 1.75) + 'cqw';
+    const ctl = root.querySelector('.ctl');
+    if (ctl) {
+      if (cfg.scen.length > 1) cfg.scen.forEach((s, k) => {
+        const b = document.createElement('button'); b.textContent = s.label;
+        b.onclick = () => { this.si = k; this.reset(); };
+        ctl.appendChild(b);
+      });
+      ctl.insertAdjacentHTML('beforeend', '<span class="sp"></span><button data-k="paso">Paso</button><button data-k="anim" class="go">Animar</button><button data-k="rap">×3</button><button data-k="rei">Reiniciar</button>');
+      ctl.querySelector('[data-k=paso]').onclick = () => this.step();
+      ctl.querySelector('[data-k=anim]').onclick = () => this.toggle();
+      ctl.querySelector('[data-k=rei]').onclick = () => this.reset();
+      const rap = ctl.querySelector('[data-k=rap]');
+      rap.onclick = () => { this.fast = !this.fast; rap.classList.toggle('on', this.fast); if (this.timer) { this.stop(); this.toggle(); } };
+      this.ctl = ctl;
+    }
+    if (cfg.controls !== false) root.closest('.slide')._ctl.push(this);
+    this.reset();
+  }
+  reset(data) {
+    this.stop();
+    const s = this.cfg.scen[this.si];
+    if (!data) data = typeof s.data === 'function' ? s.data() : s.data.slice();
+    this.a = data.map((v, id) => ({ v, id }));
+    this.c = {};
+    this.gen = this.cfg.gen(this.a, this.c, s);
+    this.done = false;
+    const n = data.length, max = Math.max(...data), cells = (this.cfg.kind === 'cells');
+    this.els = this.a.map(it => {
+      const el = document.createElement('div'); el.className = 'it';
+      el.style.width = (100 / n) + '%';
+      el.innerHTML = cells ? `<div class="b">${it.v}</div>` : `<div class="b" style="height:${Math.max(6, it.v / max * 100)}%"><i>${it.v}</i></div>`;
+      return el;
+    });
+    this.items.replaceChildren(...this.els);
+    this.ixs.innerHTML = range(0, n).map(k => `<span style="left:${(k + .5) * 100 / n}%">${k}</span>`).join('');
+    this.ptrEls = {};
+    this.ptrs.replaceChildren(...Object.entries(this.cfg.ptrs || {}).map(([name, [row, color]]) => {
+      const el = document.createElement('div'); el.className = 'pt';
+      el.textContent = name; el.style.color = color; el.style.top = (row * 1.75) + 'cqw';
+      this.ptrEls[name] = el; return el;
+    }));
+    if (this.ctl) [...this.ctl.querySelectorAll('button')].slice(0, this.cfg.scen.length > 1 ? this.cfg.scen.length : 0)
+      .forEach((b, k) => b.classList.toggle('on', k === this.si));
+    this.next();
+  }
+  next() {
+    if (this.done) return false;
+    const r = this.gen.next();
+    if (r.done) { this.done = true; this.stop(); return false; }
+    this.draw(r.value);
+    if (r.value.end) { this.done = true; this.stop(); }
+    return true;
+  }
+  draw(f) {
+    const n = f.a.length, cls = f.cls || {};
+    f.a.forEach((it, p) => {
+      const el = this.els[it.id];
+      el.style.left = (p * 100 / n) + '%';
+      el.className = 'it ' + Object.keys(cls).filter(k => cls[k].includes(p)).join(' ');
+    });
+    for (const [name, el] of Object.entries(this.ptrEls)) {
+      const p = f.ptr ? f.ptr[name] : undefined;
+      const vis = p !== undefined && p >= 0 && p < n;
+      el.style.opacity = vis ? 1 : 0;
+      if (vis) el.style.left = ((p + .5) * 100 / n) + '%';
+    }
+    this.cnt.textContent = Object.entries(f.cnt || {}).map(([k, v]) => `${k}: ${v}`).join(' · ');
+    this.msg.textContent = f.msg || '';
+    if (this.code) this.code.querySelectorAll('.ln').forEach((l, k) => l.classList.toggle('on', k === f.line));
+  }
+  step() { this.stop(); if (this.done) this.reset(); else this.next(); }
+  toggle() {
+    if (this.timer) { this.stop(); return; }
+    if (this.done) this.reset();
+    this.timer = setInterval(() => { if (!this.next()) this.stop(); }, this.fast ? this.speed / 3 : this.speed);
+    this.label('Pausa');
+  }
+  stop() { clearInterval(this.timer); this.timer = null; this.label('Animar'); }
+  label(t) { if (this.ctl) this.ctl.querySelector('[data-k=anim]').textContent = t; }
+}
+
+// la carrera: tres animaciones sobre la misma lista, una comparación por paso
+class Carrera {
+  constructor(root, cfg) {
+    this.cfg = cfg; this.si = 0; this.timer = null;
+    root.innerHTML = '<div class="race"></div><div class="ctl"></div>';
+    const race = root.querySelector('.race');
+    this.lanes = cfg.lanes.map(l => {
+      const d = document.createElement('div'); d.className = 'viz compact'; race.appendChild(d);
+      return new Viz(d, { ...l, kind: 'bars', controls: false, scen: [{ data: [1] }] });
+    });
+    this.ctl = root.querySelector('.ctl');
+    cfg.scen.forEach((s, k) => {
+      const b = document.createElement('button'); b.textContent = s.label;
+      b.onclick = () => { this.si = k; this.reset(); };
+      this.ctl.appendChild(b);
+    });
+    this.ctl.insertAdjacentHTML('beforeend', '<span class="sp"></span><button data-k="paso">Paso</button><button data-k="anim" class="go">Animar</button><button data-k="rap">×3</button><button data-k="rei">Reiniciar</button>');
+    this.ctl.querySelector('[data-k=paso]').onclick = () => this.step();
+    this.ctl.querySelector('[data-k=anim]').onclick = () => this.toggle();
+    this.ctl.querySelector('[data-k=rei]').onclick = () => this.reset(this.data);
+    const rap = this.ctl.querySelector('[data-k=rap]');
+    rap.onclick = () => { this.fast = !this.fast; rap.classList.toggle('on', this.fast); if (this.timer) { this.stop(); this.toggle(); } };
+    root.closest('.slide')._ctl.push(this);
+    this.reset();
+  }
+  reset(data) {
+    this.stop();
+    this.data = data || this.cfg.scen[this.si].data();
+    this.lanes.forEach(v => v.reset(this.data.slice()));
+    [...this.ctl.querySelectorAll('button')].slice(0, this.cfg.scen.length).forEach((b, k) => b.classList.toggle('on', k === this.si));
+    this.done = false;
+  }
+  next() {
+    let alguno = false;
+    for (const v of this.lanes) {
+      if (v.done) continue;
+      const antes = v.c.comparaciones;
+      while (v.next() && v.c.comparaciones === antes) { /* hasta la próxima comparación */ }
+      alguno = true;
+    }
+    if (!alguno || this.lanes.every(v => v.done)) { this.done = true; this.stop(); }
+    return alguno;
+  }
+  step() { this.stop(); if (this.done) this.reset(this.data); else this.next(); }
+  toggle() {
+    if (this.timer) { this.stop(); return; }
+    if (this.done) this.reset(this.data);
+    this.timer = setInterval(() => { if (!this.next()) this.stop(); }, this.fast ? 60 : 180);
+    this.ctl.querySelector('[data-k=anim]').textContent = 'Pausa';
+  }
+  stop() { clearInterval(this.timer); this.timer = null; this.ctl.querySelector('[data-k=anim]').textContent = 'Animar'; }
+}
+
+// el pedazo de la búsqueda binaria, buscando -5 en range(n)
+class Rango {
+  constructor(root) {
+    this.n = 1000; this.timer = null;
+    root.innerHTML = `<div class="vhead"><span class="vt">buscar_binaria(range(n), -5)</span><span class="cnt"></span></div>
+      <div class="rtrack"><div class="rpiece"></div><div class="rmid"></div></div>
+      <div class="rends"><span>0</span><span class="rn"></span></div>
+      <div class="rtrail"></div><div class="ctl"></div>`;
+    this.piece = root.querySelector('.rpiece'); this.mid = root.querySelector('.rmid');
+    this.trail = this.msg = root.querySelector('.rtrail'); this.cnt = root.querySelector('.cnt'); this.rn = root.querySelector('.rn');
+    this.ctl = root.querySelector('.ctl');
+    [[1000, 'mil'], [1_000_000, 'un millón'], [1_000_000_000, 'mil millones']].forEach(([n, t]) => {
+      const b = document.createElement('button'); b.textContent = t; b.dataset.n = n;
+      b.onclick = () => { this.n = n; this.reset(); };
+      this.ctl.appendChild(b);
+    });
+    this.ctl.insertAdjacentHTML('beforeend', '<span class="sp"></span><button data-k="paso">Paso</button><button data-k="anim" class="go">Animar</button><button data-k="rei">Reiniciar</button>');
+    this.ctl.querySelector('[data-k=paso]').onclick = () => this.step();
+    this.ctl.querySelector('[data-k=anim]').onclick = () => this.toggle();
+    this.ctl.querySelector('[data-k=rei]').onclick = () => this.reset();
+    root.closest('.slide')._ctl.push(this);
+    this.reset();
+  }
+  reset() {
+    this.stop();
+    this.izq = 0; this.der = this.n - 1; this.vueltas = 0; this.tamanos = []; this.done = false;
+    this.rn.textContent = miles(this.n - 1);
+    this.ctl.querySelectorAll('[data-n]').forEach(b => b.classList.toggle('on', +b.dataset.n === this.n));
+    this.draw(null);
+  }
+  next() {
+    if (this.done) return false;
+    if (this.izq > this.der) { this.done = true; this.draw(null); this.stop(); return false; }
+    this.vueltas++;
+    this.tamanos.push(this.der - this.izq + 1);
+    const medio = Math.floor((this.izq + this.der) / 2);
+    this.draw(medio);
+    this.der = medio - 1;          // el medio siempre es mayor que -5
+    return true;
+  }
+  draw(medio) {
+    const n = this.n, w = Math.max(0, this.der - this.izq + 1);
+    this.piece.style.left = (this.izq / n * 100) + '%';
+    this.piece.style.width = (w / n * 100) + '%';
+    this.piece.style.opacity = w ? 1 : 0;
+    this.mid.style.opacity = medio === null ? 0 : 1;
+    if (medio !== null) this.mid.style.left = (medio / n * 100) + '%';
+    this.cnt.textContent = `vueltas: ${this.vueltas}`;
+    const t = this.tamanos.map(miles).join(' → ');
+    this.trail.innerHTML = this.done ? `${t} → <b>vacío, tras ${this.vueltas} vueltas</b>` : (t ? `pedazos: ${t}` : `pedazo inicial: ${miles(n)} elementos`);
+  }
+  step() { this.stop(); if (this.done) this.reset(); else this.next(); }
+  toggle() {
+    if (this.timer) { this.stop(); return; }
+    if (this.done) this.reset();
+    this.timer = setInterval(() => { if (!this.next()) this.stop(); }, 700);
+    this.ctl.querySelector('[data-k=anim]').textContent = 'Pausa';
+  }
+  stop() { clearInterval(this.timer); this.timer = null; this.ctl.querySelector('[data-k=anim]').textContent = 'Animar'; }
+}
+
+// la tabla de conteos, como barras a escala fija
+class Crecer {
+  constructor(root) {
+    this.ns = [100, 200, 400, 800, 1600];
+    this.filas = [
+      ['binaria', '#81c784', [6, 7, 8, 9, 10]],
+      ['lineal', '#ffb74d', [100, 200, 400, 800, 1600]],
+      ['inserción', '#ce93d8', [2573, 10180, 39218, 160691, 639673]],
+      ['selección', '#f48fb1', [4950, 19900, 79800, 319600, 1279200]],
+      ['burbuja', '#ef5350', [4947, 19809, 79547, 318610, 1278672]],
+    ];
+    this.k = 0; this.timer = null;
+    root.innerHTML = `<div class="gr" style="margin-top:0"><div class="gn" style="color:#8b949e">n =</div><div class="gnow"></div><div></div></div>` +
+      this.filas.map(([t, col]) => `<div class="gr"><div class="gn" style="color:${col}">${t}</div><div class="gt"><div class="gf" style="background:${col}"></div></div><div class="gv"></div></div>`).join('') +
+      `<div class="ctl" style="margin-top:1.4cqw"></div>`;
+    this.now = this.msg = root.querySelector('.gnow'); this.fills = [...root.querySelectorAll('.gf')]; this.vals = [...root.querySelectorAll('.gv')];
+    this.ctl = root.querySelector('.ctl');
+    this.ns.forEach((n, k) => {
+      const b = document.createElement('button'); b.textContent = `n = ${n}`;
+      b.onclick = () => { this.stop(); this.k = k; this.draw(); };
+      this.ctl.appendChild(b);
+    });
+    this.ctl.insertAdjacentHTML('beforeend', '<span class="sp"></span><button data-k="paso">Duplicar n</button><button data-k="anim" class="go">Animar</button><button data-k="rei">Reiniciar</button>');
+    this.ctl.querySelector('[data-k=paso]').onclick = () => this.step();
+    this.ctl.querySelector('[data-k=anim]').onclick = () => this.toggle();
+    this.ctl.querySelector('[data-k=rei]').onclick = () => this.reset();
+    root.closest('.slide')._ctl.push(this);
+    this.draw();
+  }
+  draw() {
+    const k = this.k, max = 1279200;
+    this.now.textContent = this.ns[k];
+    this.filas.forEach(([t, col, vs], r) => {
+      this.fills[r].style.width = (vs[k] / max * 100) + '%';
+      const antes = k ? vs[k - 1] : null;
+      const cambio = antes === null ? '' : (vs[k] - antes === 1 ? '+1' : `×${(vs[k] / antes).toFixed(1)}`);
+      this.vals[r].innerHTML = `${miles(vs[k])}<small>${cambio}</small>`;
+    });
+    [...this.ctl.querySelectorAll('button')].slice(0, this.ns.length).forEach((b, i) => b.classList.toggle('on', i === k));
+  }
+  next() { if (this.k >= this.ns.length - 1) { this.stop(); return false; } this.k++; this.draw(); return true; }
+  reset() { this.stop(); this.k = 0; this.draw(); }
+  step() { this.stop(); if (this.k >= this.ns.length - 1) this.reset(); else this.next(); }
+  toggle() {
+    if (this.timer) { this.stop(); return; }
+    if (this.k >= this.ns.length - 1) this.reset();
+    this.timer = setInterval(() => { if (!this.next()) this.stop(); }, 1400);
+    this.ctl.querySelector('[data-k=anim]').textContent = 'Pausa';
+  }
+  stop() { clearInterval(this.timer); this.timer = null; this.ctl.querySelector('[data-k=anim]').textContent = 'Animar'; }
+}
+const $ = id => document.getElementById(id);
+const fibv = n => n < 2 ? n : fibv(n - 1) + fibv(n - 2);
+
+// La pila dibujada como escalones: una fila por llamada viva, la más nueva abajo.
+// Cada fila dice qué llamada es y qué le falta: run (ejecutando), wait (esperando)
+// o ret (devolviendo).
+class StackView {
+  constructor(el) { this.el = el; el.classList.add('stack'); this.els = []; }
+  clear() { this.el.replaceChildren(); this.els = []; }
+  draw(st) {
+    while (this.els.length > st.length) this.els.pop().remove();
+    st.forEach((f, k) => {
+      let e = this.els[k];
+      if (e && e.dataset.call !== f.call) { e.remove(); this.els.length = k; e = null; }
+      if (!e) {
+        e = document.createElement('div');
+        e.innerHTML = '<span class="fc"></span><span class="fx"></span>';
+        e.dataset.call = f.call; e.style.marginLeft = (k * 1.3) + 'cqw';
+        e.children[0].textContent = f.call;
+        this.el.appendChild(e); this.els.push(e);
+      }
+      e.className = 'fr ' + (f.st || '');
+      e.children[1].textContent = f.note || '';
+    });
+  }
+}
+
+// Controlador común de las animaciones de esta conferencia: un generador de fotos,
+// escenarios y los botones de siempre. Cumple el contrato del know-how.
+class Paso {
+  constructor(root, cfg) {
+    this.root = root; this.cfg = cfg; this.si = cfg.si || 0; this.timer = null;
+    this.speed = cfg.speed || 800;
+    root.classList.add('viz');
+    root.innerHTML = `<div class="vhead"><span class="vt">${cfg.title || ''}</span><span class="cnt"></span></div>
+      <div class="body"></div><div class="msg"></div>` + (cfg.controls === false ? '' : '<div class="ctl"></div>');
+    this.body = root.querySelector('.body'); this.msg = root.querySelector('.msg'); this.cnt = root.querySelector('.cnt');
+    this.code = cfg.code ? $(cfg.code) : null;
+    this.build();
+    const ctl = root.querySelector('.ctl');
+    if (ctl) {
+      if (cfg.scen.length > 1) cfg.scen.forEach((s, k) => {
+        const b = document.createElement('button'); b.textContent = s.label;
+        b.onclick = () => { this.si = k; this.reset(); };
+        ctl.appendChild(b);
+      });
+      ctl.insertAdjacentHTML('beforeend', '<span class="sp"></span><button data-k="paso">Paso</button><button data-k="anim" class="go">Animar</button><button data-k="rap">×3</button><button data-k="rei">Reiniciar</button>');
+      ctl.querySelector('[data-k=paso]').onclick = () => this.step();
+      ctl.querySelector('[data-k=anim]').onclick = () => this.toggle();
+      ctl.querySelector('[data-k=rei]').onclick = () => this.reset();
+      const rap = ctl.querySelector('[data-k=rap]');
+      rap.onclick = () => { this.fast = !this.fast; rap.classList.toggle('on', this.fast); if (this.timer) { this.stop(); this.toggle(); } };
+      this.ctl = ctl;
+      root.closest('.slide')._ctl.push(this);
+    }
+    this.reset();
+  }
+  build() {}
+  start() {}
+  paint() {}
+  reset() {
+    this.stop();
+    const s = this.cfg.scen[this.si];
+    this.c = {};
+    this.start(s);
+    this.gen = this.cfg.gen(this.c, s);
+    this.done = false;
+    if (this.ctl && this.cfg.scen.length > 1) [...this.ctl.querySelectorAll('button')].slice(0, this.cfg.scen.length)
+      .forEach((b, k) => b.classList.toggle('on', k === this.si));
+    this.next();
+  }
+  next() {
+    if (this.done) return false;
+    const r = this.gen.next();
+    if (r.done) { this.done = true; this.stop(); return false; }
+    this.draw(r.value);
+    if (r.value.end) { this.done = true; this.stop(); }
+    return true;
+  }
+  draw(f) {
+    this.f = f;
+    this.cnt.textContent = Object.entries(f.cnt || {}).map(([k, v]) => `${k}: ${v}`).join(' · ');
+    this.msg.textContent = f.msg || '';
+    if (this.code) this.code.querySelectorAll('.ln').forEach((l, k) => l.classList.toggle('on', k === f.line));
+    this.paint(f);
+  }
+  step() { this.stop(); if (this.done) this.reset(); else this.next(); }
+  toggle() {
+    if (this.timer) { this.stop(); return; }
+    if (this.done) this.reset();
+    this.timer = setInterval(() => { if (!this.next()) this.stop(); }, this.fast ? this.speed / 3 : this.speed);
+    this.label('Pausa');
+  }
+  stop() { clearInterval(this.timer); this.timer = null; this.label('Animar'); }
+  label(t) { if (this.ctl) this.ctl.querySelector('[data-k=anim]').textContent = t; }
+}
+
+class Pila extends Paso {
+  build() {
+    this.sv = new StackView(this.body);
+    this.body.style.minHeight = (this.cfg.rows || 5) * 2.45 + 'cqw';
+  }
+  start() { this.sv.clear(); }
+  paint(f) { this.sv.draw(f.stack); }
+}
+
+const DISCOS = ['#4fc3f7', '#81c784', '#ffb74d', '#f48fb1', '#ce93d8', '#ef5350', '#79c0ff', '#ffa657'];
+class Hanoi extends Paso {
+  build() {
+    this.body.innerHTML = '<div class="rods"></div>' + (this.cfg.pila ? '<div class="pila"></div>' : '');
+    this.rods = this.body.querySelector('.rods');
+    if (this.cfg.pila) {
+      this.sv = new StackView(this.body.querySelector('.pila'));
+      this.sv.el.style.minHeight = this.cfg.pila * 2.45 + 'cqw';
+    }
+  }
+  start(s) {
+    this.n = s.n;
+    this.rods.innerHTML = '<div class="rbase"></div>' + ['A', 'B', 'C'].map((t, k) =>
+      `<div class="rod" style="left:${(k * 2 + 1) * 100 / 6}%"></div><div class="rlab" style="left:${(k * 2 + 1) * 100 / 6}%">${t}</div>`).join('');
+    this.disks = {};
+    for (let d = 1; d <= s.n; d++) {
+      const e = document.createElement('div'); e.className = 'disk';
+      e.style.width = (9 + (d - 1) * 21 / Math.max(1, s.n - 1)) + '%';
+      e.style.background = DISCOS[(d - 1) % DISCOS.length];
+      this.rods.appendChild(e); this.disks[d] = e;
+    }
+    if (this.sv) this.sv.clear();
+  }
+  paint(f) {
+    const big = this.root.classList.contains('big'), h = Math.min(big ? 1.5 : 1.05, (big ? 10 : 6.6) / this.n), b0 = 1.65;
+    Object.values(this.disks).forEach(e => { e.style.height = (h - .1) + 'cqw'; });
+    f.pegs.forEach((p, k) => p.forEach((d, i) => {
+      const e = this.disks[d];
+      e.style.left = (k * 2 + 1) * 100 / 6 + '%';
+      e.style.bottom = (b0 + i * h) + 'cqw';
+      e.classList.toggle('mv', f.moved === d);
+    }));
+    if (this.sv) this.sv.draw(f.stack);
+  }
+}
+
+// El árbol de llamadas: los nodos aparecen en el orden en que se hacen las llamadas.
+function arbolHanoi(n, o = 'A', d = 'C', a = 'B') {
+  if (!n) return null;
+  return { label: `${n}: ${o}→${d}`, call: `hanoi(${n}, ${o}, ${d}, ${a})`, kids: [arbolHanoi(n - 1, o, a, d), arbolHanoi(n - 1, a, d, o)].filter(Boolean) };
+}
+function arbolFib(n) {
+  return { label: `fib(${n})`, call: `fib(${n})`, val: fibv(n), kids: n < 2 ? [] : [arbolFib(n - 1), arbolFib(n - 2)] };
+}
+class Arbol extends Paso {
+  start(s) {
+    const t = s._t = s.tree(), nodes = [];
+    let hojas = 0;
+    (function rec(nd, dep) {
+      nd.id = nodes.length; nd.depth = dep; nodes.push(nd);
+      if (!nd.kids.length) nd.x = hojas++;
+      else { nd.kids.forEach(k => rec(k, dep + 1)); nd.x = (nd.kids[0].x + nd.kids[nd.kids.length - 1].x) / 2; }
+    })(t, 0);
+    const niveles = Math.max(...nodes.map(n => n.depth)) + 1, dx = 76, dy = 58;
+    const W = (this.cfg.ancho || hojas) * dx, x0 = 10 + (W - hojas * dx) / 2, VW = W + 110;
+    const X = nd => x0 + (nd.x + .5) * dx, Y = nd => 28 + nd.depth * dy;
+    this.nodes = nodes; this.niveles = niveles;
+    let h = '';
+    nodes.forEach(nd => nd.kids.forEach(k => { h += `<line class="te" data-k="${k.id}" x1="${X(nd)}" y1="${Y(nd) + 13}" x2="${X(k)}" y2="${Y(k) - 13}"/>`; }));
+    nodes.forEach(nd => { h += `<g class="tn" data-i="${nd.id}"><rect x="${X(nd) - 31}" y="${Y(nd) - 13}" width="62" height="26" rx="6"/><text class="mono" x="${X(nd)}" y="${Y(nd) + 5}" text-anchor="middle">${nd.label}</text></g>`; });
+    h += `<text class="tl" x="${VW - 45}" y="16" text-anchor="middle">por nivel</text>`;
+    for (let l = 0; l < niveles; l++) h += `<text class="tl n" data-l="${l}" x="${VW - 45}" y="${28 + l * dy + 6}" text-anchor="middle"></text>`;
+    this.body.innerHTML = `<svg class="tree" viewBox="0 0 ${VW} ${(this.cfg.prof || niveles) * dy + 6}">${h}</svg>`;
+    this.gs = [...this.body.querySelectorAll('.tn')];
+    this.ls = [...this.body.querySelectorAll('.te')];
+    this.ts = [...this.body.querySelectorAll('.tl.n')];
+  }
+  paint(f) {
+    const vistos = new Array(this.niveles).fill(0);
+    this.gs.forEach((g, i) => {
+      const s = f.st[i] || '';
+      g.setAttribute('class', 'tn ' + s);
+      if (s) vistos[this.nodes[i].depth]++;
+    });
+    this.ls.forEach(l => l.classList.toggle('on', !!f.st[+l.dataset.k]));
+    this.ts.forEach((t, l) => { t.textContent = vistos[l] || ''; });
+  }
+}
+
+// ---------------------------------------------------------------- generadores
+const copia = S => S.map(f => ({ ...f }));
+
+function* gTres(c) {
+  const S = [], F = o => ({ stack: copia(S), ...o });
+  yield F({ line: 9, msg: 'print(fac3()): primero hay que calcular fac3()' });
+  S.push({ call: 'fac3()', st: 'run' });
+  yield F({ line: 7, msg: 'fac3 empieza, y para multiplicar por 3 necesita fac2()' });
+  S[0].st = 'wait'; S[0].note = '3 * ?';
+  S.push({ call: 'fac2()', st: 'run' });
+  yield F({ line: 4, msg: 'fac3 se queda esperando; fac2 empieza y necesita fac1()' });
+  S[1].st = 'wait'; S[1].note = '2 * ?';
+  S.push({ call: 'fac1()', st: 'run' });
+  yield F({ line: 1, msg: 'fac2 también espera; fac1 no llama a nadie' });
+  S[2].st = 'ret'; S[2].note = 'devuelve 1';
+  yield F({ line: 1, msg: 'fac1 devuelve 1 y sale de la pila' });
+  S.pop(); S[1].st = 'run'; S[1].note = '2 * 1';
+  yield F({ line: 4, msg: 'fac2 sigue justo donde se quedó: 2 * 1' });
+  S[1].st = 'ret'; S[1].note = 'devuelve 2';
+  yield F({ line: 4, msg: 'fac2 devuelve 2 y sale' });
+  S.pop(); S[0].st = 'run'; S[0].note = '3 * 2';
+  yield F({ line: 7, msg: 'fac3 sigue: 3 * 2' });
+  S[0].st = 'ret'; S[0].note = 'devuelve 6';
+  yield F({ line: 7, msg: 'fac3 devuelve 6 y sale' });
+  S.pop();
+  yield F({ line: 9, msg: 'la pila quedó vacía: imprime 6', end: true });
+}
+
+function* gFactorial(c, s) {
+  const S = [];
+  c.llamadas = 0;
+  const F = o => ({ stack: copia(S), cnt: { ...c }, ...o });
+  function* fac(n) {
+    c.llamadas++;
+    const fr = { call: `factorial(${n})`, note: `n = ${n}`, st: 'run' };
+    S.push(fr);
+    yield F({ line: 0, msg: `entra factorial(${n}), con su propia n = ${n}` });
+    yield F({ line: 1, msg: `¿n == 0? ${n === 0 ? 'sí' : 'no'}` });
+    if (n === 0) {
+      fr.st = 'ret'; fr.note = 'devuelve 1';
+      yield F({ line: 2, msg: 'caso base: devuelve 1 sin llamar a nadie' });
+      S.pop(); return 1;
+    }
+    fr.st = 'wait'; fr.note = `${n} * ?`;
+    yield F({ line: 3, msg: `llama a factorial(${n - 1}) y se queda esperando, con su n = ${n}` });
+    const r = yield* fac(n - 1);
+    fr.st = 'run'; fr.note = `${n} * ${r}`;
+    yield F({ line: 3, msg: `le contestaron ${r}: calcula ${n} * ${r}` });
+    fr.st = 'ret'; fr.note = `devuelve ${n * r}`;
+    yield F({ line: 3, msg: `devuelve ${n * r} y sale de la pila` });
+    S.pop(); return n * r;
+  }
+  yield F({ msg: `print(factorial(${s.n}))` });
+  const r = yield* fac(s.n);
+  yield F({ msg: `la pila quedó vacía: imprime ${r}`, end: true });
+}
+
+function* gCola(c, s) {
+  const S = [];
+  c.llamadas = 0;
+  const F = o => ({ stack: copia(S), cnt: { ...c }, ...o });
+  function* fc(n, acc) {
+    c.llamadas++;
+    const fr = { call: `factorial_cola(${n}, ${acc})`, st: 'run' };
+    S.push(fr);
+    yield F({ line: 1, msg: `¿n == 0? ${n === 0 ? 'sí' : 'no'}` });
+    if (n === 0) {
+      fr.st = 'ret'; fr.note = `devuelve ${acc}`;
+      yield F({ line: 2, msg: `caso base: el acumulado ya es la respuesta, ${acc}` });
+      S.pop(); return acc;
+    }
+    fr.st = 'wait'; fr.note = 'nada pendiente';
+    yield F({ line: 3, msg: `multiplica antes de llamar: factorial_cola(${n - 1}, ${acc} * ${n})` });
+    const r = yield* fc(n - 1, acc * n);
+    fr.st = 'ret'; fr.note = `devuelve ${r}`;
+    yield F({ line: 3, msg: `le contestaron ${r}, y lo devuelve sin tocarlo` });
+    S.pop(); return r;
+  }
+  yield F({ msg: `print(factorial_cola(${s.n}))` });
+  const r = yield* fc(s.n, 1);
+  yield F({ msg: `imprime ${r}. Al volver, ninguna llamada hizo nada`, end: true });
+}
+
+function* gHanoi(c, s) {
+  const P = [range(1, s.n + 1).reverse(), [], []], ix = { A: 0, B: 1, C: 2 }, S = [];
+  c.movimientos = 0;
+  const F = o => ({ pegs: P.map(p => p.slice()), stack: copia(S), cnt: { ...c }, ...o });
+  function* h(n, o, d, a) {
+    const fr = { call: `hanoi(${n}, ${o}, ${d}, ${a})`, st: 'run' };
+    S.push(fr);
+    if (n === 0) {
+      fr.st = 'ret'; fr.note = 'nada que hacer';
+      yield F({ line: 2, msg: 'hanoi(0, ...): caso base, vuelve sin mover nada' });
+      S.pop(); return;
+    }
+    fr.st = 'wait'; fr.note = `falta: disco ${n} y la otra llamada`;
+    yield F({ line: 3, msg: n > 1 ? `primero los ${n - 1} de arriba, de ${o} a ${a}` : `no hay discos encima del 1` });
+    yield* h(n - 1, o, a, d);
+    fr.st = 'run'; fr.note = `mueve el disco ${n}`;
+    P[ix[d]].push(P[ix[o]].pop()); c.movimientos++;
+    yield F({ line: 4, moved: n, msg: `disco ${n}: ${o} -> ${d}` });
+    fr.st = 'wait'; fr.note = 'falta: nada';
+    yield F({ line: 5, msg: n > 1 ? `y ahora los ${n - 1} que esperan en ${a}, de ${a} a ${d}` : 'y la segunda llamada, también con 0 discos' });
+    yield* h(n - 1, a, d, o);
+    S.pop();
+  }
+  yield F({ msg: `hanoi(${s.n}, "A", "C", "B")` });
+  yield* h(s.n, 'A', 'C', 'B');
+  yield F({ msg: `todos en C: ${c.movimientos} movimientos = 2^${s.n} - 1`, end: true });
+}
+
+function* gArbol(c, s) {
+  const st = {}, hechas = new Set();
+  c.llamadas = 0;
+  if (s.fib) c.repetidas = 0;
+  const F = o => ({ st: { ...st }, cnt: { ...c }, ...o });
+  function* visita(nd) {
+    c.llamadas++;
+    const rep = s.fib && hechas.has(nd.label);
+    if (rep) c.repetidas++;
+    const fin = rep ? 'rep' : 'dn';
+    if (!nd.kids.length) {
+      st[nd.id] = fin; hechas.add(nd.label);
+      yield F({ msg: `${nd.call}` + (s.fib ? ` devuelve ${nd.val} sin llamar a nadie` : ': mueve el disco 1') + (rep ? ', y no era la primera vez' : '') });
+      return;
+    }
+    st[nd.id] = rep ? 'rep' : 'act';
+    yield F({ msg: `llama a ${nd.call}` + (rep ? ': ya se había calculado, y se calcula otra vez' : '') });
+    for (const k of nd.kids) yield* visita(k);
+    st[nd.id] = fin; hechas.add(nd.label);
+    yield F({ msg: s.fib ? `${nd.call} devuelve ${nd.val}` : `${nd.call} terminó` });
+  }
+  yield F({ msg: s._t.call });
+  yield* visita(s._t);
+  yield F({ msg: s.fin(c), end: true });
+}
+
+
+new Pila($('v-tres'), { title: 'la pila de print(fac3())', gen: gTres, code: 'c-tres', rows: 3, scen: [{}] });
+new Pila($('v-factorial'), {
+  title: 'la pila de factorial(n)', gen: gFactorial, code: 'c-factorial', rows: 5,
+  scen: [{ label: 'factorial(4)', n: 4 }, { label: 'factorial(2)', n: 2 }, { label: 'factorial(0)', n: 0 }],
+});
+new Pila($('v-cola'), {
+  title: 'la pila de factorial_cola(4)', gen: gCola, code: 'c-cola', rows: 5,
+  scen: [{ n: 4 }],
+});
+new Hanoi($('v-hanoi'), {
+  title: 'las torres y la pila', gen: gHanoi, code: 'c-hanoi', pila: 4, speed: 900,
+  scen: [{ label: '2 discos', n: 2 }, { label: '3 discos', n: 3 }],
+});
+new Arbol($('v-arbol-hanoi'), {
+  title: 'el árbol de llamadas de hanoi', gen: gArbol, speed: 450, ancho: 8, prof: 4,
+  scen: [3, 4].map(n => ({
+    label: `${n} discos`, tree: () => arbolHanoi(n),
+    fin: c => `${c.llamadas} llamadas que mueven, una por movimiento: 2^${n} - 1`,
+  })),
+});
+new Arbol($('v-arbol-fib'), {
+  title: 'el árbol de llamadas de fib', gen: gArbol, speed: 450, si: 1,
+  scen: [4, 5, 6].map(n => ({
+    label: `fib(${n})`, fib: true, tree: () => arbolFib(n),
+    fin: c => `fib(${n}) = ${fibv(n)}: ${c.llamadas} llamadas para ${n + 1} valores distintos`,
+  })),
+});
+
+// la portada: cinco discos que se mueven solos, sin controles ni pila
+{
+  const v = new Hanoi($('v-portada'), { gen: gHanoi, controls: false, scen: [{ n: 5 }] });
+  v.root.querySelector('.vhead').style.display = 'none';
+  v.msg.style.display = 'none';
+  setInterval(() => {
+    if (!slides[0].classList.contains('active')) return;
+    if (v.done) { v.reset(); return; }
+    while (v.next() && !v.f.moved && !v.done) { /* hasta el próximo movimiento */ }
+  }, 450);
+}
+
+// el reto: los ocho discos quietos en A
+{
+  const v = new Hanoi($('v-reto'), { gen: gHanoi, controls: false, scen: [{ n: 8 }] });
+  v.root.querySelector('.vhead').style.display = 'none';
+  v.msg.style.display = 'none';
+}
+
+// guion de demos, construido a partir de las diapositivas marcadas
+const guion = document.getElementById('guion');
+guion.innerHTML = '<tr><th>Diap.</th><th>Dónde</th><th>Qué se muestra</th></tr>' +
+  slides.map((s, i) => [s, i]).filter(([s]) => s.querySelector('.live')).map(([s, i]) => {
+    const where = s.querySelector('.live').textContent.replace(/^En vivo · /, '');
+    return `<tr><td><a href="#${i + 1}" style="color:#ef5350;font-weight:700;text-decoration:none">${i + 1}</a></td><td>${where}</td><td>${s.querySelector('h1').innerHTML}</td></tr>`;
+  }).join('');
+
+function go(n) {
+  n = Math.max(0, Math.min(slides.length - 1, n));
+  if (n !== cur) slides[cur]._ctl.forEach(c => c.stop());
+  slides.forEach((s, i) => { s.classList.toggle('active', i === n); s.classList.toggle('prev', i < n); });
+  cur = n;
+  bar.style.width = ((n + 1) / slides.length * 100) + '%';
+  bar.style.background = getComputedStyle(slides[n]).getPropertyValue('--ac');
+  num.textContent = `${n + 1} / ${slides.length}`;
+  if (location.hash !== '#' + (n + 1)) history.replaceState(null, '', '#' + (n + 1));
+}
+function reveal() {
+  const hidden = slides[cur].querySelector('pre.out.hidden');
+  if (hidden) { hidden.classList.remove('hidden'); return true; }
+  return false;
+}
+document.querySelectorAll('pre.out.hidden').forEach(p => p.addEventListener('click', e => { e.stopPropagation(); p.classList.remove('hidden'); }));
+
+document.addEventListener('keydown', e => {
+  if (e.key >= '0' && e.key <= '9') { typed += e.key; return; }
+  if (e.key === 'Enter' && typed) { go(parseInt(typed, 10) - 1); typed = ''; return; }
+  typed = '';
+  const ctl = slides[cur]._ctl;
+  if (['ArrowRight', ' ', 'PageDown', 'ArrowDown'].includes(e.key)) { e.preventDefault(); go(cur + 1); }
+  else if (['ArrowLeft', 'PageUp', 'ArrowUp', 'Backspace'].includes(e.key)) { e.preventDefault(); go(cur - 1); }
+  else if (e.key === 'Home') go(0);
+  else if (e.key === 'End') go(slides.length - 1);
+  else if (e.key === 'r' || e.key === 'R') reveal();
+  else if (e.key === 'a' || e.key === 'A') ctl.forEach(c => c.toggle());
+  else if (e.key === 's' || e.key === 'S') ctl.forEach(c => c.step());
+  else if (e.key === 'x' || e.key === 'X') ctl.forEach(c => c.reset());
+  else if (e.key === 'v' || e.key === 'V') {
+    const next = slides.findIndex((s, i) => i > cur && s.querySelector('.live'));
+    if (next >= 0) go(next);
+  }
+  else if (e.key === 'f' || e.key === 'F') { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); }
+  else if (e.key === '?') help.classList.toggle('on');
+  else if (e.key === 'Escape') help.classList.remove('on');
+});
+document.getElementById('deck').addEventListener('click', e => {
+  if (e.target.closest('a, button, .viz, .grow, #v-carrera, pre.code')) return;
+  const r = e.currentTarget.getBoundingClientRect();
+  go(e.clientX - r.left > r.width / 3 ? cur + 1 : cur - 1);
+});
+window.addEventListener('hashchange', () => go(parseInt(location.hash.slice(1), 10) - 1 || 0));
+go(parseInt(location.hash.slice(1), 10) - 1 || 0);
+</script>
+</body>
+</html>
