@@ -262,6 +262,13 @@ svg .mono{font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace}
 #help .box{background:#161b22;border:1px solid #30363d;border-radius:1cqw;padding:2.4cqw 3cqw;font-size:1.3cqw;color:#c9d1d9;line-height:2}
 #help kbd{font-family:ui-monospace,Menlo,monospace;background:#0d1117;border:1px solid #30363d;border-radius:.3cqw;padding:.1cqw .5cqw;color:#e6edf3}
 
+/* copiar el código */
+pre.code{position:relative}
+.copiar{position:absolute;top:.4cqw;right:.5cqw;font:inherit;font-family:-apple-system,system-ui,sans-serif;font-size:.8cqw;background:#0d1117;border:1px solid #30363d;color:#8b949e;border-radius:.8cqw;padding:.15cqw .7cqw;cursor:pointer;opacity:0;transition:opacity .2s}
+pre.code:hover .copiar{opacity:1}
+.copiar:hover{color:#e6edf3;border-color:#6e7681}
+.copiar.ok{color:#81c784;border-color:#81c784;opacity:1}
+
 /* la pila de llamadas */
 .stack{display:flex;flex-direction:column;gap:.4cqw;margin-top:.5cqw}
 .fr{display:flex;justify-content:space-between;gap:1cqw;align-items:center;background:#0d1117;border:1px solid #30363d;border-left:.35cqw solid #3d4450;border-radius:.4cqw;padding:.4cqw .9cqw;font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:1.05cqw;color:#e6edf3;animation:entra .3s ease;transition:opacity .2s,border-color .2s}
@@ -270,6 +277,8 @@ svg .mono{font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace}
 .fr.run{border-left-color:#ffb74d}
 .fr.run .fx{color:#ffb74d}
 .fr.wait{opacity:.7}
+.stack.dense{gap:.15cqw}
+.stack.dense .fr{padding:.08cqw .7cqw;font-size:.85cqw;border-left-width:.25cqw}
 .fr.ret{border-left-color:#81c784}
 .fr.ret .fx{color:#81c784;font-weight:700}
 @keyframes entra{from{opacity:0;transform:translateY(-.6cqw)}to{opacity:1;transform:none}}
@@ -756,38 +765,6 @@ disco 1: A -> C</pre>
 </section>
 
 <section class="slide a4">
-  <span class="live"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M1 20h22"/></svg>En vivo · aplanar.py</span>
-  <h1>Lo que un ciclo <em>no hace fácil</em></h1>
-  <div class="c2">
-    <div>
-      <pre class="code sm" data-hl>anidada = [1, [2, 3], [4, [5, 6, [7]], 8], [[[9]]]]
-
-
-def aplanar(lista):
-    plana = []
-    for x in lista:
-        if isinstance(x, list):
-            plana.extend(aplanar(x))     # aplánala y agrégala
-        else:
-            plana.append(x)
-    return plana
-
-
-print(aplanar(anidada))</pre>
-      <pre class="out sm hidden">[1, 2, 3, 4, 5, 6, 7, 8, 9]</pre>
-    </div>
-    <div>
-      <ol class="steps">
-        <li>Pide al aula aplanarla con ciclos. <em>Un <code>for</code> por nivel, ¿y cuántos niveles hay? No se sabe hasta que corre.</em></li>
-        <li>Escribe <code>aplanar</code>. <code>isinstance(x, list)</code> pregunta si es una lista; <code>extend</code> agrega todos los de otra.</li>
-        <li>¿Dónde está el caso base? <em>Una lista sin listas dentro: el ciclo nunca entra a la rama recursiva.</em></li>
-      </ol>
-      <p class="kick">Aquí la recursión está <b>dentro de un ciclo</b>: cero, una o muchas llamadas. Cada llamada recuerda en la pila por dónde iba su <code>for</code>.</p>
-    </div>
-  </div>
-</section>
-
-<section class="slide a4">
   <div class="lbl">También con una sola llamada</div>
   <h1>La recursión <em>no es solo para números</em></h1>
   <div class="c2">
@@ -821,6 +798,59 @@ recursion False</pre>
       </ul>
     </div>
   </div>
+</section>
+
+<section class="slide a4">
+  <span class="live"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M1 20h22"/></svg>En vivo · aplanar.py</span>
+  <h1>Lo que un ciclo <em>no hace fácil</em></h1>
+  <div class="c2">
+    <div>
+      <pre class="code sm" data-hl>anidada = [1, [2, 3], [4, [5, 6, [7]], 8], [[[9]]]]
+
+
+def aplanar(lista):
+    plana = []
+    for x in lista:
+        if isinstance(x, list):
+            plana.extend(aplanar(x))     # aplánala y agrégala
+        else:
+            plana.append(x)
+    return plana
+
+
+print(aplanar(anidada))</pre>
+      <pre class="out sm hidden">[1, 2, 3, 4, 5, 6, 7, 8, 9]</pre>
+    </div>
+    <div>
+      <ol class="steps">
+        <li>Pide al aula aplanarla con ciclos. <em>Un <code>for</code> por nivel, ¿y cuántos niveles hay? No se sabe hasta que corre.</em></li>
+        <li>Escribe <code>aplanar</code>. <code>isinstance(x, list)</code> pregunta si es una lista; <code>extend</code> agrega todos los de otra.</li>
+        <li>¿Dónde está el caso base? <em>Una lista sin listas dentro: el ciclo nunca entra a la rama recursiva.</em></li>
+      </ol>
+      <p class="kick">Aquí la recursión está <b>dentro de un ciclo</b>: cero, una o muchas llamadas. Cada llamada recuerda en la pila por dónde iba su <code>for</code>.</p>
+      <p class="note">Con eso, cada llamada hace el papel de un <code>for</code> anidado más, y hay tantos como haga falta.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide a4">
+  <div class="lbl">Para qué sirve la recursión</div>
+  <h1>Cada herramienta <em>resuelve un "no sé cuántos"</em></h1>
+  <div class="c3">
+    <div class="card ac">
+      <div class="ct">Una lista</div>
+      <div class="cb">Cuando no sabes <em>cuántas variables</em> hacen falta. Las notas de un grupo de cualquier tamaño, en una sola variable.</div>
+    </div>
+    <div class="card ac">
+      <div class="ct">Un ciclo</div>
+      <div class="cb">Cuando no sabes <em>cuántas instrucciones</em> hacen falta. Las mismas líneas se repiten las veces que diga el programa al correr.</div>
+    </div>
+    <div class="card ac">
+      <div class="ct">La recursión</div>
+      <div class="cb">Cuando no sabes <em>cuántos ciclos anidados</em> hacen falta. Aplanar a cualquier profundidad, Hanói con cualquier cantidad de discos.</div>
+    </div>
+  </div>
+  <p class="kick">Cada una es <b>más poderosa</b> que la anterior: hace lo que la anterior no puede escribir de antemano. La recursión de cola no está en esta lista, porque es un ciclo. La que cuenta es la que <b>se llama más de una vez</b>.</p>
 </section>
 
 <!-- ============================================================ 4. fibonacci -->
@@ -929,7 +959,7 @@ fib(30) = 832040, con 2692537 llamadas</pre>
     <li>Las llamadas que esperan se guardan en la <strong>pila de llamadas</strong>, cada una con sus propias variables.</li>
     <li><strong>De cola</strong>: la llamada es lo último y su resultado se devuelve sin tocarlo. Se convierte en ciclo: parámetros a variables, llamada a asignación simultánea.</li>
     <li>Python corta en <strong>mil llamadas</strong> con <code>RecursionError</code>, aunque sea de cola, igual que si falta el caso base.</li>
-    <li>Con <strong>más de una llamada</strong> se forma un árbol: Hanói, aplanar. Ahí la pila recuerda lo que un ciclo tendría que llevar a mano.</li>
+    <li>Con <strong>más de una llamada</strong> se forma un árbol: Hanói, aplanar. Una lista sirve cuando no sabes cuántas variables, un ciclo cuando no sabes cuántas instrucciones, y la recursión cuando no sabes <strong>cuántos ciclos anidados</strong>.</li>
     <li>Contar el árbol nivel por nivel da el costo. Si repite subproblemas, como <code>fib</code>, es correcta e inútil.</li>
   </ul>
 </section>
@@ -1270,6 +1300,21 @@ class Crecer {
   stop() { clearInterval(this.timer); this.timer = null; this.ctl.querySelector('[data-k=anim]').textContent = 'Animar'; }
 }
 const $ = id => document.getElementById(id);
+// un botón para copiar cada bloque de código, con el texto tal como se ve
+document.querySelectorAll('pre.code').forEach(p => {
+  const texto = p.textContent, b = document.createElement('button');
+  b.className = 'copiar'; b.textContent = 'copiar';
+  b.onclick = e => {
+    e.stopPropagation();
+    const listo = () => { b.textContent = 'copiado'; b.classList.add('ok'); setTimeout(() => { b.textContent = 'copiar'; b.classList.remove('ok'); }, 1200); };
+    const aMano = () => {
+      const t = document.createElement('textarea'); t.value = texto; document.body.appendChild(t);
+      t.select(); document.execCommand('copy'); t.remove(); listo();
+    };
+    if (navigator.clipboard) navigator.clipboard.writeText(texto).then(listo, aMano); else aMano();
+  };
+  p.appendChild(b);
+});
 const fibv = n => n < 2 ? n : fibv(n - 1) + fibv(n - 2);
 
 // La pila dibujada como escalones: una fila por llamada viva, la más nueva abajo.
@@ -1359,7 +1404,8 @@ class Paso {
   toggle() {
     if (this.timer) { this.stop(); return; }
     if (this.done) this.reset();
-    this.timer = setInterval(() => { if (!this.next()) this.stop(); }, this.fast ? this.speed / 3 : this.speed);
+    const sp = this.cfg.scen[this.si].speed || this.speed;
+    this.timer = setInterval(() => { if (!this.next()) this.stop(); }, this.fast ? sp / 3 : sp);
     this.label('Pausa');
   }
   stop() { clearInterval(this.timer); this.timer = null; this.label('Animar'); }
@@ -1396,7 +1442,7 @@ class Hanoi extends Paso {
       e.style.background = DISCOS[(d - 1) % DISCOS.length];
       this.rods.appendChild(e); this.disks[d] = e;
     }
-    if (this.sv) this.sv.clear();
+    if (this.sv) { this.sv.clear(); this.sv.el.classList.toggle('dense', s.n > 4); }
   }
   paint(f) {
     const big = this.root.classList.contains('big'), h = Math.min(big ? 1.5 : 1.05, (big ? 10 : 6.6) / this.n), b0 = 1.65;
@@ -1546,17 +1592,17 @@ function* gHanoi(c, s) {
     S.push(fr);
     if (n === 0) {
       fr.st = 'ret'; fr.note = 'nada que hacer';
-      yield F({ line: 2, msg: 'hanoi(0, ...): caso base, vuelve sin mover nada' });
+      if (!s.soloMov) yield F({ line: 2, msg: 'hanoi(0, ...): caso base, vuelve sin mover nada' });
       S.pop(); return;
     }
     fr.st = 'wait'; fr.note = `falta: disco ${n} y la otra llamada`;
-    yield F({ line: 3, msg: n > 1 ? `primero los ${n - 1} de arriba, de ${o} a ${a}` : `no hay discos encima del 1` });
+    if (!s.soloMov) yield F({ line: 3, msg: n > 1 ? `primero los ${n - 1} de arriba, de ${o} a ${a}` : `no hay discos encima del 1` });
     yield* h(n - 1, o, a, d);
     fr.st = 'run'; fr.note = `mueve el disco ${n}`;
     P[ix[d]].push(P[ix[o]].pop()); c.movimientos++;
     yield F({ line: 4, moved: n, msg: `disco ${n}: ${o} -> ${d}` });
     fr.st = 'wait'; fr.note = 'falta: nada';
-    yield F({ line: 5, msg: n > 1 ? `y ahora los ${n - 1} que esperan en ${a}, de ${a} a ${d}` : 'y la segunda llamada, también con 0 discos' });
+    if (!s.soloMov) yield F({ line: 5, msg: n > 1 ? `y ahora los ${n - 1} que esperan en ${a}, de ${a} a ${d}` : 'y la segunda llamada, también con 0 discos' });
     yield* h(n - 1, a, d, o);
     S.pop();
   }
@@ -1603,7 +1649,7 @@ new Pila($('v-cola'), {
 });
 new Hanoi($('v-hanoi'), {
   title: 'las torres y la pila', gen: gHanoi, code: 'c-hanoi', pila: 4, speed: 900,
-  scen: [{ label: '2 discos', n: 2 }, { label: '3 discos', n: 3 }],
+  scen: [{ label: '2 discos', n: 2 }, { label: '3 discos', n: 3 }, { label: '10 discos', n: 10, soloMov: true, speed: 150 }],
 });
 new Arbol($('v-arbol-hanoi'), {
   title: 'el árbol de llamadas de hanoi', gen: gArbol, speed: 450, ancho: 8, prof: 4,
