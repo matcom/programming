@@ -740,7 +740,7 @@ print(ordenar_rapida_azar(ordenada) == ordenada)</pre>
   <div class="lbl">La carrera</div>
   <h1>Una comparación <em>por paso</em></h1>
   <div id="v-carrera"></div>
-  <p class="note">Las tres sobre la misma lista de 32, y cada una avanza una comparación por paso. En la rápida se cuenta un <code>x &lt; pivote</code> por elemento repartido.</p>
+  <p class="note">Las tres sobre la misma lista de 32, y cada una avanza una comparación por paso. En la rápida cuentan el <code>&lt;</code> y, si no era menor, el <code>==</code>, como en el código. ¿Quién gana? <b>Espera al reloj.</b></p>
 </section>
 
 <section class="slide a5">
@@ -750,7 +750,7 @@ print(ordenar_rapida_azar(ordenada) == ordenada)</pre>
     <div class="grow" id="v-crecer-tiempo"></div>
     <div>
       <p class="sub">Las mismas listas al azar para los cuatro. La selección y la inserción multiplican por cuatro; la mezcla y la rápida se quedan pegadas al fondo.</p>
-      <p class="note">Tiempos del libro. Con listas tan cortas, la mezcla y la rápida duran milésimas, y el reloj tiembla: lo que importa es la columna de la derecha en las dos de arriba.</p>
+      <p class="note">Tiempos del libro. Con listas tan cortas, la mezcla y la rápida duran milésimas y el reloj tiembla. Pero mira la última fila: <b>la rápida es la más rápida de las cuatro</b>, aunque en la carrera comparaba más que la mezcla.</p>
     </div>
   </div>
 </section>
@@ -786,8 +786,33 @@ for nombre, metodo in [("mezcla", ordenar_mezcla),
 </section>
 
 <section class="slide a5">
+  <div class="lbl">La sorpresa</div>
+  <h1>Más comparaciones, <em>menos segundos</em></h1>
+  <div class="c2" style="grid-template-columns:minmax(0,1fr) minmax(0,1fr)">
+    <div>
+      <div id="v-medidas"></div>
+      <p class="note">El mismo millón del libro, contado aparte. En la rápida cuentan el <code>&lt;</code> y el <code>==</code>.</p>
+    </div>
+    <div>
+      <pre class="code xs" data-hl># la mezcla: una vuelta por elemento colocado
+while i &lt; len(a) and j &lt; len(b):
+    if a[i] &lt;= b[j]:
+        resultado.append(a[i])
+        i += 1
+
+# la rápida: una vuelta por elemento repartido
+for x in lista:
+    if x &lt; pivote:
+        menores.append(x)</pre>
+      <p class="kick" style="font-size:1.3cqw">Contar comparaciones da el <b>orden de crecimiento</b>. El tiempo es ese orden por una <b>constante</b>: lo que cuesta cada vuelta. La de la mezcla calcula dos <code>len</code>, lee por índice y suma; la de la rápida recibe <code>x</code> y agrega.</p>
+      <p class="note">Con el mismo orden, n log n, la constante decide.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide a5">
   <div class="lbl">¿Y sorted?</div>
-  <h1>Más rápida, <em>pero de la misma familia</em></h1>
+  <h1>sorted es una mezcla <em>escrita en C</em></h1>
   <div class="c3">
     <div class="card ac">
       <div class="ct">Escrita en C</div>
@@ -802,7 +827,48 @@ for nombre, metodo in [("mezcla", ordenar_mezcla),
       <div class="cb">Para los pedazos pequeños usa la <em>inserción</em> de la conferencia 8, que ahí es más rápida que seguir con la recursión.</div>
     </div>
   </div>
-  <p class="kick">Su orden de crecimiento es el mismo que el de las nuestras: <b>n log n</b>. Entre n² y n log n, con un millón, está la diferencia entre multiplicar por un millón y multiplicar por veinte.</p>
+  <p class="kick">Si la rápida es más rápida, ¿por qué <code>sorted</code> es una mezcla? Porque la documentación de Python promete que <b>es estable</b>: los iguales conservan su orden, y eso la rápida no lo da.</p>
+</section>
+
+<section class="slide a5">
+  <div class="lbl">En la práctica</div>
+  <h1>Los lenguajes <em>usan las dos</em></h1>
+  <table class="br">
+    <tr><th>Dónde</th><th>Qué usa</th><th>Por qué</th></tr>
+    <tr><td><code>sorted</code>, <code>list.sort</code> (Python)</td><td>Timsort, una <b>mezcla</b></td><td>promete estabilidad</td></tr>
+    <tr><td><code>Arrays.sort</code> de objetos (Java)</td><td>Timsort, una <b>mezcla</b></td><td>los objetos iguales se distinguen: hace falta estabilidad</td></tr>
+    <tr><td><code>Arrays.sort</code> de números (Java)</td><td><b>rápida</b> con dos pivotes</td><td>dos números iguales son indistinguibles: la estabilidad no importa</td></tr>
+    <tr><td><code>std::sort</code> (C++)</td><td>introsort: <b>rápida</b>, que cambia de método si la recursión se hace muy honda</td><td>velocidad, y un peor caso n log n sin depender del azar</td></tr>
+    <tr><td><code>std::stable_sort</code> (C++)</td><td>una <b>mezcla</b></td><td>lo dice el nombre</td></tr>
+  </table>
+  <p class="kick">La regla: <b>mezcla</b> cuando hace falta estabilidad o un peor caso garantizado; <b>rápida</b> cuando no, por velocidad y memoria.</p>
+</section>
+
+<section class="slide a5">
+  <div class="lbl">Para quien quiera más · no está en el libro</div>
+  <h1>La rápida de verdad <em>no crea listas</em></h1>
+  <div class="c2" style="grid-template-columns:minmax(0,.9fr) minmax(0,1fr)">
+    <div>
+      <pre class="code sm" data-hl id="c-part">def particion(lista):
+    pivote = lista[-1]
+    k = 0                   # lista[:k]: los menores
+    for j in range(len(lista) - 1):
+        if lista[j] &lt; pivote:
+            lista[k], lista[j] = lista[j], lista[k]
+            k += 1
+    lista[k], lista[-1] = lista[-1], lista[k]
+    return k</pre>
+      <ul class="pts sm">
+        <li>Nuestra rápida crea tres listas en cada llamada. Las de las bibliotecas <strong>intercambian dentro de la misma lista</strong>.</li>
+        <li>La mezcla necesita una lista auxiliar del tamaño de lo que mezcla. Esta rápida, <strong>ninguna</strong>.</li>
+      </ul>
+    </div>
+    <div>
+      <div id="v-part"></div>
+      <div class="ley"><span><i style="background:#ce93d8"></i>pivote</span><span><i style="background:#81c784"></i>menores, ya a la izquierda</span><span><i style="background:#f48fb1"></i>intercambio</span></div>
+      <p class="note">Con <code>ini</code> y <code>fin</code> en lugar de la lista entera, y dos llamadas recursivas, es la ordenación rápida en el mismo lugar. Queda para Diseño y Análisis de Algoritmos.</p>
+    </div>
+  </div>
 </section>
 
 <!-- ============================================================ cierre -->
@@ -815,6 +881,7 @@ for nombre, metodo in [("mezcla", ordenar_mezcla),
     <li>La <strong>ordenación por mezcla</strong> parte sin mirar y trabaja al combinar: log₂ n niveles con n de trabajo cada uno, <strong>n log₂ n</strong>. Es estable.</li>
     <li>La <strong>ordenación rápida</strong> trabaja al partir, en menores, iguales y mayores que un pivote, y combinar es pegar.</li>
     <li>Con el primero como pivote, una lista ordenada deja el árbol como una fila: <strong>cuadrática</strong> y <code>RecursionError</code>. Con el pivote al azar, n log n esperado con cualquier entrada.</li>
+    <li>Contar comparaciones da el <strong>orden</strong>, no el tiempo: la rápida compara casi el doble y tarda menos. Con el mismo orden, <strong>la constante decide</strong>. La mezcla es estable; la rápida, más rápida en la práctica.</li>
     <li>El costo de un algoritmo recursivo se cuenta en su árbol: <strong>cuántos niveles</strong> y <strong>cuánto trabajo en cada uno</strong>. La binaria es divide y vencerás con un solo subproblema.</li>
   </ul>
 </section>
@@ -1320,8 +1387,9 @@ function* gQsort(a, c, s) {
     if (!quieto) yield F({ line: 3, cls: { done: hechos(), dim: fuera(lo, hi), key: [p] }, msg: `pivote: ${pv}` });
     const men = [], igu = [], may = [];
     for (let k = lo; k < hi; k++) {
-      c.comparaciones++;
-      const x = a[k], dest = x.v < pv ? men : (x.v === pv ? igu : may);
+      const x = a[k];
+      c.comparaciones += x.v < pv ? 1 : 2;     // el < siempre, el == si no era menor
+      const dest = x.v < pv ? men : (x.v === pv ? igu : may);
       if (!quieto) yield F({ line: dest === men ? 7 : (dest === igu ? 9 : 11), cls: { done: hechos(), dim: fuera(lo, hi), key: [p], cmp: k === p ? [] : [k] }, msg: `${x.v} va a ${dest === men ? 'menores' : (dest === igu ? 'iguales' : 'mayores')}` });
       else yield F({ cls: { done: hechos(), dim: fuera(lo, hi), key: [p], cmp: [k] }, msg: '' });
       dest.push(x);
@@ -1333,7 +1401,7 @@ function* gQsort(a, c, s) {
     yield* qs(lo + men.length + igu.length, hi, d + 1);
   }
   yield* qs(0, n, 0);
-  yield F({ cls: { done: range(0, n) }, msg: `ordenada, en ${c.niveles} niveles de llamadas`, end: true });
+  yield F({ cls: { done: range(0, n) }, msg: s.cuenta === 'comparaciones' ? `ordenada, con ${c.comparaciones} comparaciones` : `ordenada, en ${c.niveles} niveles de llamadas`, end: true });
 }
 
 function* gSeleccion(a, c) {
@@ -1393,6 +1461,49 @@ function* gArbolRapida(c, s) {
   yield F({ msg: `${c.repartidos} elementos repartidos en ${hondo} niveles de llamadas`, end: true });
 }
 
+// Dos medidas del mismo millón, que se revelan una por paso.
+class Medidas extends Paso {
+  build() {
+    this.body.innerHTML = this.cfg.grupos.map(g => `<div class="grow" style="margin-top:.9cqw"><div class="gn" style="text-align:left;color:#8b949e;margin-bottom:.2cqw">${g.titulo}</div>` +
+      g.filas.map(([t, col]) => `<div class="gr"><div class="gn" style="color:${col}">${t}</div><div class="gt"><div class="gf" style="background:${col};width:0"></div></div><div class="gv"></div></div>`).join('') + '</div>').join('');
+    this.gfs = [...this.body.querySelectorAll('.grow')].map(g => [[...g.querySelectorAll('.gf')], [...g.querySelectorAll('.gv')]]);
+  }
+  paint(f) {
+    this.cfg.grupos.forEach((g, k) => {
+      const [fills, vals] = this.gfs[k], max = Math.max(...g.filas.map(r => r[2]));
+      g.filas.forEach(([t, col, v], r) => {
+        fills[r].style.width = k < f.ver ? (v / max * 100) + '%' : '0';
+        vals[r].textContent = k < f.ver ? g.fmt(v) : '';
+      });
+    });
+  }
+}
+function* gMedidas(c, s) {
+  yield { ver: 0, msg: 'el millón del libro: ¿cuál compara menos?' };
+  yield { ver: 1, msg: 'la rápida hace casi el doble de comparaciones' };
+  yield { ver: 2, msg: 'y tarda un 30 % menos', end: true };
+}
+
+// La partición de Lomuto: los menores se juntan a la izquierda, sin listas nuevas.
+function* gParticion(a, c) {
+  c.intercambios = 0;
+  const n = a.length, pv = a[n - 1].v;
+  let k = 0;
+  const F = o => ({ a: a.slice(), cnt: { ...c }, ...o });
+  yield F({ line: 1, cls: { key: [n - 1] }, ptr: { k: 0 }, msg: `pivote: el último, ${pv}` });
+  for (let j = 0; j < n - 1; j++) {
+    const menor = a[j].v < pv;
+    yield F({ line: 4, cls: { key: [n - 1], found: range(0, k), cmp: [j] }, ptr: { k, j }, msg: `¿${a[j].v} < ${pv}? ${menor ? 'sí' : 'no'}` });
+    if (menor) {
+      [a[k], a[j]] = [a[j], a[k]]; c.intercambios++;
+      yield F({ line: 5, cls: { key: [n - 1], found: range(0, k), swap: [k, j] }, ptr: { k, j }, msg: k === j ? `el ${a[k].v} ya está en su lugar` : `el ${a[k].v} pasa a la posición ${k}` });
+      k++;
+    }
+  }
+  [a[k], a[n - 1]] = [a[n - 1], a[k]]; c.intercambios++;
+  yield F({ line: 7, cls: { found: range(0, k), key: [k] }, ptr: { k }, msg: `el ${pv} queda en la posición ${k}: menores a la izquierda, ninguna lista nueva`, end: true });
+}
+
 const LIBRO = [38, 27, 43, 3, 9, 82, 10, 5];
 new Montones($('v-mezclar'), {
   title: 'mezclar(a, b)', gen: gMezclar, code: 'c-mezclar', speed: 1000,
@@ -1446,6 +1557,19 @@ new Crecer($('v-crecer-tiempo'), {
     ['mezcla', '#81c784', [0.001, 0.004, 0.004, 0.007]],
     ['rápida', '#ce93d8', [0.001, 0.001, 0.003, 0.005]],
   ],
+});
+
+new Medidas($('v-medidas'), {
+  title: 'ordenar un millón', gen: gMedidas, speed: 1600, scen: [{}],
+  grupos: [
+    { titulo: 'comparaciones', fmt: miles, filas: [['mezcla', '#81c784', 18675014], ['rápida', '#ce93d8', 37258291]] },
+    { titulo: 'segundos', fmt: v => v.toFixed(2).replace('.', ',') + ' s', filas: [['mezcla', '#81c784', 4.14], ['rápida', '#ce93d8', 2.88]] },
+  ],
+});
+new Viz($('v-part'), {
+  title: 'particion(lista)', kind: 'bars', gen: gParticion, code: 'c-part', speed: 800,
+  ptrs: { j: [0, '#ffb74d'], k: [1, '#81c784'] },
+  scen: [{ label: 'un ejemplo', data: [27, 82, 3, 43, 9, 10, 5, 38] }, { label: '16 al azar', data: () => distintos(16) }],
 });
 
 // la portada: la mezcla ordenando 32 barras sola, sin controles
