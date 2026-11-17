@@ -1,0 +1,1519 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Conferencia 10: divide y vencerás</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+
+html,body{
+  width:100%;height:100%;
+  background:#0d1117;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+}
+
+#deck{
+  width:min(100vw,177.78vh);
+  aspect-ratio:16/9;
+  position:relative;
+  overflow:hidden;
+  background:#0d1117;
+  container-type:size;
+  color:#e6edf3;
+}
+
+.slide{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;
+  justify-content:center;
+  padding:3.4cqw 5cqw;
+  opacity:0;
+  transform:translateX(4%);
+  transition:opacity .35s ease,transform .35s ease;
+  pointer-events:none;
+  --ac:#4fc3f7;
+}
+.slide.active{opacity:1;transform:none;pointer-events:auto}
+.slide.prev{opacity:0;transform:translateX(-4%)}
+.slide.ctr{align-items:center;text-align:center}
+
+/* un color por sección */
+.a0{--ac:#e6edf3}
+.a1{--ac:#4fc3f7}
+.a2{--ac:#ffb74d}
+.a3{--ac:#81c784}
+.a4{--ac:#f48fb1}
+.a5{--ac:#ce93d8}
+
+.lbl{
+  font-size:.9cqw;font-weight:700;
+  letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ac);margin-bottom:1cqw;
+}
+h1{
+  font-size:3.4cqw;font-weight:800;
+  line-height:1.12;color:#e6edf3;
+  margin-bottom:1.3cqw;max-width:30ch;
+}
+h1 em{color:var(--ac);font-style:normal}
+h1.hero{font-size:5.6cqw;max-width:100%}
+h1 code,.sub code,li code,.cb code,td code,.kick code,.note code{
+  font-family:'JetBrains Mono','Fira Code',ui-monospace,Menlo,Consolas,monospace;
+  font-size:.92em;color:var(--ac);
+  background:rgba(255,255,255,.06);padding:.05em .3em;border-radius:.25em;
+}
+
+.sub{
+  font-size:1.6cqw;color:#8b949e;
+  line-height:1.5;max-width:60ch;
+  margin-bottom:1.1cqw;
+}
+.sub b{color:#e6edf3}
+
+ul.pts{list-style:none;margin-top:.3cqw}
+ul.pts li{
+  font-size:1.45cqw;line-height:1.45;
+  padding:.35cqw 0 .35cqw 1.9cqw;
+  position:relative;color:#e6edf3;
+}
+ul.pts li::before{content:'→';position:absolute;left:0;color:var(--ac)}
+ul.pts li strong{color:var(--ac)}
+ul.pts.sm li{font-size:1.2cqw}
+
+.c2{display:grid;grid-template-columns:1fr 1fr;gap:1.6cqw;width:100%;margin-top:1cqw;align-items:start}
+.c2.wl{grid-template-columns:1.25fr 1fr}
+.c2.wr{grid-template-columns:1fr 1.25fr}
+.c2>*,.c3>*{min-width:0}
+.c3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.25cqw;width:100%;margin-top:1.2cqw}
+
+.card{
+  background:#161b22;border-radius:.75cqw;
+  padding:1.3cqw 1.5cqw;border:1px solid rgba(255,255,255,.08);
+}
+.card.ac{border-color:color-mix(in srgb,var(--ac) 40%,transparent)}
+.card.bad{border-color:rgba(239,83,80,.55)}
+.ct{
+  font-size:.9cqw;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;
+  margin-bottom:.6cqw;color:var(--ac);
+}
+.card.bad .ct{color:#ef5350}
+.cb{font-size:1.18cqw;color:#8b949e;line-height:1.55}
+.cb em{color:#e6edf3;font-style:normal}
+
+.kick{font-size:1.5cqw;color:#e6edf3;line-height:1.5;max-width:70ch;margin-top:1.2cqw}
+.kick b{color:var(--ac)}
+.note{font-size:1.1cqw;color:#8b949e;line-height:1.55;margin-top:.8cqw;max-width:80ch}
+.note b{color:#e6edf3}
+
+/* código */
+pre.code,pre.out{
+  font-family:'JetBrains Mono','Fira Code',ui-monospace,Menlo,Consolas,monospace;
+  font-size:1.3cqw;line-height:1.5;
+  background:#161b22;border:1px solid rgba(255,255,255,.08);
+  border-radius:.6cqw;padding:1cqw 1.3cqw;
+  white-space:pre;overflow:hidden;color:#e6edf3;
+}
+pre.code.sm,pre.out.sm{font-size:1.08cqw}
+pre.code.xs,pre.out.xs{font-size:.98cqw}
+.kw{color:#ff7b72}.st{color:#a5d6ff}.cm{color:#6e7681;font-style:italic}
+.bi{color:#d2a8ff}.nu{color:#79c0ff}.fn{color:#ffa657}
+pre .ln{display:inline-block;min-width:100%;border-radius:.2cqw;transition:background .2s}
+pre .ln.on{background:color-mix(in srgb,var(--ac) 24%,transparent);box-shadow:-.5cqw 0 0 color-mix(in srgb,var(--ac) 24%,transparent)}
+
+pre.out{
+  position:relative;margin-top:.6cqw;
+  border-style:dashed;border-color:rgba(255,255,255,.18);
+  color:#c9d1d9;
+}
+pre.out::before{
+  content:'salida';position:absolute;top:.35cqw;right:.7cqw;
+  font-family:-apple-system,system-ui,sans-serif;font-size:.75cqw;
+  letter-spacing:.14em;text-transform:uppercase;color:#6e7681;
+}
+pre.out .err{color:#ff7b72}
+pre.out.hidden{color:transparent;cursor:pointer}
+pre.out.hidden .err{color:transparent}
+pre.out.hidden::after{
+  content:'¿qué imprime? (R o clic para ver)';
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:-apple-system,system-ui,sans-serif;font-size:1.1cqw;color:#8b949e;
+  letter-spacing:.04em;
+}
+
+/* demo en vivo */
+.live{
+  display:inline-flex;align-items:center;gap:.6cqw;
+  background:#ef5350;color:#fff;
+  font-size:.95cqw;font-weight:800;letter-spacing:.16em;text-transform:uppercase;
+  padding:.45cqw 1cqw;border-radius:2cqw;margin-bottom:1cqw;align-self:flex-start;
+}
+.live svg{width:1.4cqw;height:1.4cqw}
+.slide.ctr .live{align-self:center}
+.steps{list-style:none;counter-reset:s;margin-top:.4cqw}
+.steps li{
+  counter-increment:s;font-size:1.25cqw;line-height:1.45;color:#e6edf3;
+  padding:.35cqw 0 .35cqw 2.4cqw;position:relative;
+}
+.steps li::before{
+  content:counter(s);position:absolute;left:0;top:.35cqw;
+  width:1.7cqw;height:1.7cqw;border-radius:50%;
+  background:#ef5350;color:#fff;font-size:.95cqw;font-weight:800;
+  display:flex;align-items:center;justify-content:center;
+}
+.steps li code{
+  font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
+  font-size:.92em;color:#ffa657;background:rgba(255,255,255,.06);
+  padding:.05em .3em;border-radius:.25em;
+}
+.steps li em{color:#8b949e;font-style:normal}
+
+/* tablas */
+table.br{width:100%;border-collapse:collapse;margin-top:1cqw;font-size:1.15cqw}
+table.br th{text-align:left;font-size:.85cqw;letter-spacing:.12em;text-transform:uppercase;color:#8b949e;padding:.55cqw .9cqw;border-bottom:1px solid #30363d}
+table.br td{padding:.6cqw .9cqw;border-bottom:1px solid rgba(255,255,255,.05);color:#c9d1d9;vertical-align:top}
+table.br td:first-child{white-space:nowrap}
+table.br td code{font-size:1em}
+table.br td.big{font-size:1.5cqw;font-weight:800;color:var(--ac)}
+
+/* recorrido del curso */
+.road{display:grid;grid-template-columns:repeat(6,1fr);gap:.8cqw;width:100%;margin-top:1.6cqw}
+.road .stop{background:#161b22;border:1px solid rgba(255,255,255,.08);border-radius:.6cqw;padding:1cqw 1.1cqw;position:relative}
+.road .stop .n{font-size:2.2cqw;font-weight:900;color:#3d4450;line-height:1}
+.road .stop .t{font-size:1.1cqw;font-weight:700;color:#e6edf3;margin-top:.5cqw}
+.road .stop .d{font-size:.95cqw;color:#8b949e;margin-top:.35cqw;line-height:1.4}
+.road .stop.now{border-color:var(--ac);background:color-mix(in srgb,var(--ac) 10%,#161b22)}
+.road .stop.now .n{color:var(--ac)}
+.road .stop.next{border-style:dashed}
+.road .stop.off{opacity:.55}
+
+svg.fig{width:100%;height:auto;display:block;margin-top:.8cqw}
+svg text{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif}
+svg .mono{font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace}
+
+/* animaciones */
+.viz{background:#161b22;border:1px solid rgba(255,255,255,.08);border-radius:.75cqw;padding:.9cqw 1.1cqw;cursor:default}
+.vhead{display:flex;justify-content:space-between;align-items:baseline;gap:1cqw;margin-bottom:.3cqw}
+.vhead .vt{font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:1cqw;font-weight:700;color:var(--ac)}
+.vhead .cnt{font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:1.05cqw;color:#e6edf3;white-space:nowrap}
+.items{position:relative;height:13cqw}
+.cells .items{height:6.6cqw}
+.compact .items{height:9cqw}
+.ixs,.ptrs{position:relative}
+.ixs{height:1.4cqw}
+.compact .ixs{display:none}
+.it{position:absolute;top:2.6cqw;bottom:0;padding:0 .18cqw;display:flex;flex-direction:column;justify-content:flex-end;transition:left .32s ease,transform .32s ease,opacity .25s}
+.it .b{position:relative;border-radius:.3cqw .3cqw 0 0;background:#3d4450;transition:background .2s,border-color .2s,color .2s}
+.it .b i{position:absolute;left:0;right:0;top:-1.45cqw;text-align:center;font-style:normal;font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:.95cqw;color:#8b949e}
+.compact .it .b i{font-size:.8cqw;top:-1.2cqw}
+.cells .it .b{height:3.8cqw;border-radius:.45cqw;background:#0d1117;border:2px solid #30363d;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:1.45cqw;color:#e6edf3}
+.it.done .b{background:#4fc3f7}
+.it.cmp .b{background:#ffb74d}
+.it.swap .b{background:#f48fb1}
+.it.found .b{background:#81c784}
+.it.key .b{background:#ce93d8}
+.it.key{transform:translateY(-1.7cqw)}
+.it.cmp .b i{color:#ffb74d}.it.swap .b i{color:#f48fb1}.it.key .b i{color:#ce93d8}
+.cells .it.cmp .b{background:rgba(255,183,77,.14);border-color:#ffb74d}
+.cells .it.found .b{background:rgba(129,199,132,.18);border-color:#81c784}
+.it.dim{opacity:.2}
+.ixs span{position:absolute;top:.2cqw;transform:translateX(-50%);font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:.78cqw;color:#6e7681}
+.pt{position:absolute;transform:translateX(-50%);transition:left .32s ease,opacity .2s;font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:.92cqw;font-weight:700;white-space:nowrap;text-align:center;line-height:1.05}
+.pt::before{content:'▲';display:block;font-size:.7cqw}
+.msg{font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:1.02cqw;color:#c9d1d9;min-height:1.55cqw;margin-top:.25cqw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ctl{display:flex;flex-wrap:wrap;gap:.45cqw;margin-top:.6cqw;align-items:center}
+.ctl button{font:inherit;font-size:.88cqw;background:#0d1117;border:1px solid #30363d;color:#c9d1d9;border-radius:1cqw;padding:.28cqw .8cqw;cursor:pointer}
+.ctl button:hover{border-color:#6e7681}
+.ctl button.on{border-color:var(--ac);color:var(--ac)}
+.ctl button.go{background:var(--ac);border-color:var(--ac);color:#0d1117;font-weight:700}
+.ctl .sp{flex:1}
+.race{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1cqw;margin-top:.6cqw}
+.race .viz{padding:.7cqw .8cqw}
+
+/* el pedazo que se parte */
+.rtrack{position:relative;height:3.2cqw;background:#0d1117;border:1px solid #30363d;border-radius:.4cqw;margin-top:2cqw;overflow:hidden}
+.rpiece{position:absolute;top:0;bottom:0;background:rgba(129,199,132,.35);border-left:2px solid #81c784;border-right:2px solid #81c784;min-width:3px;transition:left .45s ease,width .45s ease}
+.rmid{position:absolute;top:-.2cqw;bottom:-.2cqw;width:2px;background:#ffb74d;transition:left .45s ease,opacity .2s}
+.rends{display:flex;justify-content:space-between;font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:.85cqw;color:#6e7681;margin-top:.3cqw}
+.rtrail{font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:1.05cqw;color:#c9d1d9;line-height:1.7;margin-top:1cqw;min-height:5.4cqw}
+.rtrail b{color:#81c784}
+
+/* crecimiento */
+.grow .gr{display:grid;grid-template-columns:8.5cqw 1fr 12cqw;gap:1cqw;align-items:center;margin-top:.75cqw}
+.grow .gn{font-size:1.15cqw;font-weight:700;text-align:right}
+.grow .gt{height:2.1cqw;background:#0d1117;border-radius:.3cqw;position:relative;overflow:hidden}
+.grow .gf{position:absolute;left:0;top:0;bottom:0;min-width:3px;border-radius:.3cqw;transition:width .6s ease}
+.grow .gv{font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:1.1cqw;color:#e6edf3;white-space:nowrap}
+.grow .gv small{color:#8b949e;font-size:.85em;margin-left:.6cqw}
+.grow .gnow{font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:2.4cqw;font-weight:800;color:var(--ac)}
+
+/* chrome */
+#bar{position:absolute;left:0;bottom:0;height:.3cqw;background:#4fc3f7;transition:width .3s ease;z-index:5}
+#num{position:absolute;right:1.6cqw;bottom:1cqw;font-size:.85cqw;color:#6e7681;z-index:5;letter-spacing:.08em}
+#foot{position:absolute;left:1.6cqw;bottom:1cqw;font-size:.85cqw;color:#484f58;z-index:5;letter-spacing:.08em}
+#help{
+  position:absolute;inset:0;background:rgba(13,17,23,.94);z-index:10;
+  display:none;align-items:center;justify-content:center;
+}
+#help.on{display:flex}
+#help .box{background:#161b22;border:1px solid #30363d;border-radius:1cqw;padding:2.4cqw 3cqw;font-size:1.3cqw;color:#c9d1d9;line-height:2}
+#help kbd{font-family:ui-monospace,Menlo,monospace;background:#0d1117;border:1px solid #30363d;border-radius:.3cqw;padding:.1cqw .5cqw;color:#e6edf3}
+
+/* copiar el código */
+pre.code{position:relative}
+.copiar{position:absolute;top:.4cqw;right:.5cqw;font:inherit;font-family:-apple-system,system-ui,sans-serif;font-size:.8cqw;background:#0d1117;border:1px solid #30363d;color:#8b949e;border-radius:.8cqw;padding:.15cqw .7cqw;cursor:pointer;opacity:0;transition:opacity .2s}
+pre.code:hover .copiar{opacity:1}
+.copiar:hover{color:#e6edf3;border-color:#6e7681}
+.copiar.ok{color:#81c784;border-color:#81c784;opacity:1}
+
+/* la pila de llamadas */
+.stack{display:flex;flex-direction:column;gap:.4cqw;margin-top:.5cqw}
+.fr{display:flex;justify-content:space-between;gap:1cqw;align-items:center;background:#0d1117;border:1px solid #30363d;border-left:.35cqw solid #3d4450;border-radius:.4cqw;padding:.4cqw .9cqw;font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:1.05cqw;color:#e6edf3;animation:entra .3s ease;transition:opacity .2s,border-color .2s}
+.fr .fc{white-space:nowrap}
+.fr .fx{color:#8b949e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fr.run{border-left-color:#ffb74d}
+.fr.run .fx{color:#ffb74d}
+.fr.wait{opacity:.7}
+.stack.dense{gap:.15cqw}
+.stack.dense .fr{padding:.08cqw .7cqw;font-size:.85cqw;border-left-width:.25cqw}
+.fr.ret{border-left-color:#81c784}
+.fr.ret .fx{color:#81c784;font-weight:700}
+@keyframes entra{from{opacity:0;transform:translateY(-.6cqw)}to{opacity:1;transform:none}}
+.ley{display:flex;gap:1.4cqw;font-size:.85cqw;color:#8b949e;margin-top:.5cqw}
+.ley i{display:inline-block;width:.8cqw;height:.8cqw;border-radius:.15cqw;margin-right:.35cqw;vertical-align:-.05cqw}
+
+/* las torres */
+.rods{position:relative;height:9cqw;margin-top:.3cqw}
+.rod{position:absolute;bottom:1.6cqw;width:.4cqw;height:7cqw;background:#3d4450;border-radius:.2cqw;transform:translateX(-50%)}
+.rbase{position:absolute;left:2%;right:2%;bottom:1.3cqw;height:.35cqw;background:#3d4450;border-radius:.2cqw}
+.rlab{position:absolute;bottom:0;transform:translateX(-50%);font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:.95cqw;color:#8b949e}
+.disk{position:absolute;height:.95cqw;border-radius:.5cqw;transform:translateX(-50%);transition:left .3s ease,bottom .3s ease,box-shadow .2s}
+.disk.mv{box-shadow:0 0 0 .18cqw #e6edf3}
+.big .rods{height:13cqw}
+.big .rod{height:11cqw}
+.big .disk{height:1.4cqw;border-radius:.7cqw}
+
+/* el árbol de llamadas */
+svg.tree{width:100%;height:auto;max-height:22cqw;display:block;margin-top:.4cqw}
+.tn rect{fill:#0d1117;stroke:#30363d;stroke-width:1.5;transition:fill .2s,stroke .2s}
+.tn text{fill:#484f58;font-size:15px;transition:fill .2s}
+.tn.act rect{stroke:#ffb74d;fill:rgba(255,183,77,.16)}
+.tn.dn rect{stroke:var(--ac);fill:color-mix(in srgb,var(--ac) 14%,transparent)}
+.tn.rep rect{stroke:#ef5350;fill:rgba(239,83,80,.2)}
+.tn.act text,.tn.dn text,.tn.rep text{fill:#e6edf3}
+.te{stroke:#21262d;stroke-width:1.5;transition:stroke .2s}
+.te.on{stroke:#6e7681}
+.tl{fill:#8b949e;font-size:15px}
+.tl.n{fill:var(--ac);font-weight:700;font-size:17px}
+
+
+/* los dos montones de la mezcla */
+.mz{display:flex;flex-direction:column;gap:.75cqw;margin-top:.6cqw}
+.mrow{display:flex;align-items:center;gap:.8cqw}
+.mlab{width:6.6cqw;flex:none;text-align:right;font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:1cqw;color:#8b949e}
+.mcells{display:flex;gap:.35cqw;min-height:3.1cqw;align-items:flex-end}
+.mc{position:relative;width:3.1cqw;height:3.1cqw;border-radius:.4cqw;background:#0d1117;border:2px solid #30363d;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:1.25cqw;color:#e6edf3;transition:opacity .2s,background .2s,border-color .2s,transform .2s}
+.mc.sa{border-color:#4fc3f7}
+.mc.sb{border-color:#ce93d8}
+.mc.used{opacity:.18}
+.mc.cmp{background:rgba(255,183,77,.2);border-color:#ffb74d;transform:translateY(-.4cqw)}
+.mc.new{background:rgba(129,199,132,.22)}
+.mc sub{position:absolute;bottom:-1.25cqw;font-size:.7cqw;color:#6e7681}
+.mptr{font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:.9cqw;color:#ffb74d;margin-left:.6cqw;white-space:nowrap}
+</style>
+</head>
+<body>
+<div id="deck">
+
+<!-- ============================================================ portada -->
+<section class="slide a1 ctr">
+  <div class="lbl">Programación · MatCom · Conferencia 10 · 18 de noviembre de 2026</div>
+  <h1 class="hero">Partir, resolver, <em>combinar</em></h1>
+  <p class="sub" style="max-width:60ch">Proyecto de hoy: el millón de números que la conferencia 8 no pudo ordenar. Dos algoritmos nuevos, escritos en Python sin trucos, que lo ordenan en segundos.</p>
+  <div class="viz" id="v-portada" style="width:52cqw;margin-top:1cqw;background:transparent;border:none"></div>
+</section>
+
+<!-- ============================================================ dónde estamos -->
+<section class="slide a1">
+  <div class="lbl">Dónde estamos</div>
+  <h1>La 8 dejó una cuenta, <em>la 9 una herramienta</em></h1>
+  <p class="sub">La conferencia 8 terminó viendo que la selección, la inserción y la burbuja multiplican su trabajo por cuatro cada vez que la lista se duplica. La 9 nos dio la función que se llama a sí misma <b>dos veces</b>. Hoy juntamos las dos cosas.</p>
+  <div class="road">
+    <div class="stop off"><div class="n">7</div><div class="t">Examen</div><div class="d">el primer tema</div></div>
+    <div class="stop"><div class="n">8</div><div class="t">Búsqueda, ordenación y costo</div><div class="d">todas las palabras ordenadas, a mano</div></div>
+    <div class="stop"><div class="n">9</div><div class="t">Recursión</div><div class="d">las Torres de Hanói</div></div>
+    <div class="stop now"><div class="n">10</div><div class="t">Divide y vencerás</div><div class="d">el millón de números</div></div>
+    <div class="stop next"><div class="n">11</div><div class="t">Divide y vencerás, II</div><div class="d">cuando partir o combinar no es evidente</div></div>
+    <div class="stop off"><div class="n">12</div><div class="t">Evaluación</div><div class="d">un problema de divide y vencerás</div></div>
+  </div>
+</section>
+
+<!-- ============================================================ el plan -->
+<section class="slide a1">
+  <div class="lbl">El plan de la hora</div>
+  <h1>De dos montones <em>al millón</em></h1>
+  <svg class="fig" viewBox="0 0 1200 330">
+    <defs><marker id="ah1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e7681"/></marker></defs>
+    <g text-anchor="middle">
+      <rect x="10" y="40" width="250" height="150" rx="12" fill="#161b22" stroke="#ffb74d" stroke-width="2"/>
+      <text x="135" y="85" fill="#ffb74d" font-size="17" font-weight="700" letter-spacing="2">1 · MEZCLAR</text>
+      <text x="135" y="125" fill="#e6edf3" font-size="22" class="mono">dos montones</text>
+      <text x="135" y="160" fill="#8b949e" font-size="17">cada elemento, una vez</text>
+
+      <rect x="310" y="40" width="250" height="150" rx="12" fill="#161b22" stroke="#81c784" stroke-width="2"/>
+      <text x="435" y="85" fill="#81c784" font-size="17" font-weight="700" letter-spacing="2">2 · POR MEZCLA</text>
+      <text x="435" y="125" fill="#e6edf3" font-size="22" class="mono">n log n</text>
+      <text x="435" y="160" fill="#8b949e" font-size="17">contado con el árbol</text>
+
+      <rect x="610" y="40" width="250" height="150" rx="12" fill="#161b22" stroke="#f48fb1" stroke-width="2"/>
+      <text x="735" y="85" fill="#f48fb1" font-size="17" font-weight="700" letter-spacing="2">3 · RÁPIDA</text>
+      <text x="735" y="125" fill="#e6edf3" font-size="22" class="mono">el pivote</text>
+      <text x="735" y="160" fill="#8b949e" font-size="17">y la lista que la rompe</text>
+
+      <rect x="910" y="40" width="250" height="150" rx="12" fill="#161b22" stroke="#ce93d8" stroke-width="2"/>
+      <text x="1035" y="85" fill="#ce93d8" font-size="17" font-weight="700" letter-spacing="2">4 · EL RELOJ</text>
+      <text x="1035" y="125" fill="#e6edf3" font-size="22" class="mono">contra la 8</text>
+      <text x="1035" y="160" fill="#8b949e" font-size="17">y contra sorted</text>
+
+      <path d="M135 195 C135 250 500 240 560 262" stroke="#ffb74d" stroke-width="2" fill="none" marker-end="url(#ah1)" opacity=".7"/>
+      <path d="M435 195 C435 235 560 240 585 260" stroke="#81c784" stroke-width="2" fill="none" marker-end="url(#ah1)" opacity=".7"/>
+      <path d="M735 195 C735 235 640 240 615 260" stroke="#f48fb1" stroke-width="2" fill="none" marker-end="url(#ah1)" opacity=".7"/>
+      <path d="M1035 195 C1035 250 700 240 640 262" stroke="#ce93d8" stroke-width="2" fill="none" marker-end="url(#ah1)" opacity=".7"/>
+      <rect x="380" y="265" width="440" height="56" rx="12" fill="#10202b" stroke="#4fc3f7" stroke-width="2"/>
+      <text x="600" y="301" fill="#4fc3f7" font-size="22" font-weight="700">un millón de números, en segundos</text>
+    </g>
+  </svg>
+  <p class="note">Las partes 2 y 3 son dos maneras de seguir el mismo esquema, <b>divide y vencerás</b>: una trabaja al combinar y la otra al partir.</p>
+</section>
+
+<section class="slide a1">
+  <div class="lbl">El proyecto</div>
+  <h1>Diez horas <em>contra un tercio de segundo</em></h1>
+  <div class="c2">
+    <div>
+      <ul class="pts">
+        <li>En la conferencia 8, la selección ordenó 4000 números en <strong>0,564 s</strong>.</li>
+        <li>Un millón es 4000 × 250. Si duplicar n multiplica por 4, multiplicar n por 250 multiplica el tiempo por 250² = <strong>62 500</strong>.</li>
+        <li>0,564 s × 62 500 ≈ 35 000 s: <strong>casi diez horas</strong>.</li>
+      </ul>
+      <p class="kick"><code>sorted</code> ordena ese millón en <b>0,37 s</b>. No es un n² escrito en un lenguaje más rápido: <b>es otro algoritmo</b>.</p>
+    </div>
+    <div>
+      <div class="card bad">
+        <div class="ct">Selección, con un millón</div>
+        <div class="cb">Unos <em>500 000 millones</em> de comparaciones: n(n − 1)/2. La estimación de diez horas sale del reloj de la conferencia 8.</div>
+      </div>
+      <div class="card ac" style="margin-top:1cqw">
+        <div class="ct">sorted, con un millón</div>
+        <div class="cb"><em>0,37 s</em>, medido en este capítulo del libro. Al final de la hora escribimos dos de su familia y los ponemos al lado.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ 1. mezclar -->
+<section class="slide a2 ctr">
+  <div class="lbl">Parte 1</div>
+  <h1 class="hero">Mezclar <em>dos listas ordenadas</em></h1>
+  <p class="sub">La pieza que no es recursiva. Todo lo demás se apoya en ella.</p>
+</section>
+
+<section class="slide a2">
+  <div class="lbl">Dos montones de exámenes</div>
+  <h1>El menor de todos <em>está arriba de un montón</em></h1>
+  <div class="c2" style="grid-template-columns:minmax(0,.85fr) minmax(0,1fr)">
+    <div>
+      <pre class="code sm" data-hl id="c-mezclar">def mezclar(a, b):
+    resultado = []
+    i, j = 0, 0
+    while i &lt; len(a) and j &lt; len(b):
+        if a[i] &lt;= b[j]:
+            resultado.append(a[i])
+            i += 1
+        else:
+            resultado.append(b[j])
+            j += 1
+    resultado.extend(a[i:])
+    resultado.extend(b[j:])
+    return resultado</pre>
+      <p class="note">Debajo del de arriba, todos son mayores. Por eso basta comparar <b>los dos de arriba</b>. Cuando un montón se acaba, el otro va entero al final.</p>
+    </div>
+    <div>
+      <div id="v-mezclar"></div>
+      <div class="ley"><span><i style="background:#4fc3f7"></i>de a</span><span><i style="background:#ce93d8"></i>de b</span><span><i style="background:#ffb74d"></i>los dos de arriba</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide a2">
+  <div class="lbl">Cuánto cuesta</div>
+  <h1>Cada elemento <em>se mira una vez</em></h1>
+  <div class="c3">
+    <div class="card ac">
+      <div class="ct">Las vueltas</div>
+      <div class="cb">Cada vuelta del <code>while</code> pone <em>un elemento</em> en <code>resultado</code>. Hay como mucho <code>len(a) + len(b)</code> vueltas.</div>
+    </div>
+    <div class="card ac">
+      <div class="ct">Sin ciclo dentro de otro</div>
+      <div class="cb">La selección vuelve a recorrer lo que queda en cada vuelta. La mezcla <em>coloca y no vuelve a tocar</em>. Mezclar cuesta tanto como la cantidad de elementos.</div>
+    </div>
+    <div class="card ac">
+      <div class="ct">El &lt;=</div>
+      <div class="cb">Con dos iguales arriba, se toma primero el de <code>a</code>. Los iguales <em>conservan su orden</em>: es la estabilidad de la conferencia 8.</div>
+    </div>
+  </div>
+  <p class="kick">En la animación anterior, el escenario <b>con iguales</b> lo muestra: los 3 de <code>a</code> salen antes que el 3 de <code>b</code>.</p>
+</section>
+
+<section class="slide a2">
+  <span class="live"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M1 20h22"/></svg>En vivo · archivo mezcla.py</span>
+  <h1>Dos montones, <em>un solo ciclo</em></h1>
+  <div class="c2">
+    <div>
+      <pre class="code sm" data-hl>def mezclar(a, b):
+    resultado = []
+    i, j = 0, 0                 # el de arriba de cada montón
+    while i &lt; len(a) and j &lt; len(b):
+        if a[i] &lt;= b[j]:
+            resultado.append(a[i])
+            i += 1
+        else:
+            resultado.append(b[j])
+            j += 1
+    resultado.extend(a[i:])     # lo que quede de a
+    resultado.extend(b[j:])     # o lo que quede de b
+    return resultado
+
+
+print(mezclar([2, 5, 8, 9], [1, 3, 4, 10, 12]))</pre>
+      <pre class="out sm hidden">[1, 2, 3, 4, 5, 8, 9, 10, 12]</pre>
+    </div>
+    <div>
+      <ol class="steps">
+        <li>Antes de escribir: con dos montones boca arriba, ¿dónde puede estar el menor de todos? <em>Arriba de uno de los dos.</em></li>
+        <li>Escribe <code>mezclar</code> con el aula. Dos índices, uno por montón.</li>
+        <li>¿Cuántas vueltas da el <code>while</code> en el ejemplo? <em>Siete: cuando b llega al 10, a ya se acabó.</em></li>
+        <li>¿Y con <code>mezclar([], [3, 4])</code>? <em>Ninguna vuelta: el <code>extend</code> copia b entera.</em></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ 2. por mezcla -->
+<section class="slide a3 ctr">
+  <div class="lbl">Parte 2</div>
+  <h1 class="hero">Ordenación <em>por mezcla</em></h1>
+  <p class="sub">Si sabes mezclar, ordenar es partir a la mitad, ordenar cada mitad y mezclar.</p>
+</section>
+
+<section class="slide a3">
+  <div class="lbl">La recursión de la conferencia 9</div>
+  <h1>Ordenar cada mitad <em>es el mismo problema</em></h1>
+  <div class="c2" style="grid-template-columns:minmax(0,.8fr) minmax(0,1fr)">
+    <div>
+      <pre class="code sm" data-hl id="c-msort">def ordenar_mezcla(lista):
+    if len(lista) &lt;= 1:
+        return list(lista)
+    medio = len(lista) // 2
+    izquierda = ordenar_mezcla(lista[:medio])
+    derecha = ordenar_mezcla(lista[medio:])
+    return mezclar(izquierda, derecha)</pre>
+      <ul class="pts sm">
+        <li><strong>Caso base</strong>: cero o un elemento ya están ordenados.</li>
+        <li>Devuelve una lista <strong>nueva</strong>, como <code>sorted</code>. Por eso <code>list(lista)</code>: una copia, no la misma lista con dos nombres (conferencia 4).</li>
+      </ul>
+    </div>
+    <div>
+      <div id="v-msort"></div>
+      <p class="note">La animación mezcla en el mismo lugar para que se vea; el código construye listas nuevas. Lo apagado está fuera de la llamada actual.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide a3">
+  <div class="lbl">El árbol de llamadas</div>
+  <h1>Bajando parte, <em>subiendo mezcla</em></h1>
+  <div class="c2" style="grid-template-columns:minmax(0,1fr) minmax(0,2.1fr)">
+    <div>
+      <ul class="pts sm">
+        <li>Bajando, cada llamada parte su lista a la mitad, hasta listas de <strong>un elemento</strong>.</li>
+        <li>Subiendo, cada nodo pasa a mostrar lo que <strong>devuelve</strong>: la mezcla de sus dos hijos.</li>
+        <li>A la derecha, cuántos elementos se mezclan en cada nivel.</li>
+      </ul>
+      <p class="kick">¿Cuánto suma <b>cada nivel</b>?</p>
+    </div>
+    <div id="v-arbol-mezcla"></div>
+  </div>
+</section>
+
+<section class="slide a3">
+  <div class="lbl">Por qué es tan rápida</div>
+  <h1>n por nivel, <em>log₂ n niveles</em></h1>
+  <div class="c2" style="grid-template-columns:minmax(0,1fr) minmax(0,1.25fr)">
+    <div>
+      <div class="card ac">
+        <div class="ct">Cada nivel mezcla n</div>
+        <div class="cb">Arriba, dos listas de 4 en una de 8. Abajo, cuatro mezclas de listas de 1. Los pedazos se achican, pero hay más: <em>la suma es siempre la lista entera</em>.</div>
+      </div>
+      <div class="card ac" style="margin-top:1cqw">
+        <div class="ct">Hay log₂ n niveles</div>
+        <div class="cb">¿Cuántas veces se parte n a la mitad hasta llegar a 1? La pregunta de la búsqueda binaria: <em>log₂ n</em>. Con 8, tres niveles de mezclas.</div>
+      </div>
+      <p class="kick">Total: <b>n log₂ n</b>. Con un millón, n por 20, no n por un millón.</p>
+    </div>
+    <div>
+      <div class="grow" id="v-crecer-cmp"></div>
+      <p class="note">Comparaciones contadas en <code>mezclar</code>, con listas al azar. La mezcla hace algo menos que n log₂ n porque, cuando un montón se acaba, el otro se copia sin comparar.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide a3">
+  <span class="live"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M1 20h22"/></svg>En vivo · archivo mezcla.py, debajo de mezclar</span>
+  <h1>Probarla contra <em>algo que sabemos que está bien</em></h1>
+  <div class="c2">
+    <div>
+      <pre class="code sm" data-hl>def ordenar_mezcla(lista):
+    if len(lista) &lt;= 1:
+        return list(lista)
+    medio = len(lista) // 2
+    izquierda = ordenar_mezcla(lista[:medio])
+    derecha = ordenar_mezcla(lista[medio:])
+    return mezclar(izquierda, derecha)
+
+
+print(ordenar_mezcla([38, 27, 43, 3, 9, 82, 10, 5]))
+
+random.seed(1)
+for prueba in range(500):
+    n = random.randint(0, 12)
+    original = [random.randint(1, 5) for _ in range(n)]
+    if ordenar_mezcla(original) != sorted(original):
+        print("FALLA", original)
+
+print("pruebas terminadas")</pre>
+      <pre class="out sm hidden">[3, 5, 9, 10, 27, 38, 43, 82]
+pruebas terminadas</pre>
+    </div>
+    <div>
+      <ol class="steps">
+        <li>Escribe <code>ordenar_mezcla</code> diciendo las tres palabras: <em>partir, ordenar cada mitad, mezclar.</em></li>
+        <li>Corre las 500 pruebas. Listas cortas y con repetidos: ahí se esconden los errores.</li>
+        <li>Planta un error: cambia <code>&lt;= 1</code> por <code>== 1</code>. ¿Falla? <em>Sí, con <code>RecursionError</code> en la prueba 4, la primera lista vacía: <code>[]</code> se parte en <code>[]</code> y <code>[]</code> para siempre.</em></li>
+        <li>Por eso <code>n</code> empieza en 0: una prueba sin la lista vacía no lo habría visto.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section class="slide a3">
+  <div class="lbl">El esquema tiene nombre</div>
+  <h1>Dividir, vencer, <em>combinar</em></h1>
+  <table class="br">
+    <tr><th></th><th>Búsqueda binaria (conferencia 8)</th><th>Ordenación por mezcla</th></tr>
+    <tr><td class="big">Dividir</td><td>mirar el del medio: casi gratis</td><td>partir por la mitad: casi gratis</td></tr>
+    <tr><td class="big">Vencer</td><td><b>una</b> mitad, la que puede tener el valor</td><td><b>las dos</b> mitades, con la misma función</td></tr>
+    <tr><td class="big">Combinar</td><td>nada: la respuesta de la mitad es la respuesta</td><td>mezclar: n por nivel</td></tr>
+    <tr><td class="big">Costo</td><td>log₂ n niveles, una llamada cada uno: <b>log₂ n</b></td><td>log₂ n niveles, n en cada uno: <b>n log₂ n</b></td></tr>
+  </table>
+  <p class="kick">Que un problema se pueda partir no basta: el costo depende de cuánto cuestan las tres partes. La mezcla parte gratis y trabaja al combinar. <b>La que viene hace lo contrario.</b></p>
+</section>
+
+<!-- ============================================================ 3. rápida -->
+<section class="slide a4 ctr">
+  <div class="lbl">Parte 3</div>
+  <h1 class="hero">Trabajar <em>al partir</em></h1>
+  <p class="sub">La ordenación rápida reparte la lista alrededor de un pivote, y así combinar no cuesta nada.</p>
+</section>
+
+<section class="slide a4">
+  <div class="lbl">Ordenación rápida</div>
+  <h1>Menores, iguales, mayores, <em>y pegar</em></h1>
+  <div class="c2" style="grid-template-columns:minmax(0,.85fr) minmax(0,1fr)">
+    <div>
+      <pre class="code xs" data-hl id="c-qsort">def ordenar_rapida(lista):
+    if len(lista) &lt;= 1:
+        return list(lista)
+    pivote = lista[0]
+    menores, iguales, mayores = [], [], []
+    for x in lista:
+        if x &lt; pivote:
+            menores.append(x)
+        elif x == pivote:
+            iguales.append(x)
+        else:
+            mayores.append(x)
+    return (ordenar_rapida(menores) + iguales
+            + ordenar_rapida(mayores))</pre>
+      <ul class="pts sm">
+        <li>Todos los menores van antes que los iguales, que van antes que los mayores: <strong>pegar con <code>+</code></strong> ya da la lista ordenada.</li>
+        <li><code>iguales</code> nunca está vacía: tiene al pivote. Por eso las dos llamadas reciben listas <strong>más pequeñas</strong>.</li>
+      </ul>
+    </div>
+    <div>
+      <div id="v-qsort"></div>
+      <div class="ley"><span><i style="background:#ce93d8"></i>pivote</span><span><i style="background:#ffb74d"></i>el que se reparte</span><span><i style="background:#4fc3f7"></i>ya en su lugar</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide a4">
+  <div class="lbl">El árbol de la rápida</div>
+  <h1>El árbol depende <em>de dónde cae el pivote</em></h1>
+  <div class="c2" style="grid-template-columns:minmax(0,1fr) minmax(0,1.8fr)">
+    <div>
+      <ul class="pts sm">
+        <li>La mezcla parte siempre a la mitad. La rápida parte <strong>donde caiga el pivote</strong>: el 38 deja cinco a la izquierda y dos a la derecha.</li>
+        <li>El pivote no baja: se queda en <code>iguales</code>. No se dibujan las llamadas con la lista vacía.</li>
+        <li>A la derecha, cuántos elementos se reparten en cada nivel.</li>
+      </ul>
+      <p class="kick">Mira el escenario <b>ya ordenada</b>. ¿Cuántos niveles?</p>
+    </div>
+    <div id="v-arbol-rapida"></div>
+  </div>
+</section>
+
+<section class="slide a4">
+  <span class="live"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M1 20h22"/></svg>En vivo · archivo rapida.py</span>
+  <h1>Una lista ordenada <em>la rompe</em></h1>
+  <div class="c2">
+    <div>
+      <pre class="code sm" data-hl>print(ordenar_rapida([38, 27, 43, 3, 9, 82, 10, 5]))
+
+ordenada = list(range(2000))
+try:
+    ordenar_rapida(ordenada)
+except RecursionError as error:
+    print(type(error).__name__, error)</pre>
+      <pre class="out sm hidden">[3, 5, 9, 10, 27, 38, 43, 82]
+RecursionError maximum recursion depth exceeded</pre>
+      <p class="note">Con el primero como pivote y la lista ordenada, el pivote es siempre el menor: <code>menores</code> vacía, <code>mayores</code> con todos los demás. Cada nivel quita <b>un</b> elemento.</p>
+    </div>
+    <div>
+      <ol class="steps">
+        <li>Escribe <code>ordenar_rapida</code> y pruébala con las mismas 500 listas que la mezcla.</li>
+        <li>Pregunta: con <code>list(range(2000))</code>, ¿cuántos niveles tiene el árbol? <em>2000, y el tope de la conferencia 9 es mil.</em></li>
+        <li>Corre. <em>Con 990 todavía termina; con 1000 ya no.</em></li>
+        <li>El trabajo: n + (n − 1) + … + 2, casi n²/2. <em>Otra vez cuadrática, con la lista que más se da en la práctica: datos que alguien ya ordenó.</em></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section class="slide a4">
+  <div class="lbl">El arreglo</div>
+  <h1>El pivote <em>al azar</em></h1>
+  <div class="c2" style="grid-template-columns:minmax(0,.85fr) minmax(0,1fr)">
+    <div>
+      <pre class="code sm" data-hl>def ordenar_rapida_azar(lista):
+    if len(lista) &lt;= 1:
+        return list(lista)
+    pivote = random.choice(lista)
+    ...     # lo demás, igual
+
+
+print(ordenar_rapida_azar(ordenada) == ordenada)</pre>
+      <pre class="out sm hidden">True</pre>
+      <ul class="pts sm">
+        <li><code>random.choice(lista)</code> devuelve un elemento cualquiera. Ahora <strong>ninguna lista es mala siempre</strong>.</li>
+        <li>El trabajo <strong>esperado</strong> es n log n con cualquier entrada. La demostración, en Diseño y Análisis de Algoritmos.</li>
+      </ul>
+    </div>
+    <div>
+      <div id="v-qsort-azar"></div>
+      <p class="note">La misma lista ordenada de 16, con los dos pivotes. Mira el contador de niveles.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ 4. el reloj -->
+<section class="slide a5 ctr">
+  <div class="lbl">Parte 4</div>
+  <h1 class="hero">El <em>reloj</em></h1>
+  <p class="sub">Contra los métodos de la conferencia 8 primero. Después, el millón.</p>
+</section>
+
+<section class="slide a5">
+  <div class="lbl">La carrera</div>
+  <h1>Una comparación <em>por paso</em></h1>
+  <div id="v-carrera"></div>
+  <p class="note">Las tres sobre la misma lista de 32, y cada una avanza una comparación por paso. En la rápida se cuenta un <code>x &lt; pivote</code> por elemento repartido.</p>
+</section>
+
+<section class="slide a5">
+  <div class="lbl">Los segundos</div>
+  <h1>La ventaja <em>crece con cada duplicación</em></h1>
+  <div class="c2" style="grid-template-columns:minmax(0,1.4fr) minmax(0,1fr)">
+    <div class="grow" id="v-crecer-tiempo"></div>
+    <div>
+      <p class="sub">Las mismas listas al azar para los cuatro. La selección y la inserción multiplican por cuatro; la mezcla y la rápida se quedan pegadas al fondo.</p>
+      <p class="note">Tiempos del libro. Con listas tan cortas, la mezcla y la rápida duran milésimas, y el reloj tiembla: lo que importa es la columna de la derecha en las dos de arriba.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide a5">
+  <span class="live"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M1 20h22"/></svg>En vivo · archivo millon.py, con las dos funciones</span>
+  <h1>El millón, <em>por fin</em></h1>
+  <div class="c2">
+    <div>
+      <pre class="code sm" data-hl>random.seed(8)
+millon = [random.randint(1, 1_000_000) for _ in range(1_000_000)]
+
+for nombre, metodo in [("mezcla", ordenar_mezcla),
+                       ("rápida", ordenar_rapida_azar),
+                       ("sorted", sorted)]:
+    inicio = time.perf_counter()
+    resultado = metodo(millon)
+    print(f"{nombre:>7}: {time.perf_counter() - inicio:5.2f} s  "
+          f"{'bien' if resultado == sorted(millon) else 'MAL'}")</pre>
+      <pre class="out sm hidden"> mezcla:  4.14 s  bien
+ rápida:  2.88 s  bien
+ sorted:  0.37 s  bien</pre>
+    </div>
+    <div>
+      <ol class="steps">
+        <li>Recuerda la cuenta del principio: la selección, <em>casi diez horas</em>.</li>
+        <li>Pide una predicción para la mezcla. Corre y espera con el aula.</li>
+        <li>Segundos, en Python, con listas y <code>append</code>. <em>No cambió la máquina ni el lenguaje: cambió el orden de crecimiento.</em></li>
+        <li>Los tiempos de la izquierda son los del libro. <em>Los de tu laptop serán otros; el orden, no.</em></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section class="slide a5">
+  <div class="lbl">¿Y sorted?</div>
+  <h1>Más rápida, <em>pero de la misma familia</em></h1>
+  <div class="c3">
+    <div class="card ac">
+      <div class="ct">Escrita en C</div>
+      <div class="cb">No en Python. Eso le da una <em>constante</em> mucho menor: el mismo trabajo, cada paso más barato.</div>
+    </div>
+    <div class="card ac">
+      <div class="ct">Timsort</div>
+      <div class="cb">Es una <em>ordenación por mezcla</em> con mejoras: aprovecha los pedazos que ya vienen ordenados en la entrada.</div>
+    </div>
+    <div class="card ac">
+      <div class="ct">Inserción abajo</div>
+      <div class="cb">Para los pedazos pequeños usa la <em>inserción</em> de la conferencia 8, que ahí es más rápida que seguir con la recursión.</div>
+    </div>
+  </div>
+  <p class="kick">Su orden de crecimiento es el mismo que el de las nuestras: <b>n log n</b>. Entre n² y n log n, con un millón, está la diferencia entre multiplicar por un millón y multiplicar por veinte.</p>
+</section>
+
+<!-- ============================================================ cierre -->
+<section class="slide a1">
+  <div class="lbl">Resumen</div>
+  <h1>Lo que te llevas <em>de hoy</em></h1>
+  <ul class="pts sm">
+    <li><strong>Divide y vencerás</strong>: dividir en subproblemas más pequeños del mismo tipo, resolverlos recursivamente, combinar sus soluciones.</li>
+    <li><strong>Mezclar</strong> dos listas ordenadas cuesta tanto como la cantidad de elementos: cada uno se mira una vez.</li>
+    <li>La <strong>ordenación por mezcla</strong> parte sin mirar y trabaja al combinar: log₂ n niveles con n de trabajo cada uno, <strong>n log₂ n</strong>. Es estable.</li>
+    <li>La <strong>ordenación rápida</strong> trabaja al partir, en menores, iguales y mayores que un pivote, y combinar es pegar.</li>
+    <li>Con el primero como pivote, una lista ordenada deja el árbol como una fila: <strong>cuadrática</strong> y <code>RecursionError</code>. Con el pivote al azar, n log n esperado con cualquier entrada.</li>
+    <li>El costo de un algoritmo recursivo se cuenta en su árbol: <strong>cuántos niveles</strong> y <strong>cuánto trabajo en cada uno</strong>. La binaria es divide y vencerás con un solo subproblema.</li>
+  </ul>
+</section>
+
+<section class="slide a2">
+  <div class="lbl">Ejercicios · están completos en el libro</div>
+  <h1>Para la clase práctica</h1>
+  <div class="c2">
+    <ul class="pts sm">
+      <li><code>mezclar_tres(a, b, c)</code>, de dos maneras. ¿Cuál compara menos?</li>
+      <li><code>ordenar_mezcla</code> partiendo en tres. ¿Cuántos niveles? Mídelo.</li>
+      <li><code>ordenar_mezcla_ciclo(lista)</code> sin recursión: el árbol de abajo arriba.</li>
+      <li>La rápida con <code>x &lt;= pivote</code>: ¿la lista más corta que da <code>RecursionError</code>?</li>
+    </ul>
+    <ul class="pts sm">
+      <li><code>contar_rapida(lista)</code> con listas ordenadas. ¿Otra lista mala?</li>
+      <li>Las palabras del Quijote, de más a menos frecuente, con <code>ordenar_mezcla</code>.</li>
+      <li><code>seleccionar(lista, k)</code> con una sola llamada recursiva. ¿Cuánto trabaja?</li>
+      <li>La rápida con un millón ya ordenado: niveles, tiempo, y qué pasa en Python.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="slide a0">
+  <div class="lbl" style="color:#ef5350">Para el profesor · guion de demos</div>
+  <h1>Los momentos <em style="color:#ef5350">en la laptop</em></h1>
+  <table class="br" id="guion"></table>
+  <p class="note">Todo corre en la carpeta de la conferencia, con <code>import random</code> y <code>import time</code> arriba. <code>millon.py</code> importa las funciones de <code>mezcla.py</code> y <code>rapida.py</code>, o las tiene copiadas. Pulsa el número de la diapositiva y Enter para saltar a ella. En las animaciones: <b>A</b> anima o pausa, <b>S</b> da un paso, <b>X</b> reinicia.</p>
+</section>
+
+<div id="bar"></div>
+<div id="foot">Programación · Conferencia 10</div>
+<div id="num"></div>
+<div id="help"><div class="box">
+  <kbd>→</kbd> <kbd>Espacio</kbd> <kbd>RePág</kbd> siguiente · <kbd>←</kbd> anterior<br>
+  <kbd>R</kbd> revela las salidas ocultas · <kbd>V</kbd> salta a la próxima demo en vivo<br>
+  <kbd>A</kbd> anima o pausa · <kbd>S</kbd> un paso · <kbd>X</kbd> reinicia la animación<br>
+  número + <kbd>Enter</kbd> va a esa diapositiva · <kbd>Inicio</kbd> <kbd>Fin</kbd><br>
+  <kbd>F</kbd> pantalla completa · <kbd>?</kbd> esta ayuda
+</div></div>
+</div>
+
+<script>
+// resaltado mínimo de Python
+const KW = /\b(def|return|for|in|if|elif|else|try|except|with|as|while|break|continue|not|and|or|None|True|False|import|from|del)\b/;
+const BI = /\b(print|len|open|int|float|str|input|repr|enumerate|range|sorted|list|dict|set|sum|max|type)\b/;
+function hl(src) {
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const re = /(#[^\n]*)|([fb]?"""[\s\S]*?"""|[fb]?"(?:[^"\\\n]|\\.)*"|[fb]?'(?:[^'\\\n]|\\.)*')|(\b[A-Za-z_]\w*\b)|(\b\d+(?:\.\d+)?\b)|(\$ [^\n]*)/g;
+  let out = '', last = 0, m;
+  while ((m = re.exec(src))) {
+    out += esc(src.slice(last, m.index));
+    const t = esc(m[0]);
+    if (m[1] || m[5]) out += `<span class="cm">${t}</span>`;
+    else if (m[2]) out += `<span class="st">${t}</span>`;
+    else if (m[3]) {
+      if (KW.test(m[3]) && m[3].match(KW)[0] === m[3]) out += `<span class="kw">${t}</span>`;
+      else if (BI.test(m[3]) && m[3].match(BI)[0] === m[3]) out += `<span class="bi">${t}</span>`;
+      else if (/^\s*\(/.test(src.slice(re.lastIndex)) && src.slice(Math.max(0, m.index - 4), m.index) === 'def ') out += `<span class="fn">${t}</span>`;
+      else out += t;
+    }
+    else if (m[4]) out += `<span class="nu">${t}</span>`;
+    last = re.lastIndex;
+  }
+  return out + esc(src.slice(last));
+}
+// cada línea en su propio span, para que las animaciones marquen la que se ejecuta
+document.querySelectorAll('pre[data-hl]').forEach(p => {
+  p.innerHTML = hl(p.textContent).split('\n').map(l => `<span class="ln">${l}</span>`).join('\n');
+});
+
+const slides = [...document.querySelectorAll('.slide')];
+slides.forEach(s => { s._ctl = []; });
+const bar = document.getElementById('bar'), num = document.getElementById('num'), help = document.getElementById('help');
+let cur = 0, typed = '';
+
+// ---------------------------------------------------------------- animaciones
+const range = (a, b) => Array.from({ length: Math.max(0, b - a) }, (_, k) => a + k);
+const barajar = n => { const a = range(1, n + 1); for (let i = n - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const miles = n => n.toLocaleString('es').replace(/\./g, ' ');
+class Viz {
+  constructor(root, cfg) {
+    this.root = root; this.cfg = cfg; this.si = 0; this.timer = null;
+    this.speed = cfg.speed || 650;
+    root.classList.add(cfg.kind || 'bars');
+    root.innerHTML = `<div class="vhead"><span class="vt">${cfg.title || ''}</span><span class="cnt"></span></div>
+      <div class="stage"><div class="items"></div><div class="ixs"></div><div class="ptrs"></div></div>
+      <div class="msg"></div>` + (cfg.controls === false ? '' : '<div class="ctl"></div>');
+    this.items = root.querySelector('.items'); this.ixs = root.querySelector('.ixs');
+    this.ptrs = root.querySelector('.ptrs'); this.msg = root.querySelector('.msg'); this.cnt = root.querySelector('.cnt');
+    this.code = cfg.code ? document.getElementById(cfg.code) : null;
+    const rows = cfg.ptrs ? Math.max(...Object.values(cfg.ptrs).map(p => p[0])) + 1 : 0;
+    this.ptrs.style.height = (rows * 1.75) + 'cqw';
+    const ctl = root.querySelector('.ctl');
+    if (ctl) {
+      if (cfg.scen.length > 1) cfg.scen.forEach((s, k) => {
+        const b = document.createElement('button'); b.textContent = s.label;
+        b.onclick = () => { this.si = k; this.reset(); };
+        ctl.appendChild(b);
+      });
+      ctl.insertAdjacentHTML('beforeend', '<span class="sp"></span><button data-k="paso">Paso</button><button data-k="anim" class="go">Animar</button><button data-k="rap">×3</button><button data-k="rei">Reiniciar</button>');
+      ctl.querySelector('[data-k=paso]').onclick = () => this.step();
+      ctl.querySelector('[data-k=anim]').onclick = () => this.toggle();
+      ctl.querySelector('[data-k=rei]').onclick = () => this.reset();
+      const rap = ctl.querySelector('[data-k=rap]');
+      rap.onclick = () => { this.fast = !this.fast; rap.classList.toggle('on', this.fast); if (this.timer) { this.stop(); this.toggle(); } };
+      this.ctl = ctl;
+    }
+    if (cfg.controls !== false) root.closest('.slide')._ctl.push(this);
+    this.reset();
+  }
+  reset(data) {
+    this.stop();
+    const s = this.cfg.scen[this.si];
+    if (!data) data = typeof s.data === 'function' ? s.data() : s.data.slice();
+    this.a = data.map((v, id) => ({ v, id }));
+    this.c = {};
+    this.gen = this.cfg.gen(this.a, this.c, s);
+    this.done = false;
+    const n = data.length, max = Math.max(...data), cells = (this.cfg.kind === 'cells');
+    this.els = this.a.map(it => {
+      const el = document.createElement('div'); el.className = 'it';
+      el.style.width = (100 / n) + '%';
+      el.innerHTML = cells ? `<div class="b">${it.v}</div>` : `<div class="b" style="height:${Math.max(6, it.v / max * 100)}%"><i>${it.v}</i></div>`;
+      return el;
+    });
+    this.items.replaceChildren(...this.els);
+    this.ixs.innerHTML = range(0, n).map(k => `<span style="left:${(k + .5) * 100 / n}%">${k}</span>`).join('');
+    this.ptrEls = {};
+    this.ptrs.replaceChildren(...Object.entries(this.cfg.ptrs || {}).map(([name, [row, color]]) => {
+      const el = document.createElement('div'); el.className = 'pt';
+      el.textContent = name; el.style.color = color; el.style.top = (row * 1.75) + 'cqw';
+      this.ptrEls[name] = el; return el;
+    }));
+    if (this.ctl) [...this.ctl.querySelectorAll('button')].slice(0, this.cfg.scen.length > 1 ? this.cfg.scen.length : 0)
+      .forEach((b, k) => b.classList.toggle('on', k === this.si));
+    this.next();
+  }
+  next() {
+    if (this.done) return false;
+    const r = this.gen.next();
+    if (r.done) { this.done = true; this.stop(); return false; }
+    this.draw(r.value);
+    if (r.value.end) { this.done = true; this.stop(); }
+    return true;
+  }
+  draw(f) {
+    const n = f.a.length, cls = f.cls || {};
+    f.a.forEach((it, p) => {
+      const el = this.els[it.id];
+      el.style.left = (p * 100 / n) + '%';
+      el.className = 'it ' + Object.keys(cls).filter(k => cls[k].includes(p)).join(' ');
+    });
+    for (const [name, el] of Object.entries(this.ptrEls)) {
+      const p = f.ptr ? f.ptr[name] : undefined;
+      const vis = p !== undefined && p >= 0 && p < n;
+      el.style.opacity = vis ? 1 : 0;
+      if (vis) el.style.left = ((p + .5) * 100 / n) + '%';
+    }
+    this.cnt.textContent = Object.entries(f.cnt || {}).map(([k, v]) => `${k}: ${v}`).join(' · ');
+    this.msg.textContent = f.msg || '';
+    if (this.code) this.code.querySelectorAll('.ln').forEach((l, k) => l.classList.toggle('on', k === f.line));
+  }
+  step() { this.stop(); if (this.done) this.reset(); else this.next(); }
+  toggle() {
+    if (this.timer) { this.stop(); return; }
+    if (this.done) this.reset();
+    this.timer = setInterval(() => { if (!this.next()) this.stop(); }, this.fast ? this.speed / 3 : this.speed);
+    this.label('Pausa');
+  }
+  stop() { clearInterval(this.timer); this.timer = null; this.label('Animar'); }
+  label(t) { if (this.ctl) this.ctl.querySelector('[data-k=anim]').textContent = t; }
+}
+
+// la carrera: tres animaciones sobre la misma lista, una comparación por paso
+class Carrera {
+  constructor(root, cfg) {
+    this.cfg = cfg; this.si = 0; this.timer = null;
+    root.innerHTML = '<div class="race"></div><div class="ctl"></div>';
+    const race = root.querySelector('.race');
+    this.lanes = cfg.lanes.map(l => {
+      const d = document.createElement('div'); d.className = 'viz compact'; race.appendChild(d);
+      return new Viz(d, { ...l, kind: 'bars', controls: false, scen: [{ data: [1] }] });
+    });
+    this.ctl = root.querySelector('.ctl');
+    cfg.scen.forEach((s, k) => {
+      const b = document.createElement('button'); b.textContent = s.label;
+      b.onclick = () => { this.si = k; this.reset(); };
+      this.ctl.appendChild(b);
+    });
+    this.ctl.insertAdjacentHTML('beforeend', '<span class="sp"></span><button data-k="paso">Paso</button><button data-k="anim" class="go">Animar</button><button data-k="rap">×3</button><button data-k="rei">Reiniciar</button>');
+    this.ctl.querySelector('[data-k=paso]').onclick = () => this.step();
+    this.ctl.querySelector('[data-k=anim]').onclick = () => this.toggle();
+    this.ctl.querySelector('[data-k=rei]').onclick = () => this.reset(this.data);
+    const rap = this.ctl.querySelector('[data-k=rap]');
+    rap.onclick = () => { this.fast = !this.fast; rap.classList.toggle('on', this.fast); if (this.timer) { this.stop(); this.toggle(); } };
+    root.closest('.slide')._ctl.push(this);
+    this.reset();
+  }
+  reset(data) {
+    this.stop();
+    this.data = data || this.cfg.scen[this.si].data();
+    this.lanes.forEach(v => v.reset(this.data.slice()));
+    [...this.ctl.querySelectorAll('button')].slice(0, this.cfg.scen.length).forEach((b, k) => b.classList.toggle('on', k === this.si));
+    this.done = false;
+  }
+  next() {
+    let alguno = false;
+    for (const v of this.lanes) {
+      if (v.done) continue;
+      const antes = v.c.comparaciones;
+      while (v.next() && v.c.comparaciones === antes) { /* hasta la próxima comparación */ }
+      alguno = true;
+    }
+    if (!alguno || this.lanes.every(v => v.done)) { this.done = true; this.stop(); }
+    return alguno;
+  }
+  step() { this.stop(); if (this.done) this.reset(this.data); else this.next(); }
+  toggle() {
+    if (this.timer) { this.stop(); return; }
+    if (this.done) this.reset(this.data);
+    this.timer = setInterval(() => { if (!this.next()) this.stop(); }, this.fast ? 60 : 180);
+    this.ctl.querySelector('[data-k=anim]').textContent = 'Pausa';
+  }
+  stop() { clearInterval(this.timer); this.timer = null; this.ctl.querySelector('[data-k=anim]').textContent = 'Animar'; }
+}
+
+const $ = id => document.getElementById(id);
+// un botón para copiar cada bloque de código, con el texto tal como se ve
+document.querySelectorAll('pre.code').forEach(p => {
+  const texto = p.textContent, b = document.createElement('button');
+  b.className = 'copiar'; b.textContent = 'copiar';
+  b.onclick = e => {
+    e.stopPropagation();
+    const listo = () => { b.textContent = 'copiado'; b.classList.add('ok'); setTimeout(() => { b.textContent = 'copiar'; b.classList.remove('ok'); }, 1200); };
+    const aMano = () => {
+      const t = document.createElement('textarea'); t.value = texto; document.body.appendChild(t);
+      t.select(); document.execCommand('copy'); t.remove(); listo();
+    };
+    if (navigator.clipboard) navigator.clipboard.writeText(texto).then(listo, aMano); else aMano();
+  };
+  p.appendChild(b);
+});
+
+// Controlador común de las animaciones de esta conferencia: un generador de fotos,
+// escenarios y los botones de siempre. Cumple el contrato del know-how.
+class Paso {
+  constructor(root, cfg) {
+    this.root = root; this.cfg = cfg; this.si = cfg.si || 0; this.timer = null;
+    this.speed = cfg.speed || 800;
+    root.classList.add('viz');
+    root.innerHTML = `<div class="vhead"><span class="vt">${cfg.title || ''}</span><span class="cnt"></span></div>
+      <div class="body"></div><div class="msg"></div>` + (cfg.controls === false ? '' : '<div class="ctl"></div>');
+    this.body = root.querySelector('.body'); this.msg = root.querySelector('.msg'); this.cnt = root.querySelector('.cnt');
+    this.code = cfg.code ? $(cfg.code) : null;
+    this.build();
+    const ctl = root.querySelector('.ctl');
+    if (ctl) {
+      if (cfg.scen.length > 1) cfg.scen.forEach((s, k) => {
+        const b = document.createElement('button'); b.textContent = s.label;
+        b.onclick = () => { this.si = k; this.reset(); };
+        ctl.appendChild(b);
+      });
+      ctl.insertAdjacentHTML('beforeend', '<span class="sp"></span><button data-k="paso">Paso</button><button data-k="anim" class="go">Animar</button><button data-k="rap">×3</button><button data-k="rei">Reiniciar</button>');
+      ctl.querySelector('[data-k=paso]').onclick = () => this.step();
+      ctl.querySelector('[data-k=anim]').onclick = () => this.toggle();
+      ctl.querySelector('[data-k=rei]').onclick = () => this.reset();
+      const rap = ctl.querySelector('[data-k=rap]');
+      rap.onclick = () => { this.fast = !this.fast; rap.classList.toggle('on', this.fast); if (this.timer) { this.stop(); this.toggle(); } };
+      this.ctl = ctl;
+      root.closest('.slide')._ctl.push(this);
+    }
+    this.reset();
+  }
+  build() {}
+  start() {}
+  paint() {}
+  reset() {
+    this.stop();
+    const s = this.cfg.scen[this.si];
+    this.c = {};
+    this.start(s);
+    this.gen = this.cfg.gen(this.c, s);
+    this.done = false;
+    if (this.ctl && this.cfg.scen.length > 1) [...this.ctl.querySelectorAll('button')].slice(0, this.cfg.scen.length)
+      .forEach((b, k) => b.classList.toggle('on', k === this.si));
+    this.next();
+  }
+  next() {
+    if (this.done) return false;
+    const r = this.gen.next();
+    if (r.done) { this.done = true; this.stop(); return false; }
+    this.draw(r.value);
+    if (r.value.end) { this.done = true; this.stop(); }
+    return true;
+  }
+  draw(f) {
+    this.f = f;
+    this.cnt.textContent = Object.entries(f.cnt || {}).map(([k, v]) => `${k}: ${v}`).join(' · ');
+    this.msg.textContent = f.msg || '';
+    if (this.code) this.code.querySelectorAll('.ln').forEach((l, k) => l.classList.toggle('on', k === f.line));
+    this.paint(f);
+  }
+  step() { this.stop(); if (this.done) this.reset(); else this.next(); }
+  toggle() {
+    if (this.timer) { this.stop(); return; }
+    if (this.done) this.reset();
+    const sp = this.cfg.scen[this.si].speed || this.speed;
+    this.timer = setInterval(() => { if (!this.next()) this.stop(); }, this.fast ? sp / 3 : sp);
+    this.label('Pausa');
+  }
+  stop() { clearInterval(this.timer); this.timer = null; this.label('Animar'); }
+  label(t) { if (this.ctl) this.ctl.querySelector('[data-k=anim]').textContent = t; }
+}
+
+// ---------------------------------------------------------------- de esta conferencia
+const txt = l => '[' + l.join(', ') + ']';
+const azar = (n, max = 99) => Array.from({ length: n }, () => 1 + Math.floor(Math.random() * max));
+const distintos = n => barajar(n).map(v => v * 5);
+
+// Los dos montones y el resultado, como filas de casillas.
+class Montones extends Paso {
+  build() {
+    this.body.innerHTML = ['a', 'b', 'resultado'].map(t =>
+      `<div class="mrow"><div class="mlab">${t}</div><div class="mcells"></div><div class="mptr"></div></div>`).join('');
+    this.body.classList.add('mz');
+    [this.ra, this.rb, this.rr] = [...this.body.querySelectorAll('.mcells')];
+    [this.pa, this.pb] = [...this.body.querySelectorAll('.mptr')];
+  }
+  paint(f) {
+    const fila = (vs, src, k, cmp) => vs.map((v, p) =>
+      `<div class="mc ${src} ${p < k ? 'used' : ''} ${cmp && p === k ? 'cmp' : ''}">${v}</div>`).join('');
+    this.ra.innerHTML = fila(f.a, 'sa', f.i, f.cmp);
+    this.rb.innerHTML = fila(f.b, 'sb', f.j, f.cmp);
+    this.rr.innerHTML = f.r.map(([v, s], p) => `<div class="mc ${s} ${p >= f.r.length - (f.nuevos || 0) ? 'new' : ''}">${v}</div>`).join('');
+    this.pa.textContent = `i = ${f.i}`; this.pb.textContent = `j = ${f.j}`;
+  }
+}
+
+// Un árbol de llamadas cuyos nodos llevan una lista, y cambian de texto al volver.
+class ArbolL extends Paso {
+  start(s) {
+    const t = s._t = s.tree(), nodes = [];
+    let hojas = 0;
+    (function rec(nd, dep) {
+      nd.id = nodes.length; nd.depth = dep; nodes.push(nd);
+      if (!nd.kids.length) nd.x = hojas++;
+      else { nd.kids.forEach(k => rec(k, dep + 1)); nd.x = (nd.kids[0].x + nd.kids[nd.kids.length - 1].x) / 2; }
+    })(t, 0);
+    const niveles = Math.max(...nodes.map(n => n.depth)) + 1, dx = this.cfg.dx || 70, dy = 54;
+    const W = Math.max(hojas, this.cfg.ancho || 0) * dx, x0 = 10 + (W - hojas * dx) / 2, VW = W + 120;
+    const X = nd => x0 + (nd.x + .5) * dx, Y = nd => 28 + nd.depth * dy;
+    const ancho = s => 14 + s.length * 8.6;
+    this.nodes = nodes; this.niveles = niveles;
+    let h = '';
+    nodes.forEach(nd => nd.kids.forEach(k => { h += `<line class="te" data-k="${k.id}" x1="${X(nd)}" y1="${Y(nd) + 13}" x2="${X(k)}" y2="${Y(k) - 13}"/>`; }));
+    nodes.forEach(nd => {
+      const w = Math.max(ancho(nd.label), ancho(nd.fin || ''));
+      h += `<g class="tn" data-i="${nd.id}"><rect x="${X(nd) - w / 2}" y="${Y(nd) - 13}" width="${w}" height="26" rx="6"/><text class="mono" x="${X(nd)}" y="${Y(nd) + 5}" text-anchor="middle">${nd.label}</text></g>`;
+    });
+    h += `<text class="tl" x="${VW - 50}" y="12" text-anchor="middle">${this.cfg.porNivel}</text>`;
+    for (let l = 0; l < niveles; l++) h += `<text class="tl n" data-l="${l}" x="${VW - 50}" y="${28 + l * dy + 6}" text-anchor="middle"></text>`;
+    this.body.innerHTML = `<svg class="tree" viewBox="0 0 ${VW} ${(this.cfg.prof || niveles) * dy + 6}">${h}</svg>`;
+    this.gs = [...this.body.querySelectorAll('.tn')];
+    this.txs = this.gs.map(g => g.querySelector('text'));
+    this.ls = [...this.body.querySelectorAll('.te')];
+    this.ts = [...this.body.querySelectorAll('.tl.n')];
+  }
+  paint(f) {
+    this.gs.forEach((g, i) => {
+      g.setAttribute('class', 'tn ' + (f.st[i] || ''));
+      this.txs[i].textContent = f.lab[i] || this.nodes[i].label;
+    });
+    this.ls.forEach(l => l.classList.toggle('on', !!f.st[+l.dataset.k]));
+    this.ts.forEach((t, l) => { t.textContent = f.lev[l] || ''; });
+  }
+}
+
+function arbolMezcla(l) {
+  const m = Math.floor(l.length / 2);
+  return { l, label: txt(l), fin: txt(l.slice().sort((x, y) => x - y)), kids: l.length <= 1 ? [] : [arbolMezcla(l.slice(0, m)), arbolMezcla(l.slice(m))] };
+}
+function arbolRapida(l) {
+  const p = l[0];
+  const kids = l.length <= 1 ? [] : [l.filter(x => x < p), l.filter(x => x > p)].filter(k => k.length).map(arbolRapida);
+  return { l, label: txt(l), fin: txt(l.slice().sort((x, y) => x - y)), kids };
+}
+
+// La tabla de una medida que crece, como barras a escala fija.
+class Crecer {
+  constructor(root, cfg) {
+    this.cfg = cfg; this.ns = cfg.ns; this.filas = cfg.filas;
+    this.k = 0; this.timer = null;
+    root.innerHTML = `<div class="gr" style="margin-top:0"><div class="gn" style="color:#8b949e">n =</div><div class="gnow"></div><div></div></div>` +
+      this.filas.map(([t, col]) => `<div class="gr"><div class="gn" style="color:${col}">${t}</div><div class="gt"><div class="gf" style="background:${col}"></div></div><div class="gv"></div></div>`).join('') +
+      `<div class="ctl" style="margin-top:1.4cqw"></div>`;
+    this.now = this.msg = root.querySelector('.gnow'); this.fills = [...root.querySelectorAll('.gf')]; this.vals = [...root.querySelectorAll('.gv')];
+    this.ctl = root.querySelector('.ctl');
+    this.ns.forEach((n, k) => {
+      const b = document.createElement('button'); b.textContent = `n = ${n}`;
+      b.onclick = () => { this.stop(); this.k = k; this.draw(); };
+      this.ctl.appendChild(b);
+    });
+    this.ctl.insertAdjacentHTML('beforeend', '<span class="sp"></span><button data-k="paso">Duplicar n</button><button data-k="anim" class="go">Animar</button><button data-k="rei">Reiniciar</button>');
+    this.ctl.querySelector('[data-k=paso]').onclick = () => this.step();
+    this.ctl.querySelector('[data-k=anim]').onclick = () => this.toggle();
+    this.ctl.querySelector('[data-k=rei]').onclick = () => this.reset();
+    root.closest('.slide')._ctl.push(this);
+    this.draw();
+  }
+  draw() {
+    const k = this.k, max = Math.max(...this.filas.flatMap(f => f[2]));
+    this.now.textContent = this.ns[k];
+    this.filas.forEach(([t, col, vs], r) => {
+      this.fills[r].style.width = (vs[k] / max * 100) + '%';
+      const antes = k ? vs[k - 1] : null;
+      this.vals[r].innerHTML = `${this.cfg.fmt(vs[k])}<small>${antes === null ? '' : `×${(vs[k] / antes).toFixed(1).replace('.', ',')}`}</small>`;
+    });
+    [...this.ctl.querySelectorAll('button')].slice(0, this.ns.length).forEach((b, i) => b.classList.toggle('on', i === k));
+  }
+  next() { if (this.k >= this.ns.length - 1) { this.stop(); return false; } this.k++; this.draw(); return true; }
+  reset() { this.stop(); this.k = 0; this.draw(); }
+  step() { this.stop(); if (this.k >= this.ns.length - 1) this.reset(); else this.next(); }
+  toggle() {
+    if (this.timer) { this.stop(); return; }
+    if (this.k >= this.ns.length - 1) this.reset();
+    this.timer = setInterval(() => { if (!this.next()) this.stop(); }, 1400);
+    this.ctl.querySelector('[data-k=anim]').textContent = 'Pausa';
+  }
+  stop() { clearInterval(this.timer); this.timer = null; this.ctl.querySelector('[data-k=anim]').textContent = 'Animar'; }
+}
+
+// ---------------------------------------------------------------- generadores
+function* gMezclar(c, s) {
+  const a = s.a, b = s.b, r = [];
+  let i = 0, j = 0;
+  c.vueltas = 0;
+  const F = o => ({ a, b, i, j, r: r.slice(), cnt: { ...c }, ...o });
+  yield F({ line: 2, msg: `mezclar(${txt(a)}, ${txt(b)})` });
+  while (i < a.length && j < b.length) {
+    c.vueltas++;
+    yield F({ line: 4, cmp: true, msg: `vuelta ${c.vueltas}: ¿${a[i]} <= ${b[j]}? ${a[i] <= b[j] ? 'sí' : 'no'}` });
+    if (a[i] <= b[j]) { r.push([a[i], 'sa']); i++; yield F({ line: 5, nuevos: 1, msg: `toma el ${a[i - 1]} de a` }); }
+    else { r.push([b[j], 'sb']); j++; yield F({ line: 8, nuevos: 1, msg: `toma el ${b[j - 1]} de b` }); }
+  }
+  const qa = a.slice(i), qb = b.slice(j);
+  const quien = qa.length ? 'a' : (qb.length ? 'b' : null);
+  qa.forEach(v => r.push([v, 'sa'])); i = a.length;
+  qb.forEach(v => r.push([v, 'sb'])); j = b.length;
+  yield F({ line: quien === 'b' ? 11 : 10, nuevos: qa.length + qb.length, msg: quien ? `${quien} va entera al final, sin comparar: ${txt(quien === 'a' ? qa : qb)}` : 'no queda nada en ningún montón' });
+  yield F({ line: 12, msg: `${r.length} elementos en ${c.vueltas} vueltas`, end: true });
+}
+
+// la mezcla en el mismo lugar, para verla con barras
+function* gMsort(a, c, s) {
+  c.comparaciones = 0;
+  const n = a.length, quieto = !!s.quieto;
+  const fuera = (lo, hi) => range(0, n).filter(p => p < lo || p >= hi);
+  const F = o => ({ a: a.slice(), cnt: { ...c }, ...o });
+  yield F({ msg: `ordenar_mezcla de ${n} elementos` });
+  function* ms(lo, hi) {
+    if (hi - lo <= 1) {
+      if (!quieto) yield F({ line: 2, cls: { dim: fuera(lo, hi) }, msg: `[${a[lo].v}]: un elemento, ya está ordenada` });
+      return;
+    }
+    const m = lo + Math.floor((hi - lo) / 2);
+    if (!quieto) yield F({ line: 3, cls: { dim: fuera(lo, hi) }, msg: `parte ${txt(a.slice(lo, hi).map(x => x.v))} en ${m - lo} y ${hi - m}` });
+    yield* ms(lo, m);
+    yield* ms(m, hi);
+    let i = lo, j = m;
+    while (i < j && j < hi) {
+      c.comparaciones++;
+      yield F({ line: 6, cls: { dim: fuera(lo, hi), cmp: [i, j] }, msg: `mezcla: ¿${a[i].v} <= ${a[j].v}?` });
+      if (a[i].v <= a[j].v) i++;
+      else {
+        const x = a.splice(j, 1)[0]; a.splice(i, 0, x); i++; j++;
+        if (!quieto) yield F({ line: 6, cls: { dim: fuera(lo, hi), swap: [i - 1] }, msg: `el ${x.v} pasa delante` });
+      }
+    }
+    yield F({ line: 6, cls: { dim: fuera(lo, hi), done: range(lo, hi) }, msg: `devuelve ${txt(a.slice(lo, hi).map(x => x.v))}` });
+  }
+  yield* ms(0, n);
+  yield F({ cls: { done: range(0, n) }, msg: `ordenada, con ${c.comparaciones} comparaciones`, end: true });
+}
+
+// la rápida, con las tres listas pegadas en el mismo lugar
+function* gQsort(a, c, s) {
+  c.comparaciones = 0; c.niveles = 0;
+  const n = a.length, listo = new Set(), quieto = !!s.quieto;
+  const F = o => ({ a: a.slice(), cnt: s.cuenta ? { [s.cuenta]: c[s.cuenta] } : { ...c }, ...o });
+  const hechos = () => [...listo];
+  const fuera = (lo, hi) => range(0, n).filter(p => (p < lo || p >= hi) && !listo.has(p));
+  yield F({ msg: `ordenar_rapida de ${n} elementos` + (s.azar ? ', pivote al azar' : ', pivote: el primero') });
+  function* qs(lo, hi, d) {
+    if (hi - lo <= 0) return;
+    c.niveles = Math.max(c.niveles, d + 1);
+    if (hi - lo === 1) {
+      listo.add(lo);
+      if (!quieto) yield F({ line: 2, cls: { done: hechos(), dim: fuera(lo, hi) }, msg: `[${a[lo].v}]: un elemento, ya está` });
+      return;
+    }
+    const p = s.azar ? lo + Math.floor(Math.random() * (hi - lo)) : lo, pv = a[p].v;
+    if (!quieto) yield F({ line: 3, cls: { done: hechos(), dim: fuera(lo, hi), key: [p] }, msg: `pivote: ${pv}` });
+    const men = [], igu = [], may = [];
+    for (let k = lo; k < hi; k++) {
+      c.comparaciones++;
+      const x = a[k], dest = x.v < pv ? men : (x.v === pv ? igu : may);
+      if (!quieto) yield F({ line: dest === men ? 7 : (dest === igu ? 9 : 11), cls: { done: hechos(), dim: fuera(lo, hi), key: [p], cmp: k === p ? [] : [k] }, msg: `${x.v} va a ${dest === men ? 'menores' : (dest === igu ? 'iguales' : 'mayores')}` });
+      else yield F({ cls: { done: hechos(), dim: fuera(lo, hi), key: [p], cmp: [k] }, msg: '' });
+      dest.push(x);
+    }
+    a.splice(lo, hi - lo, ...men, ...igu, ...may);
+    range(lo + men.length, lo + men.length + igu.length).forEach(q => listo.add(q));
+    yield F({ line: 12, cls: { done: hechos(), dim: fuera(lo, hi) }, msg: `${men.length} menores, ${igu.length} igual${igu.length > 1 ? 'es' : ''}, ${may.length} mayores` });
+    yield* qs(lo, lo + men.length, d + 1);
+    yield* qs(lo + men.length + igu.length, hi, d + 1);
+  }
+  yield* qs(0, n, 0);
+  yield F({ cls: { done: range(0, n) }, msg: `ordenada, en ${c.niveles} niveles de llamadas`, end: true });
+}
+
+function* gSeleccion(a, c) {
+  c.comparaciones = 0;
+  const n = a.length, F = o => ({ a: a.slice(), cnt: { ...c }, ...o });
+  yield F({ msg: 'selección' });
+  for (let i = 0; i < n - 1; i++) {
+    let menor = i;
+    for (let j = i + 1; j < n; j++) {
+      c.comparaciones++;
+      yield F({ cls: { done: range(0, i), cmp: [j, menor] } });
+      if (a[j].v < a[menor].v) menor = j;
+    }
+    [a[i], a[menor]] = [a[menor], a[i]];
+    yield F({ cls: { done: range(0, i + 1), swap: [i] } });
+  }
+  yield F({ cls: { done: range(0, n) }, msg: `ordenada, con ${c.comparaciones} comparaciones`, end: true });
+}
+
+function* gArbolMezcla(c, s) {
+  const st = {}, lab = {}, lev = {};
+  c.mezclados = 0;
+  const F = o => ({ st: { ...st }, lab: { ...lab }, lev: { ...lev }, cnt: { ...c }, ...o });
+  function* visita(nd) {
+    if (!nd.kids.length) { st[nd.id] = 'dn'; yield F({ msg: `ordenar_mezcla(${nd.label}): un elemento, la devuelve tal cual` }); return; }
+    st[nd.id] = 'act';
+    yield F({ msg: `ordenar_mezcla(${nd.label}) parte en ${nd.kids[0].label} y ${nd.kids[1].label}` });
+    for (const k of nd.kids) yield* visita(k);
+    lab[nd.id] = nd.fin; st[nd.id] = 'dn';
+    lev[nd.depth] = (lev[nd.depth] || 0) + nd.l.length; c.mezclados += nd.l.length;
+    yield F({ msg: `mezcla ${nd.kids[0].fin} y ${nd.kids[1].fin}: ${nd.l.length} elementos` });
+  }
+  yield F({ msg: `ordenar_mezcla(${s._t.label})` });
+  yield* visita(s._t);
+  const por = Object.keys(lev).sort().map(l => lev[l]);
+  yield F({ msg: `${c.mezclados} elementos mezclados: ${por.join(' + ')}, ${por.length} niveles de ${s._t.l.length}`, end: true });
+}
+
+function* gArbolRapida(c, s) {
+  const st = {}, lab = {}, lev = {};
+  c.repartidos = 0;
+  const F = o => ({ st: { ...st }, lab: { ...lab }, lev: { ...lev }, cnt: { ...c }, ...o });
+  let hondo = 0;
+  function* visita(nd) {
+    hondo = Math.max(hondo, nd.depth + 1);
+    if (!nd.kids.length) { st[nd.id] = 'dn'; yield F({ msg: `ordenar_rapida(${nd.label}): un elemento, la devuelve tal cual` }); return; }
+    const p = nd.l[0], men = nd.l.filter(x => x < p), may = nd.l.filter(x => x > p);
+    st[nd.id] = 'act';
+    lev[nd.depth] = (lev[nd.depth] || 0) + nd.l.length; c.repartidos += nd.l.length;
+    yield F({ msg: `pivote ${p}: menores ${txt(men)}, mayores ${txt(may)}` });
+    for (const k of nd.kids) yield* visita(k);
+    lab[nd.id] = nd.fin; st[nd.id] = 'dn';
+    yield F({ msg: `devuelve menores + [${p}] + mayores = ${nd.fin}` });
+  }
+  yield F({ msg: `ordenar_rapida(${s._t.label})` });
+  yield* visita(s._t);
+  yield F({ msg: `${c.repartidos} elementos repartidos en ${hondo} niveles de llamadas`, end: true });
+}
+
+const LIBRO = [38, 27, 43, 3, 9, 82, 10, 5];
+new Montones($('v-mezclar'), {
+  title: 'mezclar(a, b)', gen: gMezclar, code: 'c-mezclar', speed: 1000,
+  scen: [
+    { label: 'el del libro', a: [2, 5, 8, 9], b: [1, 3, 4, 10, 12] },
+    { label: 'con iguales', a: [1, 3, 3, 7], b: [3, 4, 9] },
+    { label: 'b se acaba', a: [6, 7, 8, 9], b: [1, 2] },
+  ],
+});
+new Viz($('v-msort'), {
+  title: 'ordenar_mezcla(lista)', kind: 'bars', gen: gMsort, code: 'c-msort', speed: 550,
+  scen: [{ label: 'la del libro', data: LIBRO }, { label: '16 al azar', data: () => distintos(16) }],
+});
+new ArbolL($('v-arbol-mezcla'), {
+  title: 'el árbol de ordenar_mezcla', gen: gArbolMezcla, speed: 900, dx: 70, prof: 4, porNivel: 'mezclados',
+  scen: [{ label: 'la del libro', tree: () => arbolMezcla(LIBRO) }],
+});
+new Crecer($('v-crecer-cmp'), {
+  ns: [100, 200, 400, 800, 1600, 3200], fmt: miles,
+  filas: [
+    ['mezcla', '#81c784', [545, 1278, 2961, 6739, 15047, 33290]],
+    ['n log₂ n', '#8b949e', [664, 1529, 3458, 7715, 17030, 37260]],
+    ['selección', '#f48fb1', [4950, 19900, 79800, 319600, 1279200, 5118400]],
+  ],
+});
+new Viz($('v-qsort'), {
+  title: 'ordenar_rapida(lista)', kind: 'bars', gen: gQsort, code: 'c-qsort', speed: 600,
+  scen: [{ label: 'la del libro', data: LIBRO, cuenta: 'niveles' }, { label: '16 al azar', data: () => distintos(16), cuenta: 'niveles' }],
+});
+new ArbolL($('v-arbol-rapida'), {
+  title: 'el árbol de ordenar_rapida', gen: gArbolRapida, speed: 900, dx: 92, ancho: 4, prof: 8, porNivel: 'repartidos',
+  scen: [{ label: 'la del libro', tree: () => arbolRapida(LIBRO) }, { label: 'ya ordenada', tree: () => arbolRapida(range(1, 9)) }],
+});
+new Viz($('v-qsort-azar'), {
+  title: 'ordenar_rapida con range(1, 17)', kind: 'bars', gen: gQsort, speed: 120,
+  scen: [{ label: 'el primero', data: range(1, 17), quieto: true, cuenta: 'niveles' }, { label: 'al azar', data: range(1, 17), azar: true, quieto: true, cuenta: 'niveles' }],
+});
+new Carrera($('v-carrera'), {
+  lanes: [
+    { title: 'selección', gen: gSeleccion },
+    { title: 'mezcla', gen: (a, c) => gMsort(a, c, { quieto: true }) },
+    { title: 'rápida, pivote al azar', gen: (a, c) => gQsort(a, c, { azar: true, quieto: true, cuenta: 'comparaciones' }) },
+  ],
+  scen: [{ label: '32 al azar', data: () => distintos(32) }],
+});
+new Crecer($('v-crecer-tiempo'), {
+  ns: [500, 1000, 2000, 4000], fmt: v => v.toFixed(3).replace('.', ',') + ' s',
+  filas: [
+    ['selección', '#f48fb1', [0.004, 0.021, 0.085, 0.302]],
+    ['inserción', '#ffb74d', [0.004, 0.025, 0.079, 0.296]],
+    ['mezcla', '#81c784', [0.001, 0.004, 0.004, 0.007]],
+    ['rápida', '#ce93d8', [0.001, 0.001, 0.003, 0.005]],
+  ],
+});
+
+// la portada: la mezcla ordenando 32 barras sola, sin controles
+{
+  const v = new Viz($('v-portada'), { kind: 'bars', gen: gMsort, controls: false, scen: [{ data: () => distintos(32), quieto: true }] });
+  v.root.querySelector('.vhead').style.display = 'none';
+  v.msg.style.display = 'none';
+  v.root.querySelector('.ixs').style.display = 'none';
+  setInterval(() => {
+    if (!slides[0].classList.contains('active')) return;
+    if (v.done) { v.reset(); return; }
+    v.next();
+  }, 90);
+}
+
+// guion de demos, construido a partir de las diapositivas marcadas
+const guion = document.getElementById('guion');
+guion.innerHTML = '<tr><th>Diap.</th><th>Dónde</th><th>Qué se muestra</th></tr>' +
+  slides.map((s, i) => [s, i]).filter(([s]) => s.querySelector('.live')).map(([s, i]) => {
+    const where = s.querySelector('.live').textContent.replace(/^En vivo · /, '');
+    return `<tr><td><a href="#${i + 1}" style="color:#ef5350;font-weight:700;text-decoration:none">${i + 1}</a></td><td>${where}</td><td>${s.querySelector('h1').innerHTML}</td></tr>`;
+  }).join('');
+
+function go(n) {
+  n = Math.max(0, Math.min(slides.length - 1, n));
+  if (n !== cur) slides[cur]._ctl.forEach(c => c.stop());
+  slides.forEach((s, i) => { s.classList.toggle('active', i === n); s.classList.toggle('prev', i < n); });
+  cur = n;
+  bar.style.width = ((n + 1) / slides.length * 100) + '%';
+  bar.style.background = getComputedStyle(slides[n]).getPropertyValue('--ac');
+  num.textContent = `${n + 1} / ${slides.length}`;
+  if (location.hash !== '#' + (n + 1)) history.replaceState(null, '', '#' + (n + 1));
+}
+function reveal() {
+  const hidden = slides[cur].querySelector('pre.out.hidden');
+  if (hidden) { hidden.classList.remove('hidden'); return true; }
+  return false;
+}
+document.querySelectorAll('pre.out.hidden').forEach(p => p.addEventListener('click', e => { e.stopPropagation(); p.classList.remove('hidden'); }));
+
+document.addEventListener('keydown', e => {
+  if (e.key >= '0' && e.key <= '9') { typed += e.key; return; }
+  if (e.key === 'Enter' && typed) { go(parseInt(typed, 10) - 1); typed = ''; return; }
+  typed = '';
+  const ctl = slides[cur]._ctl;
+  if (['ArrowRight', ' ', 'PageDown', 'ArrowDown'].includes(e.key)) { e.preventDefault(); go(cur + 1); }
+  else if (['ArrowLeft', 'PageUp', 'ArrowUp', 'Backspace'].includes(e.key)) { e.preventDefault(); go(cur - 1); }
+  else if (e.key === 'Home') go(0);
+  else if (e.key === 'End') go(slides.length - 1);
+  else if (e.key === 'r' || e.key === 'R') reveal();
+  else if (e.key === 'a' || e.key === 'A') ctl.forEach(c => c.toggle());
+  else if (e.key === 's' || e.key === 'S') ctl.forEach(c => c.step());
+  else if (e.key === 'x' || e.key === 'X') ctl.forEach(c => c.reset());
+  else if (e.key === 'v' || e.key === 'V') {
+    const next = slides.findIndex((s, i) => i > cur && s.querySelector('.live'));
+    if (next >= 0) go(next);
+  }
+  else if (e.key === 'f' || e.key === 'F') { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); }
+  else if (e.key === '?') help.classList.toggle('on');
+  else if (e.key === 'Escape') help.classList.remove('on');
+});
+document.getElementById('deck').addEventListener('click', e => {
+  if (e.target.closest('a, button, .viz, .grow, #v-carrera, pre.code')) return;
+  const r = e.currentTarget.getBoundingClientRect();
+  go(e.clientX - r.left > r.width / 3 ? cur + 1 : cur - 1);
+});
+window.addEventListener('hashchange', () => go(parseInt(location.hash.slice(1), 10) - 1 || 0));
+go(parseInt(location.hash.slice(1), 10) - 1 || 0);
+</script>
+</body>
+</html>
