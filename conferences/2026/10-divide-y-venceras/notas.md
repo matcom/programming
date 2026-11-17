@@ -464,7 +464,96 @@ vienen ordenados en la entrada y usa la inserción para los pedazos pequeños, d
 rápida que la recursión. Pero es de la misma familia que la que escribimos aquí, y su
 orden de crecimiento es el mismo.
 
-## 8. Resumen
+## 8. Comparaciones y segundos
+
+Mira otra vez el millón. La rápida le gana a la mezcla, y no por poco. Sería natural
+pensar que compara menos, pero la mezcla parte siempre por la mitad y la rápida no. Las
+contamos en el mismo millón:
+
+```{python continue}
+def contar_mezcla(lista):
+    cuenta = 0
+
+    def mezclar_c(a, b):
+        nonlocal cuenta
+        resultado = []
+        i, j = 0, 0
+        while i < len(a) and j < len(b):
+            cuenta += 1
+            if a[i] <= b[j]:
+                resultado.append(a[i])
+                i += 1
+            else:
+                resultado.append(b[j])
+                j += 1
+        resultado.extend(a[i:])
+        resultado.extend(b[j:])
+        return resultado
+
+    def ordenar(lista):
+        if len(lista) <= 1:
+            return list(lista)
+        medio = len(lista) // 2
+        return mezclar_c(ordenar(lista[:medio]), ordenar(lista[medio:]))
+
+    ordenar(lista)
+    return cuenta
+
+
+def contar_rapida(lista):
+    cuenta = 0
+
+    def ordenar(lista):
+        nonlocal cuenta
+        if len(lista) <= 1:
+            return list(lista)
+        pivote = random.choice(lista)
+        menores, iguales, mayores = [], [], []
+        for x in lista:
+            cuenta += 1                 # x < pivote
+            if x < pivote:
+                menores.append(x)
+            else:
+                cuenta += 1             # x == pivote
+                if x == pivote:
+                    iguales.append(x)
+                else:
+                    mayores.append(x)
+        return ordenar(menores) + iguales + ordenar(mayores)
+
+    ordenar(lista)
+    return cuenta
+
+
+print(f"mezcla: {contar_mezcla(millon):>10,} comparaciones")
+print(f"rápida: {contar_rapida(millon):>10,} comparaciones")
+```
+
+`nonlocal` es el `global` de la sección 3 para una función definida dentro de otra: le
+dice a Python que `cuenta` es la de la función de afuera.
+
+La rápida hace casi el doble de comparaciones y tarda menos. No hay contradicción.
+Contar comparaciones da el **orden de crecimiento**, y el tiempo es ese orden por una
+constante: lo que cuesta cada paso. Cada vuelta del `while` de `mezclar` calcula dos
+`len`, lee `a[i]` y `b[j]` por su índice, compara, agrega y suma 1 a un índice. Cada
+vuelta del `for` de la rápida recibe `x` sin índices, compara y agrega. En Python, donde
+cada una de esas operaciones cuesta, la vuelta más corta gana aunque se dé más veces.
+Con el mismo orden de crecimiento, la constante decide.
+
+Por eso los lenguajes usan los dos. Java ordena los arreglos de números con una
+ordenación rápida de dos pivotes, y los de objetos con Timsort. C++ ofrece `std::sort`,
+una rápida que se cambia a otro método si la recursión se hace demasiado honda, y
+`std::stable_sort`, una mezcla. La regla es la estabilidad: la mezcla cuando los iguales
+tienen que conservar su orden, como en el ejercicio 6, o cuando hace falta un peor caso
+garantizado; la rápida cuando no. `sorted` usa Timsort, una mezcla, y la documentación
+de Python promete que es estable.
+
+Las rápidas de esas bibliotecas, además, no construyen tres listas nuevas como la
+nuestra: reparten intercambiando elementos dentro de la misma lista, sin listas auxiliares.
+La mezcla necesita una lista auxiliar del tamaño de lo que mezcla. Esa versión de la
+rápida queda para Diseño y Análisis de Algoritmos.
+
+## 9. Resumen
 
 - **Divide y vencerás**: dividir el problema en subproblemas más pequeños del mismo tipo,
   resolverlos recursivamente, y combinar sus soluciones.
@@ -482,6 +571,11 @@ orden de crecimiento es el mismo.
   niveles tiene, y cuánto trabajo hay en cada nivel.
 - La búsqueda binaria es divide y vencerás con un solo subproblema.
 - Pasar de $n^2$ a $n \log n$ es pasar de horas a segundos con un millón de elementos.
+- Contar comparaciones da el orden de crecimiento, no el tiempo. La rápida compara casi el
+  doble que la mezcla y tarda menos, porque cada paso suyo cuesta menos. Con el mismo
+  orden, la constante decide.
+- La mezcla es estable y su peor caso es $n \log n$; la rápida es más rápida en la
+  práctica. Las bibliotecas usan las dos.
 
 ## Ejercicios
 
